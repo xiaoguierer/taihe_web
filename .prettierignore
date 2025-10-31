@@ -1,0 +1,87 @@
+# 依赖目录
+node_modules/
+dist/
+build/
+
+# 配置文件
+*.config.js
+*.config.ts
+
+# 日志文件
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 运行时数据
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# 覆盖率目录
+coverage/
+.nyc_output/
+
+# 依赖树
+.npm
+
+# 可选 npm 缓存目录
+.npm
+
+# 微前端子应用（如果使用）
+micro-apps/
+
+# 测试相关
+__tests__/
+__snapshots__/
+
+# 环境变量文件（敏感信息）
+.env
+.env.local
+.env.*.local
+
+# 版本控制
+.git/
+.svn/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 操作系统
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+
+# 图片和字体文件（通常不需要格式化）
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.svg
+*.ico
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+# 文档文件
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx

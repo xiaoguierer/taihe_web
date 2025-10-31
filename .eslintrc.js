@@ -1,0 +1,55 @@
+module.exports = {
+  root: true,
+  env: {
+    browser: true,
+    es2021: true,
+    node: true,
+  },
+  extends: [
+    'eslint:recommended',
+    '@vue/eslint-config-typescript',
+    '@vue/eslint-config-prettier/skip-formatting',
+    'plugin:vue/vue3-essential',
+    'plugin:prettier/recommended',
+  ],
+  overrides: [],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    parser: '@typescript-eslint/parser',
+  },
+  plugins: ['vue', '@typescript-eslint', 'prettier'],
+  rules: {
+    'prettier/prettier': 'error',
+    'vue/multi-word-component-names': 'off',
+    'vue/no-unused-vars': 'error',
+    'vue/require-default-prop': 'off',
+    'vue/html-self-closing': [
+      'error',
+      {
+        html: {
+          void: 'always',
+          normal: 'always',
+          component: 'always',
+        },
+        svg: 'always',
+        math: 'always',
+      },
+    ],
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error'],
+    'no-var': 'error',
+    'prefer-const': 'error',
+    'no-duplicate-imports': 'error',
+    'object-shorthand': 'error',
+    'prefer-template': 'error',
+  },
+  globals: {
+    defineProps: 'readonly',
+    defineEmits: 'readonly',
+    defineExposes: 'readonly',
+    withDefaults: 'readonly',
+  },
+}
