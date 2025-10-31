@@ -1,7 +1,5 @@
 <template>
   <div class="login-page">
-    <!-- 使用头部组件 -->
-    <Header/>
     <!-- 第二部分：登录表单 -->
     <section class="login-section">
       <div class="login-container">
@@ -11,7 +9,6 @@
           还没有账号？
           <a href="#" class="register-link" @click="goToRegister" >点击这里注册</a>
         </p>
-
         <form @submit.prevent="handleLogin">
           <div class="form-group">
             <label class="form-label" for="username">账号</label>
@@ -24,7 +21,6 @@
               required
             >
           </div>
-
           <div class="form-group">
             <label class="form-label" for="password">密码</label>
             <input
@@ -36,11 +32,8 @@
               required
             >
           </div>
-
           <button type="submit" class="login-button">登录</button>
-
           <a href="#" class="forgot-password" @click="goToForgotPassword">忘记密码？</a>
-
           <p class="policy-links">
             登录即表示您同意我们的
             <a href="#" class="policy-link" @click="goToPrivacyPolicy">隐私政策</a>
@@ -54,13 +47,8 @@
 </template>
 
 <script>
-// 导入组件
-import Header from '@/components/layout/Header.vue'
 export default {
   name: 'UserLogin',
-  components: {
-    Header
-  },
   data() {
     return {
       loginForm: {
@@ -75,7 +63,6 @@ export default {
         alert('请输入账号和密码');
         return;
       }
-
       // 模拟登录请求
       console.log('登录信息:', this.loginForm);
       alert('登录成功！');
@@ -91,12 +78,10 @@ export default {
       this.$router.push('/UserGetmima');
     },
     goToPrivacyPolicy() {
-      alert('跳转到隐私政策页面');
-      // this.$router.push('/privacy-policy');
+      this.$router.push('/Police');
     },
     goToTerms() {
-      alert('跳转到服务条款页面');
-      // this.$router.push('/terms');
+      this.$router.push('/Service');
     }
   }
 };

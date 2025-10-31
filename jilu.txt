@@ -9,7 +9,7 @@ src/
 ├── styles/        # 样式文件
 └── types/         # TypeScript类型定义
 
-首页构成
+一 首页构成
 index.html (入口模板)
     ↓
 main.js (应用入口)
@@ -41,3 +41,25 @@ Footer.vue - 底部信息组件
 2 app: 应用实例对象，用于配置和挂载应用
 3 插件注册和配置
 4 路由  状态管理  组件库  挂载到index.html，启动渲染
+
+
+二  Vue Router 模块化方案 按模块拆分路由文件
+
+src/
+├── router/
+│   ├── index.js                 # 主入口
+│   ├── routes.js               # 路由集合
+│   ├── guards/                 # 路由守卫
+│   │   ├── auth.js           # 认证
+│   │   └── permission.js     # 权限
+│   └── modules/                # 模块路由
+│       ├── user.js
+│       ├── policy.js
+│       ├── product.js
+│       └── order.js
+避免index.js 冗余繁杂
+结构清晰：按业务模块划分，易于维护
+灵活可控：可以精确控制每个路由的配置
+团队友好：多人协作时冲突少
+类型安全：配合TypeScript更友好
+这种结构可以很好地支持项目规模的增长，保持代码的可维护性和可扩展性。

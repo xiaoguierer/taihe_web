@@ -1,7 +1,5 @@
 <template>
   <div class="login-page">
-    <!-- 使用头部组件 -->
-    <Header />
     <!-- 第二部分：登录表单 -->
     <section class="login-section">
       <div class="login-container">
@@ -74,13 +72,8 @@
 </template>
 
 <script>
-// 导入组件
-import Header from '@/components/layout/Header.vue'
 export default {
   name: 'UserRegister',
-  components: {
-    Header
-  },
   data() {
     return {
       registerForm: {
@@ -110,12 +103,10 @@ export default {
       this.$router.push('/UserLogin');
     },
     goToPrivacyPolicy() {
-      alert('跳转到隐私政策页面');
-      // this.$router.push('/privacy-policy');
+      this.$router.push('/Police');
     },
     goToTerms() {
-      alert('跳转到服务条款页面');
-      // this.$router.push('/terms');
+      this.$router.push('/Service');
     }
   }
 };

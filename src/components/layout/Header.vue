@@ -6,7 +6,7 @@
       </div>
       <div class="menu-dropdown" :class="{ 'menu-show': isMenuOpen }">
         <a href="#" @click.prevent="navigateTo('/')">首页</a>
-        <a href="#" @click.prevent="navigateTo('/jewelry')">珠宝系列</a>
+        <a href="#" @click.prevent="navigateTo('/ProductList')">珠宝系列</a>
         <a href="#" @click.prevent="navigateTo('/custom')">高级定制</a>
         <a href="#" @click.prevent="navigateTo('/story')">品牌故事</a>
         <a href="#" @click.prevent="navigateTo('/service')">客户服务</a>
