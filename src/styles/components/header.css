@@ -1,7 +1,7 @@
 /* 页面头部 */
 .header {
   height: 2cm;
-  background-color: white;
+  background-color: rgba(10, 17, 40, 0.9);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -20,7 +20,7 @@
 
 .menu-icon {
   font-size: 24px;
-  color: #5d4037;
+  color: #FF8C00;
   cursor: pointer;
   padding: 10px;
   display: flex;
@@ -85,7 +85,7 @@
 
 .header-icons i {
   font-size: 20px;
-  color: #5d4037;
+  color: #FF8C00;
   cursor: pointer;
   transition: all 0.3s;
   position: relative;

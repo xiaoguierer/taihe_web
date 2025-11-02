@@ -5,12 +5,12 @@
         <i class="fas fa-bars"></i> 菜单
       </div>
       <div class="menu-dropdown" :class="{ 'menu-show': isMenuOpen }">
-        <a href="#" @click.prevent="navigateTo('/')">首页</a>
-        <a href="#" @click.prevent="navigateTo('/ProductList')">珠宝系列</a>
-        <a href="#" @click.prevent="navigateTo('/custom')">高级定制</a>
-        <a href="#" @click.prevent="navigateTo('/story')">品牌故事</a>
-        <a href="#" @click.prevent="navigateTo('/service')">客户服务</a>
-        <a href="#" @click.prevent="navigateTo('/contact')">联系我们</a>
+        <a href="#" @click.prevent="navigateTo('/')">首页-此处为产品分类</a>
+        <a href="#" @click.prevent="navigateTo('/ProductList')">产品列表页</a>
+        <a href="#" @click.prevent="navigateTo('/ProductDatil')">产品详情页</a>
+        <a href="#" @click.prevent="navigateTo('/OrderList')">订单列表</a>
+        <a href="#" @click.prevent="navigateTo('/CartPage')">购物车</a>
+        <a href="#" @click.prevent="navigateTo('/AddressPage')">收货地址</a>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
     <div class="header-icons">
       <i class="fas fa-search" title="搜索" @click="search"></i>
       <i class="fas fa-user" title="用户" @click="navigateTo('/UserLogin')"></i>
-      <i class="fas fa-shopping-bag" title="购物车" @click="navigateTo('/cart')">
+      <i class="fas fa-shopping-bag" title="购物车" @click="navigateTo('/CartPage')">
         <span class="cart-count">{{ cartCount }}</span><a href="#"></a>
       </i>
       <i class="fas fa-share-alt" title="分享" @click="share"></i>

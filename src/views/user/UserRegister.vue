@@ -1,115 +1,188 @@
 <template>
-  <div class="login-page">
-    <!-- 第二部分：登录表单 -->
-    <section class="login-section">
-      <div class="login-container">
-        <h1 class="login-title">注册</h1>
-        <p class="register-prompt">
-          已有账号？
-          <a href="#" class="register-link" @click="goToLogin" >点击这里登录</a>
-        </p>
+  <div class="register-page">
+    <!-- 背景装饰元素 -->
+    <div class="bg-decoration bg-star-1"></div>
+    <div class="bg-decoration bg-star-2"></div>
+    <div class="bg-decoration bg-star-3"></div>
 
-        <form @submit.prevent="handleRegister">
-          <div class="form-group">
-            <label class="form-label" for="firstname">First name</label>
-            <input
-              type="text"
-              id="firstname"
-              class="form-input"
-              placeholder="请输入firstname"
-              v-model="registerForm.firstname"
-              required
-            >
+    <div class="register-container">
+      <!-- 左侧品牌展示区 -->
+      <div class="brand-section">
+        <div class="brand-content">
+          <h1 class="brand-title">灵性珠宝</h1>
+          <p class="brand-subtitle">发现属于您的能量宝石</p>
+          <div class="brand-features">
+            <div class="feature-item">
+              <span class="feature-icon">💎</span>
+              <span>个性化宝石推荐</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">✨</span>
+              <span>专属能量分析</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🔮</span>
+              <span>深度灵性洞察</span>
+            </div>
           </div>
-
-          <div class="form-group">
-          <label class="form-label" for="secondname">Second name</label>
-          <input
-            type="text"
-            id="secondname"
-            class="form-input"
-            placeholder="请输入secondname"
-            v-model="registerForm.secondname"
-            required
-          >
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="email">Email</label>
-            <input
-              type="text"
-              id="email"
-              class="form-input"
-              placeholder="请输入email"
-              v-model="registerForm.email"
-              required
-            >
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="password">密码</label>
-            <input
-              type="password"
-              id="password"
-              class="form-input"
-              placeholder="请输入密码"
-              v-model="registerForm.password"
-              required
-            >
-          </div>
-
-          <button type="submit" class="login-button">注册</button>
-          <p class="policy-links">
-            登录即表示您同意我们的
-            <a href="#" class="policy-link" @click="goToPrivacyPolicy">隐私政策</a>
-            和
-            <a href="#" class="policy-link" @click="goToTerms">服务条款</a>
-          </p>
-        </form>
+        </div>
       </div>
-    </section>
+
+      <!-- 右侧注册表单区 -->
+      <div class="form-section">
+        <div class="form-container">
+          <h2 class="form-title">开启您的灵性之旅</h2>
+          <p class="form-subtitle">注册会员，发现与您能量共鸣的珠宝</p>
+
+          <form @submit.prevent="handleRegister" class="register-form">
+            <!-- 邮箱输入 -->
+            <div class="form-group">
+              <label for="email" class="form-label">电子邮箱</label>
+              <input
+                id="email"
+                v-model="formData.email"
+                type="email"
+                class="form-input"
+                placeholder="请输入您的电子邮箱"
+                required
+              >
+            </div>
+
+            <!-- 密码输入 -->
+            <div class="form-group">
+              <label for="password" class="form-label">密码</label>
+              <input
+                id="password"
+                v-model="formData.password"
+                type="password"
+                class="form-input"
+                placeholder="请设置登录密码（至少8位字符）"
+                required
+                minlength="8"
+              >
+            </div>
+
+            <!-- 出生日期输入 -->
+            <div class="form-group">
+              <label for="birthdate" class="form-label">
+                出生年月日
+                <span class="optional-label">（选填）</span>
+              </label>
+              <input
+                id="birthdate"
+                v-model="formData.birthdate"
+                type="date"
+                class="form-input"
+              >
+              <p class="field-description">您的出生日期仅用于为您提供个性化的星座运势和产品推荐</p>
+            </div>
+
+            <!-- 隐私政策同意 -->
+            <div class="privacy-section">
+              <div class="checkbox-group">
+                <input
+                  id="privacy-agree"
+                  v-model="privacyAgreed"
+                  type="checkbox"
+                  class="checkbox-input"
+                  required
+                >
+                <label for="privacy-agree" class="checkbox-label">
+                  我已阅读并同意
+                  <a href="#" class="privacy-link" @click.prevent="showPrivacyModal = true">《隐私政策》</a>
+                </label>
+              </div>
+            </div>
+
+            <!-- 激励提示 -->
+            <div class="incentive-card" v-if="!formData.birthdate">
+              <div class="incentive-icon">🎁</div>
+              <div class="incentive-content">
+                <h3>完善您的灵性档案</h3>
+                <p>填写出生日期，即可获得<strong>200积分</strong>，并解锁高级运势报告</p>
+              </div>
+            </div>
+
+            <!-- 提交按钮 -->
+            <button
+              type="submit"
+              class="submit-button"
+              :class="{ 'with-incentive': !formData.birthdate }"
+              :disabled="!privacyAgreed"
+            >
+              注册会员
+            </button>
+
+            <!-- 登录链接 -->
+            <p class="login-link">
+              已有账户？<a href="#" @click="switchtologin">立即登录</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- 隐私政策模态框 -->
+    <div v-if="showPrivacyModal" class="modal-overlay" @click="showPrivacyModal = false">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3>隐私政策</h3>
+          <button class="modal-close" @click="showPrivacyModal = false">×</button>
+        </div>
+        <div class="modal-body">
+          <h4>数据使用说明</h4>
+          <p>我们非常重视您的隐私权，并致力于保护您的个人信息。以下是我们的数据使用政策：</p>
+
+          <ul>
+            <li><strong>邮箱地址：</strong>用于账户验证、登录和重要通知</li>
+            <li><strong>密码：</strong>经过加密处理，我们无法查看您的原始密码</li>
+            <li><strong>出生日期：</strong>仅用于为您提供个性化的星座运势和产品推荐，您可以选择不提供此信息</li>
+          </ul>
+
+          <h4>数据安全承诺</h4>
+          <p>我们采用先进的加密技术保护您的数据，绝不会将您的个人信息出售给第三方。</p>
+
+          <div class="modal-actions">
+            <button class="btn-primary" @click="showPrivacyModal = false">我已了解</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'UserRegister',
-  data() {
-    return {
-      registerForm: {
-        firstname: '',
-        secondname: '',
-        email:'',
-        password: ''
-      }
-    };
-  },
-  methods: {
-    handleRegister() {
-      if (!this.registerForm.firstname || !this.registerForm.firstname) {
-        alert('请输入账号和密码');
-        return;
-      }
+<script setup>
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+// 定义事件
+const switchtologin = () =>{
+  router.push('/UserLogin')
+}
 
-      // 模拟登录请求
-      console.log('登录信息:', this.registerForm);
-      alert('登录成功！');
+// 响应式数据
+const formData = reactive({
+  email: '',
+  password: '',
+  birthdate: ''
+})
 
-      // 在实际应用中，这里会调用API进行登录验证
-      // 然后跳转到用户主页或返回之前的页面
-      // this.$router.push('/dashboard');
-    },
-    goToLogin() {
-      this.$router.push('/UserLogin');
-    },
-    goToPrivacyPolicy() {
-      this.$router.push('/Police');
-    },
-    goToTerms() {
-      this.$router.push('/Service');
-    }
+const privacyAgreed = ref(false)
+const showPrivacyModal = ref(false)
+
+// 注册处理函数
+const handleRegister = () => {
+  if (!privacyAgreed.value) {
+    alert('请先阅读并同意隐私政策')
+    return
   }
-};
+
+  // 这里可以添加实际的注册逻辑
+  console.log('注册数据:', formData)
+
+  // 模拟注册成功
+  alert('注册成功！' + (formData.birthdate ? '您已获得200积分奖励！' : ''))
+}
 </script>
 
 <style scoped>

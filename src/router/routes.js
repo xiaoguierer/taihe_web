@@ -1,7 +1,9 @@
 import userRoutes from './modules/user'
 import policyRoutes from './modules/policy'
 import productRoutes from './modules/product'
-
+import orderRoutes from "@/router/modules/orders.js";
+import cartRoutes from "@/router/modules/cart.js";
+import addressRoutes from "@/router/modules/address.js";
 // 自动加载所有模块
 const modules = import.meta.glob('./modules/*.js', { eager: true })
 
@@ -23,6 +25,12 @@ export const routes = [
   ...policyRoutes,
   //商品没款
   ...productRoutes,
+  //购物车
+  ...cartRoutes,
+  //收货地址
+  ...addressRoutes,
+  //订单
+  ...orderRoutes,
   // 404页面
   {
     path: '/:pathMatch(.*)*',

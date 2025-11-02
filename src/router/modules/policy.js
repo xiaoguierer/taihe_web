@@ -5,7 +5,7 @@ const policyRoutes = [
     component: () => import('@/views/policy/Police.vue'),
     meta: {
       title: '政策列表',
-      requiresAuth: true
+      requiresAuth: false
     }
   },
   {
@@ -14,7 +14,7 @@ const policyRoutes = [
     component: () => import('@/views/policy/Service.vue'),
     meta: {
       title: '服务详情',
-      requiresAuth: true
+      requiresAuth: false
     }
   }
 ]
