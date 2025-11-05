@@ -64,16 +64,18 @@
 
             <!-- 出生日期输入 -->
             <div class="form-group">
-              <label for="birthdate" class="form-label">
-                出生年月日
+              <label for="birthdaytime" class="form-label">
+                出生时间
                 <span class="optional-label">（选填）</span>
               </label>
-              <input
-                id="birthdate"
-                v-model="formData.birthdate"
-                type="date"
-                class="form-input"
-              >
+              <el-date-picker
+                v-model="formData.birthdaytime"
+                type="datetime"
+                placeholder="Select date and time"
+                value-format="YYYY-MM-DD HH:mm:ss"
+                format="YYYY-MM-DD HH:mm:ss"
+                style="width: 100%"
+              />
               <p class="field-description">您的出生日期仅用于为您提供个性化的星座运势和产品推荐</p>
             </div>
 
@@ -95,7 +97,7 @@
             </div>
 
             <!-- 激励提示 -->
-            <div class="incentive-card" v-if="!formData.birthdate">
+            <div class="incentive-card" v-if="!formData.birthdaytime">
               <div class="incentive-icon">🎁</div>
               <div class="incentive-content">
                 <h3>完善您的灵性档案</h3>
@@ -154,6 +156,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import {ElMessage,} from "element-plus";
 const router = useRouter()
 // 定义事件
 const switchtologin = () =>{
@@ -164,24 +167,57 @@ const switchtologin = () =>{
 const formData = reactive({
   email: '',
   password: '',
-  birthdate: ''
+  birthdaytime: null
 })
 
 const privacyAgreed = ref(false)
 const showPrivacyModal = ref(false)
 
 // 注册处理函数
-const handleRegister = () => {
+const handleRegister = async () => {
   if (!privacyAgreed.value) {
     alert('请先阅读并同意隐私政策')
     return
   }
+  console.log('原始日期:', formData.birthdaytime)
+  try {
+    const formDataToSend = new FormData()
 
-  // 这里可以添加实际的注册逻辑
-  console.log('注册数据:', formData)
-
-  // 模拟注册成功
-  alert('注册成功！' + (formData.birthdate ? '您已获得200积分奖励！' : ''))
+    const requestData = {
+      email: formData.email,
+      password: formData.password,
+      birthdaytime: formData.birthdaytime
+    }
+    console.log('发送的请求数据:', JSON.stringify(requestData, null, 2))
+    const requestBlob = new Blob([JSON.stringify(requestData)], {
+      type: 'application/json'
+    })
+    formDataToSend.append('request', requestBlob)
+    formDataToSend.append('avatarFile', new Blob([]), 'empty.txt')
+    console.log('FormData 内容:',formDataToSend)
+    const response = await fetch('/api/users/register', {
+      method: 'POST',
+      body: formDataToSend
+    })
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('注册接口不存在，请检查后端服务')
+      }
+      try {
+        const errorData = await response.json()
+        throw new Error(errorData.message || '注册失败')
+      } catch (e) {
+        throw new Error(`HTTP错误: ${response.status}`)
+      }
+    }
+    const result = await response.json()
+    console.log('注册成功:', result)
+    ElMessage.success('注册成功！' + (formData.birthdaytime ? '您已获得200积分奖励！' : ''))
+  } catch (e) {
+    console.log('注册失败')
+  }
+  console.error('注册失败')
+  ElMessage.error(`注册失败: ${error.message}`)
 }
 </script>
 

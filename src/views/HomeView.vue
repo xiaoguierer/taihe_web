@@ -30,7 +30,7 @@
           <div class="hero-visual">
             <div class="product-visual">
               <img :src="currentHeroImage" alt="平衡之境系列黑欧宝戒指" />
-              <button class="visual-control" @click="toggleHeroLayout">A/B测试布局</button>
+              <button class="visual-control" @click="toggleHeroLayout">测试说明布局</button>
             </div>
           </div>
         </div>
@@ -39,7 +39,7 @@
     <!-- 模块三：精选商品分类导航 -->
     <section class="categories-section">
       <div class="section-container">
-        <h2 class="section-title">按您的需求探索</h2>
+        <h2 class="section-title">元能量探索</h2>
         <div class="categories-grid">
           <div v-for="category in categories" :key="category.id" class="category-card" @click="navigateToCategory(category.id)">
             <span class="category-icon">{{ category.icon }}</span>
@@ -76,7 +76,7 @@
                 <span class="tag">{{ product.tags.zodiac }}</span>
                 <span class="tag">{{ product.tags.element }}</span>
               </div>
-              <div class="product-price">¥{{ product.price.toLocaleString() }}</div>
+              <div class="product-price">${{ product.price.toLocaleString() }}</div>
             </div>
           </div>
         </div>
@@ -201,7 +201,7 @@
               <div class="product-details">
                 <h4>文中同款黄水晶「丰饶」手链</h4>
                 <p>增强财富能量的专属配饰</p>
-                <div class="product-price">¥3,800</div>
+                <div class="product-price">$3,800</div>
                 <button class="btn-small">立即购买</button>
               </div>
             </div>
@@ -221,7 +221,7 @@
             </div>
             <div class="product-info">
               <h3 class="product-name">{{ product.name }}</h3>
-              <div class="product-price">¥{{ product.price.toLocaleString() }}</div>
+              <div class="product-price">${{ product.price.toLocaleString() }}</div>
             </div>
           </div>
         </div>
@@ -310,12 +310,12 @@ const categories = ref([
 
 // 产品数据
 const products = ref([
-  { id: 1, name: '【沧海月明】蓝宝石吊坠', price: 12800, image: 'https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: true, tags: { zodiac: '星座：天蝎/双鱼', element: '五行：水' } },
-  { id: 2, name: '【平衡之境】黑欧宝戒指', price: 9800, image: 'https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: true, tags: { zodiac: '星座：金牛/处女', element: '五行：土' } },
-  { id: 3, name: '【清音】海蓝宝耳钉', price: 6800, image: '/https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: false, tags: { zodiac: '星座：双子/天秤', element: '五行：风' } },
-  { id: 4, name: '【丰饶】黄水晶手链', price: 4200, image: '/https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: true, tags: { zodiac: '星座：金牛/摩羯', element: '五行：土' } },
-  { id: 5, name: '【守护】黑曜石挂坠', price: 3200, image: '/https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: false, tags: { zodiac: '星座：天蝎/摩羯', element: '五行：水' } },
-  { id: 6, name: '【灵感】紫水晶项链', price: 5600, image: '/https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: true, tags: { zodiac: '星座：双鱼/射手', element: '五行：火' } }
+  { id: 1, name: '【沧海月明】蓝宝石吊坠', price: 1000, image: 'https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: true, tags: { zodiac: '星座：天蝎/双鱼', element: '五行：水' } },
+  { id: 2, name: '【平衡之境】黑欧宝戒指', price: 2000, image: 'https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: true, tags: { zodiac: '星座：金牛/处女', element: '五行：土' } },
+  { id: 3, name: '【清音之魔】海蓝宝耳钉', price: 3000, image: 'https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: false, tags: { zodiac: '星座：双子/天秤', element: '五行：风' } },
+  { id: 4, name: '【丰饶之姿】黄水晶手链', price: 4000, image: 'https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: true, tags: { zodiac: '星座：金牛/摩羯', element: '五行：土' } },
+  { id: 5, name: '【守护之神】黑曜石挂坠', price: 5000, image: 'https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: false, tags: { zodiac: '星座：天蝎/摩羯', element: '五行：水' } },
+  { id: 6, name: '【灵感秘籍】紫水晶项链', price: 5000, image: 'https://a.vpimg4.com/upload/merchandise/382845/HUAN-YD0321007-1.jpg', isHot: true, tags: { zodiac: '星座：双鱼/射手', element: '五行：火' } }
 ])
 
 // 用户见证数据
