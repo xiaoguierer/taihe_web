@@ -24,6 +24,10 @@ export default defineConfig({
     // 热更新配置
     hmr: {
       overlay: false // 禁用错误覆盖层
+    },
+    watch: {
+      usePolling: true,  // 使用轮询替代文件系统事件
+      interval: 1000     // 轮询间隔1秒
     }
   },
 

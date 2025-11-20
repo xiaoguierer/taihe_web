@@ -1,9 +1,10 @@
 import userRoutes from './modules/user'
 import policyRoutes from './modules/policy'
 import productRoutes from './modules/product'
-import orderRoutes from "@/router/modules/orders.js";
-import cartRoutes from "@/router/modules/cart.js";
-import addressRoutes from "@/router/modules/address.js";
+import orderRoutes from "./modules/orders.js";
+import cartRoutes from "./modules/cart.js";
+import addressRoutes from "./modules/address.js";
+import homeindexRoutes from "./modules/home.js";
 // 自动加载所有模块
 const modules = import.meta.glob('./modules/*.js', { eager: true })
 
@@ -23,7 +24,7 @@ export const routes = [
   ...userRoutes,
   // 政策模块
   ...policyRoutes,
-  //商品没款
+  //商品模块
   ...productRoutes,
   //购物车
   ...cartRoutes,
@@ -31,6 +32,8 @@ export const routes = [
   ...addressRoutes,
   //订单
   ...orderRoutes,
+  //首页导航
+  ...homeindexRoutes,
   // 404页面
   {
     path: '/:pathMatch(.*)*',

@@ -35,17 +35,25 @@
               @mouseleave="handleMegaMenuLeave"
             >
               <div class="mega-menu-content">
-                <!-- 加载状态 -->
+                <!-- 修复：移除所有注释，确保条件链连续 -->
                 <div v-if="getMenuData(navItem.id).loading" class="menu-loading">
                   <div class="loading-spinner"></div>
                   <span class="loading-text">加载中...</span>
                 </div>
 
-                <!-- 内容区域 -->
-                <div v-else-if="!getMenuData(navItem.id).error" class="menu-content">
-                  <!-- 左侧导航区 -->
+                <div v-else-if="getMenuData(navItem.id).error" class="menu-error">
+                  <div class="error-content">
+                    <span class="error-icon">⚠️</span>
+                    <span class="error-text">数据加载失败</span>
+                    <button class="retry-btn" @click="retryLoadMenuData(navItem.id)">
+                      <span class="retry-icon">🔄</span>
+                      重试
+                    </button>
+                  </div>
+                </div>
+
+                <div v-else class="menu-content">
                   <div class="mega-menu-left">
-                    <!-- 品类浏览区域 -->
                     <div class="section">
                       <h4 class="section-title">按品类浏览</h4>
                       <div class="category-list">
@@ -56,7 +64,6 @@
                           @click="navigateToCategory(navItem.id, category)"
                         >
                           <span class="item-prefix">•</span>
-                          <!--点击标签 打开spu列表页  需要传递intentId 和 category.id-->
                           <span class="item-name">{{ category.tagName }}</span>
                           <span class="item-count">({{ category.productCount }})</span>
                         </div>
@@ -67,7 +74,6 @@
                       </div>
                     </div>
 
-                    <!-- 能量筛选区域 -->
                     <div class="section">
                       <h4 class="section-title">快速筛选能量</h4>
                       <div class="energy-list">
@@ -80,7 +86,6 @@
                         >
                           <span class="energy-icon">{{ getEnergyIcon(energy.tagName) }}</span>
                           <span class="item-prefix">•</span>
-                          <!--点击标签 打开spu列表页  需要传递intentId 和 category.id-->
                           <span class="item-name">{{ energy.tagName }}</span>
                           <span class="item-count">({{ energy.productCount }})</span>
                         </div>
@@ -92,9 +97,7 @@
                     </div>
                   </div>
 
-                  <!-- 右侧内容区 -->
                   <div class="mega-menu-right">
-                    <!-- 主打商品 -->
                     <div class="featured-section">
                       <div class="section-header">
                         <span class="featured-icon">🎯</span>
@@ -112,7 +115,6 @@
                             <div class="image-placeholder">
                               <span class="placeholder-icon">💎</span>
                             </div>
-                            <!-- 商品标签 -->
                             <div class="product-badges">
                               <span v-if="product.isBestSeller" class="badge best-seller">热销</span>
                               <span v-if="product.isFeatured" class="badge featured">精选</span>
@@ -132,18 +134,16 @@
                           </div>
                         </div>
                         <div v-if="getMenuData(navItem.id).products.length === 0" class="empty-state">
-                          <span class="empty-icon">🛍️</span>
+                          <span class="empty-icon">🛍</span>
                           <span class="empty-text">暂无推荐商品</span>
                         </div>
                       </div>
                     </div>
 
-                    <!-- 品牌故事 -->
                     <div v-if="getMenuData(navItem.id).brandStory" class="brand-story">
                       <p class="story-text">{{ getMenuData(navItem.id).brandStory }}</p>
                     </div>
 
-                    <!-- 查看全部按钮 -->
                     <div class="view-all-section">
                       <button class="view-all-btn" @click="viewAllProducts(navItem.id)">
                         <span class="btn-text">查看全部{{ navItem.label }}商品</span>
@@ -152,31 +152,17 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- 错误状态 -->
-                <div v-else-if="getMenuData(navItem.id).error" class="menu-error">
-                  <div class="error-content">
-                    <span class="error-icon">⚠️</span>
-                    <span class="error-text">数据加载失败</span>
-                    <button class="retry-btn" @click="retryLoadMenuData(navItem.id)">
-                      <span class="retry-icon">🔄</span>
-                      重试
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
           </transition>
         </div>
       </nav>
 
-      <!-- 滚动提示 -->
       <div v-if="showScrollHint" class="scroll-hint">
         <span class="hint-icon">←→</span>
       </div>
     </div>
 
-    <!-- 右侧功能图标 -->
     <div class="header-actions">
       <div class="action-item" @click="search" title="搜索">
         <span class="action-icon">🔍</span>
@@ -189,7 +175,7 @@
         <span v-if="cartCount > 0" class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
       </div>
       <div class="action-item" @click="share" title="分享">
-        <span class="action-icon">↗️</span>
+        <span class="action-icon">↗</span>
       </div>
       <div class="action-item" @click="navigateTo('/wishlist')" title="收藏">
         <span class="action-icon">❤️</span>
@@ -199,8 +185,8 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import {ref, onMounted, onUnmounted, nextTick} from 'vue'
+import {useRouter} from 'vue-router'
 
 export default {
   name: 'GlobalHeader',
@@ -222,17 +208,17 @@ export default {
 
     // 配置常量 - 修正图标重复问题
     const ENERGY_CONFIG = {
-      '木能量': { icon: '🌳', color: '#4CAF50' },
-      '水能量': { icon: '💧', color: '#2196F3' },
-      '火能量': { icon: '🔥', color: '#F44336' },
-      '土能量': { icon: '⛰️', color: '#795548' },
-      '金能量': { icon: '⚱️', color: '#FFD700' },
-      '木': { icon: '🌳', color: '#4CAF50' },
-      '水': { icon: '💧', color: '#2196F3' },
-      '火': { icon: '🔥', color: '#F44336' },
-      '土': { icon: '⛰️', color: '#795548' },
-      '金': { icon: '⚱️', color: '#FFD700' },
-      '默认': { icon: '💎', color: '#FF8C00' }
+      '木能量': {icon: '🌳', color: '#4CAF50'},
+      '水能量': {icon: '💧', color: '#2196F3'},
+      '火能量': {icon: '🔥', color: '#F44336'},
+      '土能量': {icon: '⛰️', color: '#795548'},
+      '金能量': {icon: '⚱️', color: '#FFD700'},
+      '木': {icon: '🌳', color: '#4CAF50'},
+      '水': {icon: '💧', color: '#2196F3'},
+      '火': {icon: '🔥', color: '#F44336'},
+      '土': {icon: '⛰️', color: '#795548'},
+      '金': {icon: '⚱️', color: '#FFD700'},
+      '默认': {icon: '💎', color: '#FF8C00'}
     }
 
     const DEFAULT_MENU_DATA = {
@@ -276,7 +262,7 @@ export default {
     // 数据管理
     const getMenuData = (intentId) => {
       if (!menuDataCache.value.has(intentId)) {
-        menuDataCache.value.set(intentId, { ...DEFAULT_MENU_DATA })
+        menuDataCache.value.set(intentId, {...DEFAULT_MENU_DATA})
       }
       return menuDataCache.value.get(intentId)
     }
@@ -344,7 +330,7 @@ export default {
         const [categories, energies, products] = await Promise.allSettled([
           fetchCategoriesByIntent(intentId),
           fetchEnergiesByIntent(intentId),
-          fetchFeaturedProducts(intentId, 6)
+          fetchFeaturedProducts(intentId, 3)
         ])
 
         menuData.categories = categories.status === 'fulfilled' ? (categories.value || []) : []
@@ -406,7 +392,7 @@ export default {
           console.log("📋 JEnergyInfoByIntentId 数据内容:", result.data)
         }
         return normalizeApiResponse(result)
-      }catch (error) {
+      } catch (error) {
         console.error("❌ JewelryTagByIntentId 获取品类数据失败:", error)
         return []
       }
@@ -534,7 +520,7 @@ export default {
       const tagId = category.id || category.tagId
       router.push({
         path: '/ProductList',
-        query: { intentId, tagId, source: 'category' }
+        query: {intentId, tagId, source: 'category'}
       })
     }
 
@@ -542,7 +528,7 @@ export default {
       const tagId = energy.id || energy.tagId
       router.push({
         path: '/ProductList',
-        query: { intentId, tagId, source: 'energy' }
+        query: {intentId, tagId, source: 'energy'}
       })
     }
 
@@ -574,11 +560,18 @@ export default {
     }
 
     const navigateToNav = (navItem) => {
-      if (navItem.megaMenu) {
-        window.open(`/api/emotional-intent/getByid/${navItem.id}`, '_blank')
-      } else {
-        router.push(navItem.path)
-      }
+      const url = `/product-spu/selectSpuByIntentId/spu/${navItem.id}`;
+      console.info("intentId is :",navItem.id);
+      console.info("navItem is :",navItem);
+      console.info("url is :",url);
+      //window.open(url, '_blank')
+      // 使用正确的路由名称和参数
+      router.push({
+        name: 'ProductEmotionalList', // 使用路由名称而不是路径
+        params: {
+          intentId: navItem.id
+        }
+      })
     }
 
     const goToHome = () => router.push('/')
@@ -589,7 +582,6 @@ export default {
     const retryLoadMenuData = async (intentId) => {
       await loadMegaMenuData(intentId)
     }
-
     // 初始化
     const fetchEmotionalIntents = async () => {
       try {
@@ -601,12 +593,12 @@ export default {
           emotionalIntents.value = result.data
             .filter(item => item.showInNavigation === 1)
             .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
-
+          //点击路由配置路径
           navigationItems.value = emotionalIntents.value.map(item => ({
-            id:  item.id,
+            id: item.id,
             label: item.intentNameEn,
-            intentId:item.id,
-            path: '/ProductList',
+            intentId: item.id,
+            //path: '/emotionalProductList',
             megaMenu: true
           }))
 
@@ -665,16 +657,848 @@ export default {
       share,
       retryLoadMenuData
     }
-    // 图片错误处理
-    const handleImageError = (event) => {
-      const img = event.target
-      img.style.display = 'none'
-      img.parentNode.querySelector('.image-placeholder').style.display = 'flex'
-    }
   }
 }
 </script>
 <style scoped>
-@import url('@/styles/components/header.css');
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 头部样式 - 提升到全局最高层级 */
+.header {
+  height: 80px;
+  background: linear-gradient(135deg, rgba(10, 17, 40, 0.95) 0%, rgba(20, 30, 60, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 140, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100000; /* 提升到全局最高层级 */
+  gap: 20px;
+}
+
+/* 品牌LOGO */
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  min-width: 100px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  z-index: 100001;
+}
+
+.brand:hover {
+  transform: scale(1.05);
+}
+
+.brand-text {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.brand-subtitle {
+  font-size: 9px;
+  color: rgba(255, 140, 0, 0.7);
+  letter-spacing: 1px;
+  margin-top: 1px;
+}
+
+/* 导航容器 */
+.nav-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-width: 0;
+  max-width: calc(100% - 280px);
+  margin: 0 15px;
+  height: 100%;
+  z-index: 100001;
+}
+
+/* 主导航 */
+.main-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 5px 0;
+  width: 100%;
+  flex-wrap: nowrap;
+  height: 100%;
+}
+
+/* 隐藏滚动条 */
+.main-nav::-webkit-scrollbar {
+  display: none;
+}
+
+/* 导航项 */
+.nav-item {
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.nav-label {
+  color: #FF8C00;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.nav-item:hover .nav-label {
+  background: rgba(255, 140, 0, 0.1);
+  color: #FFD700;
+  transform: translateY(-1px);
+}
+
+.nav-item.active .nav-label {
+  background: rgba(255, 140, 0, 0.15);
+  color: #FFD700;
+  box-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
+}
+
+.nav-loading-dot {
+  animation: pulse 1.5s infinite;
+  color: #FFD700;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* 滚动提示 */
+.scroll-hint {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 140, 0, 0.1);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: bounce 2s infinite;
+  z-index: 100002;
+}
+
+.hint-icon {
+  font-size: 12px;
+  color: #FF8C00;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(-50%) translateX(0);
+  }
+  40% {
+    transform: translateY(-50%) translateX(-3px);
+  }
+  60% {
+    transform: translateY(-50%) translateX(-2px);
+  }
+}
+
+/* 巨型菜单主容器 - 关键修复：提升到全局最高层级 */
+.mega-menu {
+  position: fixed; /* 改为fixed定位，脱离文档流 */
+  top: 80px; /* 距离顶部80px，在header下方 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  max-width: 90vw;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(40px);
+  border-radius: 16px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25),
+  0 0 0 1px rgba(255, 140, 0, 0.3);
+  border: 1px solid rgba(255, 140, 0, 0.3);
+  overflow: hidden;
+  z-index: 1000000; /* 提升到最高层级，确保在所有内容之上 */
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+/* 确保巨型菜单的动画容器也有高z-index */
+.mega-menu-enter-active,
+.mega-menu-leave-active {
+  z-index: 1000000;
+}
+
+.mega-menu-enter-active {
+  animation: slideDown 0.3s ease-out;
+}
+
+.mega-menu-leave-active {
+  animation: slideUp 0.2s ease-in;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+.mega-menu-content {
+  min-height: 450px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 加载状态 */
+.menu-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 40px;
+  color: #666;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 140, 0, 0.1);
+  border-top: 3px solid #FF8C00;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+.loading-text {
+  font-size: 14px;
+  color: #999;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 错误状态 */
+.menu-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+}
+
+.error-content {
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.error-text {
+  color: #d32f2f;
+  font-size: 14px;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.retry-btn {
+  background: #FF8C00;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.retry-btn:hover {
+  background: #FFD700;
+  transform: translateY(-1px);
+}
+
+/* 菜单内容布局 */
+.menu-content {
+  display: flex;
+  padding: 32px;
+  gap: 40px;
+  min-height: 450px;
+}
+
+.mega-menu-left {
+  flex: 0 0 280px;
+  border-right: 1px solid rgba(255, 140, 0, 0.1);
+  padding-right: 32px;
+}
+
+.mega-menu-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 分区样式 */
+.section {
+  margin-bottom: 32px;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.featured-icon {
+  font-size: 18px;
+}
+
+/* 列表项样式 */
+.category-list,
+.energy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category-item,
+.energy-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #555;
+}
+
+.category-item:hover,
+.energy-item:hover {
+  background: rgba(255, 140, 0, 0.08);
+  color: #333;
+  transform: translateX(4px);
+}
+
+.energy-item {
+  color: inherit;
+}
+
+.energy-item:hover {
+  color: inherit;
+}
+
+.item-prefix {
+  font-weight: bold;
+  color: inherit;
+}
+
+.item-name {
+  flex: 1;
+  font-size: 13px;
+  color: inherit;
+}
+
+.item-count {
+  font-size: 11px;
+  color: #999;
+}
+
+.energy-icon {
+  font-size: 14px;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #999;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 12px;
+}
+
+/* 商品卡片 */
+.featured-products {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.product-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 140, 0, 0.1);
+  background: white;
+}
+
+.product-card:hover {
+  border-color: rgba(255, 140, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(255, 140, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.product-image {
+  position: relative;
+  flex: 0 0 60px;
+  height: 60px;
+}
+
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-icon {
+  font-size: 20px;
+  opacity: 0.7;
+}
+
+.product-badges {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.best-seller {
+  background: #d32f2f;
+  color: white;
+}
+
+.featured {
+  background: #FF8C00;
+  color: white;
+}
+
+.product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.product-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-price {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.retail-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #d32f2f;
+}
+
+.sale-price {
+  font-size: 12px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.product-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.energy-tag {
+  background: rgba(255, 140, 0, 0.1);
+  color: #FF8C00;
+}
+
+.category-tag {
+  background: rgba(33, 150, 243, 0.1);
+  color: #2196F3;
+}
+
+/* 品牌故事 */
+.brand-story {
+  padding: 16px;
+  background: rgba(255, 140, 0, 0.05);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 3px solid #FF8C00;
+}
+
+.story-text {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+  font-style: italic;
+  margin: 0;
+}
+
+/* 查看全部按钮 */
+.view-all-section {
+  margin-top: auto;
+}
+
+.view-all-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #FF8C00 0%, #FFD700 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.view-all-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+}
+
+.btn-text {
+  flex: 1;
+  text-align: center;
+}
+
+.btn-icon {
+  font-size: 16px;
+}
+
+/* 右侧功能图标 */
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 180px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  z-index: 100001;
+}
+
+.action-item {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.action-item:hover {
+  background: rgba(255, 140, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.action-icon {
+  font-size: 16px;
+}
+
+.cart-item {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #d32f2f;
+  color: white;
+  border-radius: 10px;
+  min-width: 18px;
+  height: 18px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  padding: 0 4px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .mega-menu {
+    width: 800px;
+  }
+
+  .main-nav {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .header {
+    padding: 0 2%;
+  }
+
+  .mega-menu {
+    width: 95vw;
+  }
+
+  .menu-content {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .mega-menu-left {
+    flex: none;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 140, 0, 0.1);
+    padding-right: 0;
+    padding-bottom: 24px;
+  }
+
+  .nav-container {
+    max-width: calc(100% - 200px);
+    margin: 0 10px;
+  }
+
+  .main-nav {
+    gap: 12px;
+  }
+
+  .nav-label {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .header-actions {
+    min-width: 150px;
+    gap: 10px;
+  }
+
+  .action-item {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 70px;
+    padding: 0 1%;
+    gap: 10px;
+  }
+
+  .mega-menu {
+    top: 70px;
+    max-height: calc(100vh - 80px);
+  }
+
+  .brand {
+    min-width: 70px;
+  }
+
+  .brand-text {
+    font-size: 20px;
+  }
+
+  .nav-container {
+    max-width: calc(100% - 160px);
+    margin: 0 5px;
+  }
+
+  .main-nav {
+    gap: 8px;
+  }
+
+  .nav-label {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  .header-actions {
+    min-width: 120px;
+    gap: 8px;
+  }
+
+  .action-item {
+    width: 28px;
+    height: 28px;
+  }
+
+  .action-icon {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-container {
+    max-width: calc(100% - 140px);
+  }
+
+  .main-nav {
+    gap: 6px;
+  }
+
+  .nav-label {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .scroll-hint {
+    display: none;
+  }
+}
+
+/* 全局样式覆盖，确保其他页面元素不会遮挡头部 */
+::v-deep * {
+  /* 确保页面主要内容在头部下方 */
+  position: relative;
+  z-index: auto !important;
+}
+
+/* 确保模态框等特殊组件也不会遮挡 */
+::v-deep .modal,
+::v-deep .dialog,
+::v-deep .popup,
+::v-deep .tooltip,
+::v-deep .dropdown {
+  z-index: 99999 !important; /* 低于头部组件的层级 */
+}
+
+/* 打印样式 */
+@media print {
+  .header {
+    position: static;
+    background: white;
+    border-bottom: 1px solid #ccc;
+    z-index: auto;
+  }
+
+  .mega-menu {
+    display: none;
+  }
+}
+
 </style>
 
