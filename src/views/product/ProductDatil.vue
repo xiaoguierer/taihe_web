@@ -230,20 +230,6 @@
         </div>
       </div>
     </section>
-
-    <!-- 底部浮动行动栏 -->
-<!--    <div class="floating-action-bar" :class="{ visible: isActionBarVisible }">-->
-<!--      <div class="action-bar-content">-->
-<!--        <div class="product-preview">-->
-<!--          <img :src="thumbnails[0].src" alt="产品预览" />-->
-<!--          <div class="preview-info">-->
-<!--            <span class="product-name">【沧海月明】蓝宝石吊坠</span>-->
-<!--            <span class="product-price">￥12,800</span>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <button class="btn-primary">加入购物车</button>-->
-<!--      </div>-->
-<!--    </div>-->
   </div>
 </template>
 

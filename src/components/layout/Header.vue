@@ -9,6 +9,7 @@
     <!-- 主导航栏容器 -->
     <div class="nav-container" ref="navContainerRef">
       <nav class="main-nav">
+        <!--zhu 导航-->
         <div
           v-for="navItem in navigationItems"
           :key="navItem.id"
@@ -54,6 +55,7 @@
 
                 <div v-else class="menu-content">
                   <div class="mega-menu-left">
+                    <!--标签 -->
                     <div class="section">
                       <h4 class="section-title">按品类浏览</h4>
                       <div class="category-list">
@@ -73,7 +75,7 @@
                         </div>
                       </div>
                     </div>
-
+                    <!--能量 -->
                     <div class="section">
                       <h4 class="section-title">快速筛选能量</h4>
                       <div class="energy-list">
@@ -98,6 +100,7 @@
                   </div>
 
                   <div class="mega-menu-right">
+                    <!--推荐商品 -->
                     <div class="featured-section">
                       <div class="section-header">
                         <span class="featured-icon">🎯</span>
@@ -109,8 +112,9 @@
                           v-for="product in getMenuData(navItem.id).products"
                           :key="product.id"
                           class="product-card"
-                          @click="navigateToProduct(product)"
+                          @click.stop="navigateToProductDetail(product)"
                         >
+                          <!-- @click.stop 防止事件冒泡问题-->
                           <div class="product-image">
                             <div class="image-placeholder">
                               <span class="placeholder-icon">💎</span>
@@ -151,6 +155,7 @@
                       </button>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -358,17 +363,17 @@ export default {
     // API调用  根据情感意愿id 对所属商品spu的标签统计
     const fetchCategoriesByIntent = async (intentId) => {
       try {
-        console.log("🔍 -----------开始获取标签数据------------")
-        console.log("🔍 开始获取品类数据，intentId:", intentId)
+        // console.log("🔍 -----------开始获取标签数据------------")
+        // console.log("🔍 开始获取品类数据，intentId:", intentId)
         const response = await fetch(`/api/product-category-tags/JewelryTagByIntentId/${intentId}`)
-        console.log("📡 JewelryTagByIntentId API响应状态:", response.status, response.ok)
+      //  console.log("📡 JewelryTagByIntentId API响应状态:", response.status, response.ok)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const result = await response.json()
-        console.log("📊 JewelryTagByIntentId 原始API数据:", JSON.stringify(result, null, 2))
+      //  console.log("📊 JewelryTagByIntentId 原始API数据:", JSON.stringify(result, null, 2))
         // 检查数据结构
         if (result.code === 200) {
-          console.log("✅ JewelryTagByIntentId 数据条数:", result.data?.length || 0)
-          console.log("📋 JewelryTagByIntentId 数据内容:", result.data)
+          // console.log("✅ JewelryTagByIntentId 数据条数:", result.data?.length || 0)
+          // console.log("📋 JewelryTagByIntentId 数据内容:", result.data)
         }
         return normalizeApiResponse(result)
       } catch (error) {
@@ -379,17 +384,17 @@ export default {
     // API调用  根据情感意愿id 对所属商品spu的能量标签统计
     const fetchEnergiesByIntent = async (intentId) => {
       try {
-        console.log("🔍 -----------开始获取能量数据------------")
-        console.log("🔍 开始获取能量数据，intentId:", intentId)
+        // console.log("🔍 -----------开始获取能量数据------------")
+        // console.log("🔍 开始获取能量数据，intentId:", intentId)
         const response = await fetch(`/api/product-category-tags/JEnergyInfoByIntentId/${intentId}`)
-        console.log("📡 JEnergyInfoByIntentId API响应状态:", response.status, response.ok)
+    //    console.log("📡 JEnergyInfoByIntentId API响应状态:", response.status, response.ok)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const result = await response.json()
-        console.log("📊 JEnergyInfoByIntentId 原始API数据:", JSON.stringify(result, null, 2))
+     //   console.log("📊 JEnergyInfoByIntentId 原始API数据:", JSON.stringify(result, null, 2))
         // 检查数据结构
         if (result.code === 200) {
-          console.log("✅ JEnergyInfoByIntentId 数据条数:", result.data?.length || 0)
-          console.log("📋 JEnergyInfoByIntentId 数据内容:", result.data)
+          // console.log("✅ JEnergyInfoByIntentId 数据条数:", result.data?.length || 0)
+          // console.log("📋 JEnergyInfoByIntentId 数据内容:", result.data)
         }
         return normalizeApiResponse(result)
       } catch (error) {
@@ -401,32 +406,26 @@ export default {
     const fetchFeaturedProducts = async (intentId, limit) => {
       try {
         const url = `/api/product-spu/getRecommendProducts/${intentId}/${limit}`
-        console.log("🌐 请求推荐商品:", url)
-
+       // console.log("🌐 请求推荐商品:", url)
         const response = await fetch(url)
-        console.log("📡 响应状态:", response.status, response.ok)
-
+     //   console.log("📡 响应状态:", response.status, response.ok)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
-
         const result = await response.json()
-        console.log("📊 API响应数据:", {
-          code: result.code,
-          message: result.message,
-          dataCount: result.data?.length || 0,
-          sampleData: result.data ? result.data.slice(0, 2) : '无数据'
-        })
-
+        // console.log("📊 API响应数据:", {
+        //   code: result.code,
+        //   message: result.message,
+        //   dataCount: result.data?.length || 0,
+        //   sampleData: result.data ? result.data.slice(0, 2) : '无数据'
+        // })
         const products = normalizeProductResponse(result)
-        console.log("🔄 标准化后的商品:", products.map(p => ({
-          id: p.id,
-          name: p.productName,
-          price: p.price,
-          category: p.mainCategory,
-          image: p.imageUrl ? '有图片' : '无图片'
-        })))
-
+        // console.log("🔄 标准化后的商品:", products.map(p => ({
+        //   id: p.id,
+        //   name: p.productName,
+        //   price: p.price,
+        //   category: p.mainCategory,
+        //   image: p.imageUrl ? '有图片' : '无图片'
+        // })))
         return products.slice(0, limit)
-
       } catch (error) {
         console.error('❌ 获取推荐商品失败:', error)
         return []
@@ -532,42 +531,35 @@ export default {
       })
     }
 
-    const navigateToProduct = (product) => {
-      console.log("📍 导航到商品详情:", {
-        spuId: product.spuId,
-        skuId: product.skuId,
-        productName: product.productName,
-        price: product.price,
-        energyType: product.energyType,
-        category: product.mainCategory
-      })
+    //根据商品spu  ID打开详情页
+    const navigateToProductDetail = (product) => {
+      console.log('🔍 开始导航到商品详情...')
+      console.log('📦 商品对象:', product)
 
-      router.push({
-        path: '/ProductDetail',
-        query: {
-          spuId: product.spuId,
-          skuId: product.skuId,
-          from: 'mega-menu',
-          intentId: activeNav.value,
-          productName: product.productName,
-          category: product.mainCategory
-        }
+      const url = `/product-spu/getByid/${product.id}`
+      console.log('🔗 目标URL:', url)
+
+      // 添加导航前后的详细日志
+      console.log('📍 当前路由:', router.currentRoute.value.fullPath)
+
+      router.push(url).then(() => {
+        console.log('✅ 导航成功完成')
+        console.log('📍 新路由:', router.currentRoute.value.fullPath)
+      }).catch(error => {
+        console.error('❌ 导航失败:', error)
       })
     }
-
+    // 根据情感意图id 查询商品信息
     const viewAllProducts = (intentId) => {
-      router.push(`/selectSpuByIntentId/${intentId}`)
+      const url = `/product-spu/selectSpuByIntentId/spu/${intentId}`;
+      console.info("根据情感意图id 查询商品信息url is :",url);
+      router.push(url)// 通过路由路径导航
     }
-
     const navigateToNav = (navItem) => {
-      const url = `/product-spu/selectSpuByIntentId/spu/${navItem.id}`;
-      console.info("intentId is :",navItem.id);
-      console.info("navItem is :",navItem);
-      console.info("url is :",url);
-      //window.open(url, '_blank')
-      // 使用正确的路由名称和参数
+    //  const url = `/product-spu/selectSpuByIntentId/spu/${navItem.id}`;
+      console.info("根据情感意图id 查询商品信息方式2:",navItem.id);
       router.push({
-        name: 'ProductEmotionalList', // 使用路由名称而不是路径
+        name: 'ProductEmotionalList', // 通过路由名称导航  与上述效果一致
         params: {
           intentId: navItem.id
         }
@@ -648,7 +640,7 @@ export default {
       handleMegaMenuLeave,
       navigateToCategory,
       navigateToEnergy,
-      navigateToProduct,
+      navigateToProductDetail,
       viewAllProducts,
       navigateToNav,
       goToHome,

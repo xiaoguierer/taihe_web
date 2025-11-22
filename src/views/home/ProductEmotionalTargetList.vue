@@ -29,7 +29,7 @@
             v-for="(product, index) in products"
             :key="product.id || index"
           >
-            <div class="product-image" @click="goToProductDetail(product)">
+            <div class="product-image" @click="goToProductDetail(product.id)">
               <img
                 v-if="product.mainImageUrl"
                 :src="product.mainImageUrl"
@@ -73,9 +73,6 @@
 </template>
 
 <script>
-import {useRoute, useRouter} from 'vue-router'
-import router from "@/router/index.js";
-const route = useRoute()
 export default {
   name: 'emotionalProductList',
   data() {
@@ -346,36 +343,31 @@ export default {
     },
 
     // 跳转到商品详情页
-    goToProductDetail(product) {
-      console.log('🔍 开始导航到商品详情...')
-      console.log('📦 商品对象:', product)
+    goToProductDetail(productId) {
+      if (!productId) {
+        console.warn('商品ID不存在');
+        return;
+      }
 
-      const url = `/product-spu/getByid/${product.id}`
-      console.log('🔗 目标URL:', url)
-
-      // 添加导航前后的详细日志
-      console.log('📍 当前路由:', router.currentRoute.value.fullPath)
-
-      router.push(url).then(() => {
-        console.log('✅ 导航成功完成')
-        console.log('📍 新路由:', router.currentRoute.value.fullPath)
-      }).catch(error => {
-        console.error('❌ 导航失败:', error)
-      })
+      this.$router.push({
+        name: 'ProductDetail',
+        params: {id: productId},
+        query: {fromIntent: this.currentIntentId} // 传递来源意图
+      });
     },
 
     // 获取第一部分数据 - 根据意图ID查询
     async fetchHeroData() {
       try {
-       // console.log("🔍 当前参数:", this.currentIntentId)
+        console.log("🔍 当前参数:", this.currentIntentId)
         const response = await fetch(`/api/emotional-intent/getByid/${this.currentIntentId}`);
         if (!response.ok) {
           throw new Error('获取英雄区数据失败');
         }
         const result = await response.json();
-     //   console.info("result is  ：", result);
+        console.info("result is  ：", result);
         this.heroData = result.data;
-    //    console.info("this.heroData is  ：", this.heroData);
+        console.info("this.heroData is  ：", this.heroData);
       } catch (error) {
         console.error('获取第一部分数据失败:', error);
       }
@@ -389,12 +381,12 @@ export default {
           throw new Error('获取商品数据失败');
         }
         const result = await response.json();
-     //   console.log("22---API响应---22  :", result);
+        console.log("22---API响应---22  :", result);
 
         // ✅ 正确：提取 data 数组
         if (result.code === 200 && Array.isArray(result.data)) {
           this.products = result.data;
-     //     console.log("22---商品数据---22  :", this.products);
+          console.log("22---商品数据---22  :", this.products);
         } else {
           throw new Error(result.message || '商品数据格式错误');
         }
