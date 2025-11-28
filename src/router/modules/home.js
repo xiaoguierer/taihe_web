@@ -1,11 +1,21 @@
 const homeindexRoutes = [
-  //根据商品SPU id展示商品详情和sku详情
+  //根据商品SPU 唯一标识展示商品详情和sku详情以及五行表数据信息
   {
     path: '/product-spu/getByid/:id',
     name: 'ProductDetailList',
     component: () => import('/src/views/home/ProductDetailList.vue'),
     meta: {
       title: '商品SPU详情',
+      requiresAuth: false
+    }
+  },
+  // 情感意愿详情
+  {
+    path: '/emotional-intent/getByid/:id',
+    name: 'EmotionalDetail',
+    component: () => import('/src/views/emotionalIntent/EmotionalDetail.vue'),
+    meta: {
+      title: '情感意愿详情',
       requiresAuth: false
     }
   },
@@ -19,23 +29,26 @@ const homeindexRoutes = [
       requiresAuth: false
     }
   },
-  //根据情感意愿、标签展示商品SPU列表
+  //根据情感意愿、类型标签展示商品SPU列表
   {
     path: '/product-spu/getProductsByIntentAndTag/:intentId/:tagId',
-    name: 'ProductEmotionalTargetList',
-    component: () => import('/src/views/home/ProductEmotionalTargetList.vue'),
+    name: 'ProductsByIntentAndTagList',
+    component: () => import('/src/views/home/ProductsByIntentAndTagList.vue'),
     meta: {
       title: '商品SPU列表',
       requiresAuth: false
     }
   },
-  //参数获取
-  // import { useRoute } from 'vue-router'
-  // const route = useRoute()
-  // console.log('intentId:', route.params.intentId) // EI_PROTECT_CORE
-  // console.log('tagId:', route.params.tagId)       // A0001
-
-
+  //根据情感意愿、五行能量标签展示商品SPU列表
+  {
+    path: '/product-spu/getProductsByIntentAndElementTag/:intentId/:elementTagId',
+    name: 'ProductsByIntentAndElementTagList',
+    component: () => import('/src/views/home/ProductsByIntentAndElementTagList.vue'),
+    meta: {
+      title: '商品SPU列表',
+      requiresAuth: false
+    }
+  },
   //情感意图 emotionalIntent
   {
     path: '/emotional-intent/getByid/:id',

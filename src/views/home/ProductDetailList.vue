@@ -229,7 +229,6 @@
               <div class="action-buttons">
                 <button class="btn-primary" @click="buyNow">🛒 立即购买</button>
                 <button class="btn-secondary" @click="addToCart">❤️ 加入购物车</button>
-                <button class="btn-wishlist" @click="addToWishlist">⭐ 收藏</button>
               </div>
               <!-- 快速信息 -->
               <div class="quick-info-grid">
@@ -1200,30 +1199,55 @@ const buyNow = () => {
   // 实际业务逻辑：跳转到订单确认页
   // router.push(`/order/confirm?skuId=${currentSku.value.id}`)
 }
+//添加购物车
+// 在现有的响应式数据后面添加
+const cartLoading = ref(false)
 
-const addToCart = () => {
+// 添加购物车方法
+const addToCart = async () => {
   if (!currentSku.value.id) {
     alert('请选择商品规格')
     return
   }
-  console.log('加入购物车', currentSku.value)
-  // 实际业务逻辑：调用购物车API
-  // cartApi.addToCart({
-  //   skuId: currentSku.value.id,
-  //   quantity: 1,
-  //   price: currentPrice.value
-  // })
+  cartLoading.value = true
+  try {
+    const cartData = {
+      userId:'0010010',
+      skuId: currentSku.value.id, // 商品SKU ID（必填）
+      quantity: 1, // 购买数量（默认1）
+      selected: 1, // 是否选中: 0-否, 1-是（默认1）
+      unitPrice: currentPrice.value, // 加入时单价（必填）
+      currency: 'USD' // 货币（默认USD）
+    }
+    console.log('🛒 准备添加到购物车:', cartData)
+    // 调用后端购物车接口
+    const response = await fetch('/api/shopingcart/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cartData)
+    })
+    const result = await response.json()
+    console.log('📦 result后端响应:', result)
+    console.log('📦 response后端响应:', response)
+    if (result.code === 200) {
+      // 添加成功，显示提示
+      alert('✅ 商品已成功添加到购物车！')
+      console.log('✅ 添加购物车成功:', result)
+    } else {
+      throw new Error(result.message || '添加购物车失败')
+    }
+  } catch (error) {
+    console.error('❌ 添加购物车异常:', error)
+    alert('❌ ' + (error.message || '添加购物车失败，请重试'))
+  } finally {
+    cartLoading.value = false
+  }
 }
 
-const addToWishlist = () => {
-  if (!currentSku.value.id) {
-    alert('请选择商品规格')
-    return
-  }
-  console.log('加入收藏', currentSku.value)
-  // 实际业务逻辑：调用收藏API
-  // wishlistApi.addToWishlist(currentSku.value.id)
-}
+// 添加购物车操作
+
 
 // 监听路由变化
 watch(

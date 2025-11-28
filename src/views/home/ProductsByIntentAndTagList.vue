@@ -3,19 +3,19 @@
     <!-- 第一部分：左右分栏布局 -->
     <section class="hero-section">
       <div class="hero-container">
-        <div class="hero-image" @click="goToProductDetail(heroData.id)">
+        <div class="hero-image" @click="goToProductTagDetail(heroData)">
           <img
-            v-if="heroData.iconUrl"
-            :src="heroData.iconUrl"
-            :alt="heroData.intentNameZh || '珠宝展示图'"
+            v-if="heroData.iconPath"
+            :src="heroData.iconPath"
+            :alt="heroData.tagNameZh || '标签展示图'"
             class="product-icon"
           />
           <!-- 如果没有图片，显示占位符 -->
-          <div v-else class="image-placeholder">珠宝展示图</div>
+          <div v-else class="image-placeholder">标签展示图</div>
         </div>
         <div class="hero-content">
-          <h2 class="hero-title">{{ heroData.metaKeywordsEn }}-{{ heroData.culturalSignificanceEn }}-</h2>
-          <p class="hero-description">{{ heroData.modernInterpretationEn }}</p>
+          <h2 class="hero-title">{{ heroData.tagKey }}-{{ heroData.tagNameZh }}-</h2>
+          <p class="hero-description">{{ heroData.descriptionEn }}</p>
         </div>
       </div>
     </section>
@@ -29,7 +29,7 @@
             v-for="(product, index) in products"
             :key="product.id || index"
           >
-            <div class="product-image" @click="goToProductDetail(product.id)">
+            <div class="product-image" @click="goToProductDetail(product)">
               <img
                 v-if="product.mainImageUrl"
                 :src="product.mainImageUrl"
@@ -73,111 +73,55 @@
 </template>
 
 <script>
+import {useRoute, useRouter} from 'vue-router'
+import router from "@/router/index.js";
+const route = useRoute()
 export default {
   name: 'emotionalProductList',
   data() {
     return {
       // 当前意图ID
       currentIntentId: '',
-      // 第一部分数据
-      // 第一部分数据 - 情感意图详情
+      // 第一部分数据 - 商品品类标签详情
       heroData: {
         // ==================== 基础标识字段 ====================
         id: '',
-        intentKey: '',
-        intentCode: '',
-        intentCategory: '',
+        tagKey: '',
 
         // ==================== 多语言名称 ====================
-        intentNameEn: '',
-        intentNameZh: '',
-        intentNameAr: '',
+        tagNameEn: '',
+        tagNameZh: '',
+        tagNameAr: '',
 
-        // ==================== 核心象征属性 ====================
-        symbolCharacter: '',
-        symbolColor: '',
-        symbolColorGradient: '',
+        // ==================== 描述字段 ====================
+        descriptionEn: '',
+        descriptionZh: '',
+        descriptionAr: '',
+        shortDescEn: '',
+        shortDescZh: '',
+        shortDescAr: '',
 
-        // ==================== 情感属性 ====================
-        primaryEmotionZh: '',
-        primaryEmotionEn: '',
-        primaryEmotionAr: '',
-        secondaryEmotionsZh: '',
-        secondaryEmotionsEn: '',
-        secondaryEmotionsAr: '',
-        emotionalIntensity: 0,
-        emotionalDirection: '',
-        emotionalFrequency: '',
-
-        // ==================== 哲学文化含义 ====================
-        philosophyMeaningZh: '',
-        philosophyMeaningEn: '',
-        philosophyMeaningAr: '',
-        culturalSignificanceZh: '',
-        culturalSignificanceEn: '',
-        culturalSignificanceAr: '',
-        spiritualMeaningZh: '',
-        spiritualMeaningEn: '',
-        spiritualMeaningAr: '',
-        modernInterpretationZh: '',
-        modernInterpretationEn: '',
-        modernInterpretationAr: '',
-
-        // ==================== 实用属性描述 ====================
-        personalityArchetypeZh: '',
-        personalityArchetypeEn: '',
-        personalityArchetypeAr: '',
-        lifeGuidanceZh: '',
-        lifeGuidanceEn: '',
-        lifeGuidanceAr: '',
-        healingPropertyZh: '',
-        healingPropertyEn: '',
-        healingPropertyAr: '',
-        relationshipImpactZh: '',
-        relationshipImpactEn: '',
-        relationshipImpactAr: '',
-        careerAlignmentZh: '',
-        careerAlignmentEn: '',
-        careerAlignmentAr: '',
-
-        // ==================== 图片资源属性 ====================
-        // 图像ID
+        // ==================== 图片资源 ====================
         iconId: '',
-        symbolImageId: '',
-        energyImageId: '',
-        applicationImageId: '',
-        meditationImageId: '',
+        iconPath: '',  // 主要使用的图片地址
+        coverImageUrl: '',
+        coverId: '',
+        hoverImageUrl: '',
+        hoverId: '',
 
-        // 图像URL
-        iconUrl: '',
-        symbolImageUrl: '',
-        energyImageUrl: '',
-        applicationImageUrl: '',
-        meditationImageUrl: '',
-
-        // ==================== SEO优化字段 ====================
-        metaTitleZh: '',
-        metaTitleEn: '',
-        metaTitleAr: '',
-        metaDescriptionZh: '',
-        metaDescriptionEn: '',
-        metaDescriptionAr: '',
-        metaKeywordsZh: '',
-        metaKeywordsEn: '',
-        metaKeywordsAr: '',
-
-        // ==================== 控制属性 ====================
+        // ==================== 其他字段（保留但不一定使用） ====================
+        tagType: 0,
+        parentTagId: '',
+        colorCode: '',
         sortOrder: 0,
-        intensityLevel: 0,
-        popularityScore: 0,
-        isActive: 1,
-        showInNavigation: 1,
-        showInFilter: 1,
-        isFeatured: 0,
+        isActive: true,
+        showInFilter: true,
+        showInNavigation: false,
 
-        // ==================== 审计字段 ====================
-        createdTime: '',
-        updatedTime: ''
+        // SEO字段（可选显示）
+        metaTitleEn: '',
+        metaDescriptionEn: '',
+        metaKeywordsEn: ''
       },
       // 第二部分数据
       products: [],
@@ -295,21 +239,35 @@ export default {
   },
   watch: {
     // 监听路由变化，当意图ID改变时重新加载数据
-    '$route.params.intentId': {
+    '$route.params': {
       immediate: true,
-      handler(newIntentId) {
-        if (newIntentId) {
-          this.currentIntentId = newIntentId;
-          this.loadAllData();
+      handler(newParams) {
+        console.log('🔄 路由参数变化:', newParams)
+        if (newParams.intentId && newParams.tagId) {
+          this.currentIntentId = newParams.intentId
+          this.currentTagId = newParams.tagId
+          this.loadAllData()
+        } else {
+          console.error('❌ 缺少必要的路由参数:', newParams)
+          this.error = true
+          this.loading = false
         }
       }
     }
   },
   async mounted() {
     // 初始化时获取路由参数
-    this.currentIntentId = this.$route.params.intentId;
-    if (this.currentIntentId) {
-      await this.loadAllData();
+    const { intentId, tagId } = this.$route.params
+    console.log('🚀 组件挂载，接收参数:', { intentId, tagId })
+
+    if (intentId && tagId) {
+      this.currentIntentId = intentId
+      this.currentTagId = tagId
+      await this.loadAllData()
+    } else {
+      console.error('❌ 初始化时缺少必要的路由参数')
+      this.error = true
+      this.loading = false
     }
   },
   methods: {
@@ -318,17 +276,20 @@ export default {
       try {
         this.loading = true;
         this.error = false;
-
-        if (!this.currentIntentId) {
-          throw new Error('意图ID不能为空');
+        // 验证参数完整性
+        if (!this.currentIntentId || !this.currentTagId) {
+          throw new Error(`参数不完整: intentId=${this.currentIntentId}, tagId=${this.currentTagId}`)
         }
-
-        // 并行加载所有数据
+        console.log('📥 开始加载数据:', {
+          intentId: this.currentIntentId,
+          tagId: this.currentTagId
+        })
+        // 并行加载品类标签数据和商品数据
         await Promise.all([
-          this.fetchHeroData(),
-          this.fetchProductsData()
-        ]);
-
+          this.fetchHeroData(),      // 使用 tagId 获取品类标签数据
+          this.fetchProductsData()   // 使用 intentId 获取商品数据
+        ])
+        console.log('✅ 数据加载完成')
       } catch (error) {
         console.error('数据加载失败:', error);
         this.error = true;
@@ -339,56 +300,69 @@ export default {
 
     // 重新加载
     retryLoading() {
+      console.log('🔄 重新加载数据')
       this.loadAllData();
     },
 
     // 跳转到商品详情页
-    goToProductDetail(productId) {
-      if (!productId) {
-        console.warn('商品ID不存在');
-        return;
-      }
+    goToProductDetail(product) {
+      console.log('🔍 开始导航到商品详情...')
+      console.log('📦 商品对象:', product)
 
-      this.$router.push({
-        name: 'ProductDetail',
-        params: {id: productId},
-        query: {fromIntent: this.currentIntentId} // 传递来源意图
-      });
+      const url = `/product-spu/getByid/${product.id}`
+      console.log('🔗 目标URL:', url)
+      router.push(url).then(() => {
+        console.log('✅ 导航成功完成')
+      }).catch(error => {
+        console.error('❌ 导航失败:', error)
+      })
     },
 
-    // 获取第一部分数据 - 根据意图ID查询
+    goToProductTagDetail(heroData){
+      console.log('🔍 开始导航到标签详情...')
+      console.log('📦 标签对象:', heroData)
+    },
+
+    // 获取第一部分数据 - 根据标签ID查询
     async fetchHeroData() {
       try {
-        console.log("🔍 当前参数:", this.currentIntentId)
-        const response = await fetch(`/api/emotional-intent/getByid/${this.currentIntentId}`);
+        console.log("🔍 请求品类标签数据，TagID:", this.currentTagId)
+        const response = await fetch(`/api/product-category-tags/getById/${this.currentTagId}`);
         if (!response.ok) {
-          throw new Error('获取英雄区数据失败');
+          throw new Error('获取品类标签数据失败');
         }
         const result = await response.json();
-        console.info("result is  ：", result);
-        this.heroData = result.data;
-        console.info("this.heroData is  ：", this.heroData);
+        console.info("📋 品类标签API响应:", result)
+        if (result.code === 200 && result.data) {
+          this.heroData = result.data
+          console.info("✅ 品类标签数据加载成功:", {
+            tagKey: this.heroData.tagKey,
+            tagNameEn: this.heroData.tagNameEn,
+            iconPath: this.heroData.iconPath
+          })
+        } else {
+          throw new Error(result.message || '品类标签数据格式错误')
+        }
       } catch (error) {
-        console.error('获取第一部分数据失败:', error);
+        console.error('获取品类标签数据失败:', error);
       }
     },
 
     // 获取第二部分数据 - 根据意图ID查询
     async fetchProductsData() {
       try {
-        const response = await fetch(`/api/product-spu/selectSpuByIntentId/${this.currentIntentId}`);
+        console.log("🔍 请求商品数据，IntentID:", this.currentIntentId)
+        const response = await fetch(`/api/product-spu/getProductsByIntentAndTag/${this.currentIntentId}/${this.currentTagId}`);
         if (!response.ok) {
           throw new Error('获取商品数据失败');
         }
         const result = await response.json();
-        console.log("22---API响应---22  :", result);
-
-        // ✅ 正确：提取 data 数组
+        console.info("📦 商品API响应:", result)
         if (result.code === 200 && Array.isArray(result.data)) {
-          this.products = result.data;
-          console.log("22---商品数据---22  :", this.products);
+          this.products = result.data
+          console.info(`✅ 商品数据加载成功，共 ${this.products.length} 个商品`)
         } else {
-          throw new Error(result.message || '商品数据格式错误');
+          throw new Error(result.message || '商品数据格式错误')
         }
       } catch (error) {
         console.error('获取商品数据失败:', error);

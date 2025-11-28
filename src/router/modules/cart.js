@@ -1,6 +1,6 @@
 const cartRoutes = [
   {
-    path: '/CartPage',
+    path: '/shopingcart/page',
     name: 'CartPage',
     component: () => import('@/views/cart/CartPage.vue'),
     meta: {

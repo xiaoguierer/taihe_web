@@ -46,7 +46,7 @@
                   <div class="error-content">
                     <span class="error-icon">⚠️</span>
                     <span class="error-text">数据加载失败</span>
-                    <button class="retry-btn" @click="retryLoadMenuData(navItem.id)">
+                    <button class="retry-btn" @click.stop="retryLoadMenuData(navItem.id)">
                       <span class="retry-icon">🔄</span>
                       重试
                     </button>
@@ -63,7 +63,7 @@
                           v-for="category in getMenuData(navItem.id).categories"
                           :key="category.id"
                           class="category-item"
-                          @click="navigateToCategory(navItem.id, category)"
+                          @click.stop="navigateToCategory(navItem.id, category)"
                         >
                           <span class="item-prefix">•</span>
                           <span class="item-name">{{ category.tagName }}</span>
@@ -84,7 +84,7 @@
                           :key="energy.id"
                           class="energy-item"
                           :style="{ color: energy.colorCode || getEnergyColor(energy.tagName) }"
-                          @click="navigateToEnergy(navItem.id, energy)"
+                          @click.stop="navigateToEnergy(navItem.id, energy)"
                         >
                           <span class="energy-icon">{{ getEnergyIcon(energy.tagName) }}</span>
                           <span class="item-prefix">•</span>
@@ -114,7 +114,6 @@
                           class="product-card"
                           @click.stop="navigateToProductDetail(product)"
                         >
-                          <!-- @click.stop 防止事件冒泡问题-->
                           <div class="product-image">
                             <div class="image-placeholder">
                               <span class="placeholder-icon">💎</span>
@@ -149,7 +148,7 @@
                     </div>
 
                     <div class="view-all-section">
-                      <button class="view-all-btn" @click="viewAllProducts(navItem.id)">
+                      <button class="view-all-btn" @click.stop="viewAllProducts(navItem.id)">
                         <span class="btn-text">查看全部{{ navItem.label }}商品</span>
                         <span class="btn-icon">→</span>
                       </button>
@@ -175,7 +174,7 @@
       <div class="action-item" @click="navigateTo('/UserLogin')" title="用户">
         <span class="action-icon">👤</span>
       </div>
-      <div class="action-item cart-item" @click="navigateTo('/CartPage')" title="购物车">
+      <div class="action-item cart-item" @click.stop="goToCart()" title="购物车">
         <span class="action-icon">🛒</span>
         <span v-if="cartCount > 0" class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
       </div>
@@ -406,6 +405,7 @@ export default {
     const fetchFeaturedProducts = async (intentId, limit) => {
       try {
         const url = `/api/product-spu/getRecommendProducts/${intentId}/${limit}`
+        //const url = `/api/getRecommendProducts/${intentId}?limit=${limit}`
        // console.log("🌐 请求推荐商品:", url)
         const response = await fetch(url)
      //   console.log("📡 响应状态:", response.status, response.ok)
@@ -514,24 +514,42 @@ export default {
       return '五行能量'
     }
 
-    // 导航功能
+    // 巨型导航品类标签导航下钻功能
     const navigateToCategory = (intentId, category) => {
-      const tagId = category.id || category.tagId
-      router.push({
-        path: '/ProductList',
-        query: {intentId, tagId, source: 'category'}
+      const tagId = category.id
+      console.log('🔍 品类标签数据下钻...')
+      console.log('📦 情感意图标识:', intentId)
+      console.log('📦 品类标签:', tagId)
+      const url = `/product-spu/getProductsByIntentAndTag/${intentId}/${tagId}`
+      console.log('🔗 目标URL:', url)
+      // 添加导航前后的详细日志
+      console.log('📍 当前路由:', router.currentRoute.value.fullPath)
+      router.push(url).then(() => {
+        console.log('✅ 导航成功完成')
+        console.log('📍 新路由:', router.currentRoute.value.fullPath)
+      }).catch(error => {
+        console.error('❌ 导航失败:', error)
       })
     }
-
+    // 巨型菜单能量标签数据下钻
     const navigateToEnergy = (intentId, energy) => {
-      const tagId = energy.id || energy.tagId
-      router.push({
-        path: '/ProductList',
-        query: {intentId, tagId, source: 'energy'}
+      const elementTagId = energy.id
+      console.log('🔍 能量标签数据下钻...')
+      console.log('📦 情感意图标识:', intentId)
+      console.log('📦 能量标签:', elementTagId)
+      const url = `/product-spu/getProductsByIntentAndElementTag/${intentId}/${elementTagId}`
+      console.log('🔗 目标URL:', url)
+      // 添加导航前后的详细日志
+      console.log('📍 当前路由:', router.currentRoute.value.fullPath)
+      router.push(url).then(() => {
+        console.log('✅ 导航成功完成')
+        console.log('📍 新路由:', router.currentRoute.value.fullPath)
+      }).catch(error => {
+        console.error('❌ 导航失败:', error)
       })
     }
 
-    //根据商品spu  ID打开详情页
+    //根据商品spu主键打开详情页
     const navigateToProductDetail = (product) => {
       console.log('🔍 开始导航到商品详情...')
       console.log('📦 商品对象:', product)
@@ -555,15 +573,16 @@ export default {
       console.info("根据情感意图id 查询商品信息url is :",url);
       router.push(url)// 通过路由路径导航
     }
+    // 情感意愿详情
     const navigateToNav = (navItem) => {
-    //  const url = `/product-spu/selectSpuByIntentId/spu/${navItem.id}`;
-      console.info("根据情感意图id 查询商品信息方式2:",navItem.id);
-      router.push({
-        name: 'ProductEmotionalList', // 通过路由名称导航  与上述效果一致
-        params: {
-          intentId: navItem.id
-        }
-      })
+      const url = `/emotional-intent/getByid/${navItem.id}`;
+      console.info("根据情感意图ID查看详情 :",url);
+      router.push(url)// 通过路由路径导航
+    }
+    const goToCart = () =>{
+      const url = `/shopingcart/page`
+      console.info("购物车url is :",url);
+      router.push(url)// 通过路由路径导航
     }
 
     const goToHome = () => router.push('/')
@@ -647,7 +666,8 @@ export default {
       navigateTo,
       search,
       share,
-      retryLoadMenuData
+      retryLoadMenuData,
+      goToCart
     }
   }
 }

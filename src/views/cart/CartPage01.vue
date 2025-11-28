@@ -4,22 +4,19 @@
     <div class="page-header">
       <h1 class="page-title">购物车</h1>
       <div class="header-actions">
-        <el-button type="text" @click="clearCart" :loading="loading">清空购物车</el-button>
+        <el-button type="text" @click="clearCart">清空购物车</el-button>
       </div>
     </div>
 
-    <!-- 加载状态 -->
-    <div v-if="loading" class="loading-container">
-      <el-skeleton :rows="5" animated />
-    </div>
+    <!-- 顶部提示条 -->
 
     <!-- 购物车内容区域 -->
-    <div v-else class="cart-content">
+    <div class="cart-content">
       <!-- 商品列表区 -->
       <div class="product-list-section">
         <!-- 全选操作栏 -->
         <div class="select-all-bar">
-          <el-checkbox v-model="selectAll" @change="handleSelectAll" :disabled="cartItems.length === 0">
+          <el-checkbox v-model="selectAll" @change="handleSelectAll">
             全选
           </el-checkbox>
           <span class="selected-count">已选 {{ selectedCount }} 件商品</span>
@@ -28,7 +25,7 @@
         <!-- 商品列表 -->
         <div class="product-list">
           <div v-if="cartItems.length === 0" class="empty-cart">
-            <div class="empty-icon">🛒🛒🛒</div>
+            <div class="empty-icon">🛒</div>
             <div class="empty-text">购物车是空的</div>
             <div class="empty-subtext">快去挑选心仪的商品吧</div>
             <el-button type="primary" @click="goShopping">去逛逛</el-button>
@@ -38,19 +35,19 @@
           <div v-for="item in cartItems" :key="item.id" class="cart-item-card" :class="{ 'invalid-item': !item.isValid }">
             <div class="item-select">
               <el-checkbox
-                :model-value="item.selected === 1"
+                v-model="item.selected"
                 :disabled="!item.isValid"
                 @change="(val) => handleItemSelection(item.id, val)"
               />
             </div>
 
-            <div class="item-image" @click="goToProductDetail(item.skuId)">
-
+            <div class="item-image" @click="goToProductDetail(item.product.id)">
+              <img :src="item.product.image" :alt="item.product.name">
             </div>
 
             <div class="item-info">
-              <div class="product-name" @click="goToProductDetail(item.skuId)">{{ getProductName(item) }}</div>
-              <div class="product-spec">{{ getProductSpec(item) }}</div>
+              <div class="product-name" @click="goToProductDetail(item.product.id)">{{ item.product.name }}</div>
+              <div class="product-spec">{{ item.product.spec }}</div>
               <div v-if="!item.isValid" class="stock-warning">
                 <el-icon><Warning /></el-icon>
                 <span>库存不足</span>
@@ -58,22 +55,21 @@
             </div>
 
             <div class="item-price">
-              <div class="price">¥{{ item.unitPrice.toFixed(2) }}</div>
-              <div class="currency">{{ item.currency }}</div>
+              <div class="price">¥{{ item.product.price.toFixed(2) }}</div>
             </div>
 
             <div class="item-quantity">
               <el-input-number
                 v-model="item.quantity"
                 :min="1"
-                :max="getProductStock(item)"
+                :max="item.product.stock"
                 :disabled="!item.isValid"
                 @change="(val) => handleQuantityChange(item.id, val)"
               />
             </div>
 
             <div class="item-subtotal">
-              <div class="subtotal">¥{{ (item.unitPrice * item.quantity).toFixed(2) }}</div>
+              <div class="subtotal">¥{{ (item.product.price * item.quantity).toFixed(2) }}</div>
             </div>
 
             <div class="item-actions">
@@ -81,25 +77,11 @@
                 type="danger"
                 text
                 @click="handleRemoveItem(item.id)"
-                :loading="item.deleteLoading"
               >
                 删除
               </el-button>
             </div>
           </div>
-        </div>
-
-        <!-- 分页组件 -->
-        <div class="pagination-container" v-if="pagination.total > 0">
-          <el-pagination
-            v-model:current-page="pagination.currentPage"
-            v-model:page-size="pagination.pageSize"
-            :page-sizes="[5, 10, 20, 50]"
-            :total="pagination.total"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
         </div>
       </div>
 
@@ -114,7 +96,7 @@
             <div class="summary-details">
               <div class="detail-item">
                 <span class="label">商品总数：</span>
-                <span class="value">{{ selectedCount }}件</span>
+                <span class="value">{{ selectedItems.length }}件</span>
               </div>
 
               <div class="detail-item">
@@ -149,7 +131,6 @@
                 :disabled="isCheckoutDisabled"
                 @click="handleCheckout"
                 class="checkout-btn"
-                :loading="checkoutLoading"
               >
                 去结算
               </el-button>
@@ -159,16 +140,48 @@
       </div>
     </div>
 
+    <!-- 优惠券选择对话框 -->
+    <el-dialog
+      v-model="showCouponDialog"
+      title="选择优惠券"
+      width="500px"
+    >
+      <div class="coupon-list">
+        <div v-for="coupon in availableCoupons" :key="coupon.id" class="coupon-item">
+          <div class="coupon-content">
+            <div class="coupon-value">
+              <span class="value">¥{{ coupon.value }}</span>
+              <span class="condition">满{{ coupon.minAmount }}可用</span>
+            </div>
+            <div class="coupon-info">
+              <div class="coupon-name">{{ coupon.name }}</div>
+              <div class="coupon-date">有效期至 {{ formatDate(coupon.expiryDate) }}</div>
+            </div>
+          </div>
+          <el-button
+            :type="selectedCoupon?.id === coupon.id ? 'primary' : 'default'"
+            @click="selectCoupon(coupon)"
+          >
+            {{ selectedCoupon?.id === coupon.id ? '已选择' : '选择' }}
+          </el-button>
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="showCouponDialog = false">取消</el-button>
+        <el-button type="primary" @click="applyCoupon">确认</el-button>
+      </template>
+    </el-dialog>
+
     <!-- 删除确认对话框 -->
     <el-dialog
       v-model="showDeleteConfirm"
       title="确认删除"
       width="400px"
     >
-      <p>确定要删除「{{ itemToDeleteProductName }}」吗？</p>
+      <p>确定要删除「{{ itemToDelete?.product.name }}」吗？</p>
       <template #footer>
         <el-button @click="showDeleteConfirm = false">取消</el-button>
-        <el-button type="primary" @click="confirmDelete" :loading="deleteLoading">确定</el-button>
+        <el-button type="primary" @click="confirmDelete">确定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -178,37 +191,126 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Warning } from '@element-plus/icons-vue'
-import { getCartList, updateCartItem, deleteCartItem, clearCartItems } from '@/router/modules/cart'
 
 export default {
   name: 'CartPage',
-  components: {
-    Warning
-  },
   setup() {
     const router = useRouter()
 
-    // 响应式数据
-    const loading = ref(false)
-    const checkoutLoading = ref(false)
-    const deleteLoading = ref(false)
-    const cartItems = ref([])
+    // 购物车数据
+    const cartItems = ref([
+      {
+        id: 'cart_001',
+        selected: true,
+        product: {
+          id: 'P001',
+          name: '璀璨钻石项链',
+          image: 'https://img2.baidu.com/it/u=2414743278,241672380&fm=253&app=138&f=JPEG?w=1067&h=800',
+          spec: '链长40cm，玫瑰金',
+          price: 2580.00,
+          stock: 5
+        },
+        quantity: 1,
+        isValid: true
+      },
+      {
+        id: 'cart_002',
+        selected: true,
+        product: {
+          id: 'P002',
+          name: '蓝宝石耳环',
+          image: 'https://img2.baidu.com/it/u=2414743278,241672380&fm=253&app=138&f=JPEG?w=1067&h=800',
+          spec: '单只，铂金',
+          price: 1945.00,
+          stock: 3
+        },
+        quantity: 2,
+        isValid: true
+      },{
+        id: 'cart_001',
+        selected: true,
+        product: {
+          id: 'P001',
+          name: '璀璨钻石项链',
+          image: 'https://img2.baidu.com/it/u=2414743278,241672380&fm=253&app=138&f=JPEG?w=1067&h=800',
+          spec: '链长40cm，玫瑰金',
+          price: 2580.00,
+          stock: 5
+        },
+        quantity: 1,
+        isValid: true
+      },
+      {
+        id: 'cart_002',
+        selected: true,
+        product: {
+          id: 'P002',
+          name: '蓝宝石耳环',
+          image: 'https://img2.baidu.com/it/u=2414743278,241672380&fm=253&app=138&f=JPEG?w=1067&h=800',
+          spec: '单只，铂金',
+          price: 1945.00,
+          stock: 3
+        },
+        quantity: 2,
+        isValid: true
+      }
+    ])
 
-    // 分页数据
-    const pagination = reactive({
-      currentPage: 1,
-      pageSize: 10,
-      total: 0
-    })
+    // 优惠券相关
+    const showCouponDialog = ref(false)
+    const availableCoupons = ref([
+      {
+        id: 'coupon_001',
+        name: '新用户优惠券',
+        value: 100,
+        minAmount: 1000,
+        expiryDate: '2023-12-31'
+      }
+    ])
+    const selectedCoupon = ref(null)
 
     // 删除确认相关
     const showDeleteConfirm = ref(false)
     const itemToDelete = ref(null)
 
+    // 推荐商品
+    const recommendedProducts = ref([
+      {
+        id: 'P004',
+        name: '祖母绿复古戒指',
+        image: 'https://img0.baidu.com/it/u=2177321691,711594086&fm=253&app=138&f=JPEG?w=1067&h=800',
+        price: 3200.00
+      },{
+        id: 'P004',
+        name: '祖母绿复古戒指',
+        image: 'https://img0.baidu.com/it/u=2177321691,711594086&fm=253&app=138&f=JPEG?w=1067&h=800',
+        price: 3000.00
+      }, {
+        id: 'P004',
+        name: '祖母绿复古戒指',
+        image: 'https://img0.baidu.com/it/u=2177321691,711594086&fm=253&app=138&f=JPEG?w=1067&h=800',
+        price: 3200.00
+      },{
+        id: 'P004',
+        name: '祖母绿复古戒指',
+        image: 'https://img0.baidu.com/it/u=2177321691,711594086&fm=253&app=138&f=JPEG?w=1067&h=800',
+        price: 3000.00
+      }, {
+        id: 'P004',
+        name: '祖母绿复古戒指',
+        image: 'https://img0.baidu.com/it/u=2177321691,711594086&fm=253&app=138&f=JPEG?w=1067&h=800',
+        price: 3200.00
+      },{
+        id: 'P004',
+        name: '祖母绿复古戒指',
+        image: 'https://img0.baidu.com/it/u=2177321691,711594086&fm=253&app=138&f=JPEG?w=1067&h=800',
+        price: 3000.00
+      }
+    ])
+
     // 计算属性
     const selectedItems = computed(() => {
-      return cartItems.value.filter(item => item.selected === 1 && item.isValid)
+      return cartItems.value.filter(item => item.selected && item.isValid)
     })
 
     const selectedCount = computed(() => {
@@ -218,12 +320,12 @@ export default {
     const selectAll = computed({
       get: () => {
         const validItems = cartItems.value.filter(item => item.isValid)
-        return validItems.length > 0 && validItems.every(item => item.selected === 1)
+        return validItems.length > 0 && validItems.every(item => item.selected)
       },
       set: (value) => {
         cartItems.value.forEach(item => {
           if (item.isValid) {
-            item.selected = value ? 1 : 0
+            item.selected = value
           }
         })
       }
@@ -231,12 +333,14 @@ export default {
 
     const totalAmount = computed(() => {
       return selectedItems.value.reduce((sum, item) => {
-        return sum + (item.unitPrice * item.quantity)
+        return sum + (item.product.price * item.quantity)
       }, 0)
     })
 
     const discountAmount = computed(() => {
-      // 这里可以根据业务需求实现优惠券逻辑
+      if (selectedCoupon.value && totalAmount.value >= selectedCoupon.value.minAmount) {
+        return selectedCoupon.value.value
+      }
       return 0
     })
 
@@ -252,116 +356,27 @@ export default {
       return selectedItems.value.length === 0 || selectedItems.value.some(item => !item.isValid)
     })
 
-    const itemToDeleteProductName = computed(() => {
-      return itemToDelete.value ? getProductName(itemToDelete.value) : ''
-    })
-
     // 方法
-    const loadCartData = async () => {
-      loading.value = true
-      try {
-        const queryDTO = {
-          userId: '0010010'//getCurrentUserId()
+    const handleSelectAll = (value) => {
+      cartItems.value.forEach(item => {
+        if (item.isValid) {
+          item.selected = value
         }
-
-        const response = await getCartList(queryDTO, pagination.currentPage, pagination.pageSize)
-
-        if (response.code === 200) {
-          const result = response.data
-          cartItems.value = result.list.map(item => ({
-            ...item,
-            isValid: checkItemValid(item),
-            deleteLoading: false
-          }))
-
-          pagination.total = result.total
-        } else {
-          ElMessage.error(response.message || '获取购物车数据失败')
-        }
-      } catch (error) {
-        console.error('加载购物车数据失败:', error)
-        ElMessage.error('加载购物车数据失败')
-      } finally {
-        loading.value = false
-      }
+      })
     }
 
-    const getProductImage = (item) => {
-      // 需要根据skuId从商品服务获取图片
-      // 这里返回空字符串，实际项目中需要调用商品服务接口
-      return ''
-    }
-
-    const getProductName = (item) => {
-      // 需要根据skuId从商品服务获取商品名称
-      // 这里返回默认名称，实际项目中需要调用商品服务接口
-      return `商品-${item.skuId}`
-    }
-
-    const getProductSpec = (item) => {
-      // 需要根据skuId从商品服务获取规格信息
-      // 这里返回默认规格，实际项目中需要调用商品服务接口
-      return '默认规格'
-    }
-
-    const getProductStock = (item) => {
-      // 需要根据skuId从商品服务获取库存信息
-      // 这里返回默认库存，实际项目中需要调用商品服务接口
-      return 10
-    }
-
-    const checkItemValid = (item) => {
-      // 校验商品是否有效（库存、状态等）
-      // 实际项目中需要根据业务逻辑实现
-      return true
-    }
-
-    const getCurrentUserId = () => {
-      // 实现获取当前用户ID的逻辑
-      return localStorage.getItem('userId') || ''
-    }
-
-    const handleSelectAll = async (value) => {
-      try {
-        const updatePromises = cartItems.value
-          .filter(item => item.isValid)
-          .map(item => {
-            item.selected = value ? 1 : 0
-            return updateCartItem(item.id, { selected: item.selected })
-          })
-
-        await Promise.all(updatePromises)
-        ElMessage.success(value ? '已全选' : '已取消全选')
-      } catch (error) {
-        console.error('全选操作失败:', error)
-        ElMessage.error('操作失败')
-      }
-    }
-
-    const handleItemSelection = async (itemId, selected) => {
+    const handleItemSelection = (itemId, selected) => {
       const item = cartItems.value.find(item => item.id === itemId)
       if (item) {
-        try {
-          await updateCartItem(itemId, { selected: selected ? 1 : 0 })
-          item.selected = selected ? 1 : 0
-        } catch (error) {
-          console.error('更新选中状态失败:', error)
-          ElMessage.error('更新失败')
-        }
+        item.selected = selected
       }
     }
 
-    const handleQuantityChange = async (itemId, quantity) => {
+    const handleQuantityChange = (itemId, quantity) => {
       const item = cartItems.value.find(item => item.id === itemId)
-      if (item && quantity > 0) {
-        try {
-          await updateCartItem(itemId, { quantity })
-          item.quantity = quantity
-          ElMessage.success('购物车已更新')
-        } catch (error) {
-          console.error('更新数量失败:', error)
-          ElMessage.error('更新失败')
-        }
+      if (item) {
+        item.quantity = quantity
+        ElMessage.success('购物车已更新')
       }
     }
 
@@ -370,33 +385,32 @@ export default {
       showDeleteConfirm.value = true
     }
 
-    const confirmDelete = async () => {
-      if (!itemToDelete.value) return
-
-      deleteLoading.value = true
-      try {
-        await deleteCartItem(itemToDelete.value.id)
+    const confirmDelete = () => {
+      if (itemToDelete.value) {
         const index = cartItems.value.findIndex(item => item.id === itemToDelete.value.id)
         if (index !== -1) {
           cartItems.value.splice(index, 1)
-          pagination.total -= 1
           ElMessage.success('商品已删除')
         }
-        showDeleteConfirm.value = false
-        itemToDelete.value = null
-      } catch (error) {
-        console.error('删除商品失败:', error)
-        ElMessage.error('删除失败')
-      } finally {
-        deleteLoading.value = false
+      }
+      showDeleteConfirm.value = false
+      itemToDelete.value = null
+    }
+
+    const selectCoupon = (coupon) => {
+      selectedCoupon.value = coupon
+    }
+
+    const applyCoupon = () => {
+      showCouponDialog.value = false
+      if (selectedCoupon.value) {
+        ElMessage.success(`已应用优惠券：${selectedCoupon.value.name}`)
       }
     }
 
     const handleCheckout = async () => {
-      if (isCheckoutDisabled.value) return
-
-      checkoutLoading.value = true
       try {
+        // 最后一次库存校验
         const validationResult = await validateCartItems()
         if (!validationResult.valid) {
           ElMessage.error(validationResult.message)
@@ -407,15 +421,23 @@ export default {
         ElMessage.success('跳转到结算页面')
         // router.push('/checkout')
       } catch (error) {
-        console.error('结算失败:', error)
         ElMessage.error('结算失败，请稍后重试')
-      } finally {
-        checkoutLoading.value = false
       }
     }
 
     const validateCartItems = async () => {
-      // 实现库存校验逻辑
+      // 模拟API调用
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      // 检查是否有无效商品
+      const invalidItems = selectedItems.value.filter(item => !item.isValid)
+      if (invalidItems.length > 0) {
+        return {
+          valid: false,
+          message: '部分商品库存不足，请重新选择'
+        }
+      }
+
       return { valid: true }
     }
 
@@ -424,52 +446,54 @@ export default {
         await ElMessageBox.confirm('确定要清空购物车吗？', '提示', {
           type: 'warning'
         })
-
-        await clearCartItems(getCurrentUserId())
         cartItems.value = []
-        pagination.total = 0
         ElMessage.success('购物车已清空')
       } catch {
         // 用户取消操作
       }
     }
 
-    const goToProductDetail = (skuId) => {
-      // 跳转到商品详情页
-      // router.push(`/product/${skuId}`)
+    const addToCart = (product) => {
+      const existingItem = cartItems.value.find(item => item.product.id === product.id)
+      if (existingItem) {
+        existingItem.quantity += 1
+      } else {
+        cartItems.value.push({
+          id: `cart_${Date.now()}`,
+          selected: true,
+          product: {
+            ...product,
+            stock: 10 // 默认库存
+          },
+          quantity: 1,
+          isValid: true
+        })
+      }
+      ElMessage.success('商品已加入购物车')
+    }
+
+    const goToProductDetail = (productId) => {
+      ElMessage.info(`跳转到商品详情页: ${productId}`)
+      // router.push(`/product/${productId}`)
     }
 
     const goShopping = () => {
-      // 跳转到商品列表页
+      ElMessage.info('跳转到商品列表页')
       // router.push('/products')
     }
 
-    const handleSizeChange = (newSize) => {
-      pagination.pageSize = newSize
-      pagination.currentPage = 1
-      loadCartData()
+    const formatDate = (dateString) => {
+      return new Date(dateString).toLocaleDateString('zh-CN')
     }
-
-    const handleCurrentChange = (newPage) => {
-      pagination.currentPage = newPage
-      loadCartData()
-    }
-
-    onMounted(() => {
-      loadCartData()
-    })
 
     return {
-      // 响应式数据
-      loading,
-      checkoutLoading,
-      deleteLoading,
       cartItems,
-      pagination,
+      showCouponDialog,
+      availableCoupons,
+      selectedCoupon,
       showDeleteConfirm,
       itemToDelete,
-
-      // 计算属性
+      recommendedProducts,
       selectedItems,
       selectedCount,
       selectAll,
@@ -478,47 +502,25 @@ export default {
       shippingFee,
       finalAmount,
       isCheckoutDisabled,
-      itemToDeleteProductName,
-
-      // 方法
       handleSelectAll,
       handleItemSelection,
       handleQuantityChange,
       handleRemoveItem,
       confirmDelete,
+      selectCoupon,
+      applyCoupon,
       handleCheckout,
       clearCart,
+      addToCart,
       goToProductDetail,
       goShopping,
-      handleSizeChange,
-      handleCurrentChange
+      formatDate
     }
   }
 }
 </script>
 
 <style scoped>
-/* 保持原有的样式不变，只添加分页样式 */
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  padding: 20px;
-  background: rgba(30, 41, 59, 0.6);
-  border-radius: 12px;
-}
-
-.loading-container {
-  padding: 20px;
-}
-
-.currency {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-top: 5px;
-}
-
-/* 其他样式保持不变 */
 .cart-page {
   min-height: 100vh;
   background-color: #0f172a;
@@ -533,6 +535,29 @@ export default {
   align-items: center;
   margin-bottom: 20px;
   margin-top: 80px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.cart-tip {
+  margin-bottom: 20px;
+}
+
+.cart-content {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 30px;
+  position: relative;
+}
+
+.product-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .select-all-bar {
@@ -672,6 +697,105 @@ export default {
   justify-content: center;
 }
 
+.promotion-section,
+.recommendation-section {
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 15px;
+}
+
+.coupon-area {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.coupon-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coupon-text {
+  color: #e2e8f0;
+}
+
+.shipping-promotion {
+  padding: 10px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 6px;
+}
+
+.promotion-text {
+  color: #22c55e;
+  font-size: 14px;
+}
+
+.recommendation-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.recommendation-item {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 8px;
+  padding: 15px;
+  transition: transform 0.2s;
+}
+
+.recommendation-item:hover {
+  transform: translateY(-2px);
+}
+
+.rec-image {
+  width: 100%;
+  height: 240px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.rec-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rec-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rec-name {
+  color: #f1f5f9;
+  font-size: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rec-name:hover {
+  color: #60a5fa;
+}
+
+.rec-price {
+  color: #3b82f6;
+  font-weight: 600;
+  font-size: 16px;
+}
+
 .summary-section {
   position: sticky;
   top: 20px;
@@ -765,6 +889,60 @@ export default {
   cursor: not-allowed;
 }
 
+.coupon-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.coupon-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.coupon-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.coupon-value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.coupon-value .value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.coupon-value .condition {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.coupon-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.coupon-name {
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.coupon-date {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
 @media (max-width: 968px) {
   .cart-content {
     grid-template-columns: 1fr;
@@ -780,6 +958,10 @@ export default {
     backdrop-filter: blur(10px);
     padding: 15px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .recommendation-list {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .cart-item-card {
@@ -820,6 +1002,10 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+  }
+
+  .recommendation-list {
+    grid-template-columns: 1fr;
   }
 }
 </style>
