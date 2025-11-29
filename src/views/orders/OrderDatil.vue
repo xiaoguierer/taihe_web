@@ -6,7 +6,7 @@
         <h1 class="page-title">订单详情</h1>
         <div class="order-status-info">
           <span class="status-label">订单状态：</span>
-          <span :class="['status-badge', `status-${orderDetail.status}`]">
+          <span :class="['status-badge', getStatusClass(orderDetail.status)]">
             {{ getStatusText(orderDetail.status) }}
           </span>
         </div>
@@ -14,404 +14,267 @@
       <el-button type="primary" @click="$router.back()">返回订单列表</el-button>
     </div>
 
-    <!-- 订单基本信息 -->
-    <div class="order-basic-info">
-      <div class="info-card">
-        <h3 class="info-title">订单信息</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="info-label">订单编号：</span>
-            <span class="info-value">{{ orderDetail.id }}</span>
-            <el-button type="text" @click="copyOrderId">复制</el-button>
-          </div>
-          <div class="info-item">
-            <span class="info-label">下单时间：</span>
-            <span class="info-value">{{ formatDate(orderDetail.createTime) }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">支付方式：</span>
-            <span class="info-value">{{ orderDetail.paymentMethod || '在线支付' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">支付时间：</span>
-            <span class="info-value">{{ formatDate(orderDetail.payTime) }}</span>
-          </div>
-        </div>
-      </div>
+    <!-- 加载状态 -->
+    <div v-if="loading" class="loading-container">
+      <el-skeleton :rows="10" animated />
+    </div>
 
-      <!-- 物流信息 -->
-      <div v-if="orderDetail.status !== 'pending_payment'" class="info-card">
-        <h3 class="info-title">物流信息</h3>
-        <div class="logistics-info">
-          <div v-if="orderDetail.logistics" class="logistics-detail">
-            <div class="logistics-item">
-              <span class="label">物流公司：</span>
-              <span class="value">{{ orderDetail.logistics.company }}</span>
+    <!-- 订单详情内容 -->
+    <div v-else class="order-content">
+      <!-- 订单基本信息 -->
+      <div class="order-basic-info">
+        <div class="info-card">
+          <h3 class="info-title">订单信息</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">订单ID：</span>
+              <span class="info-value">{{ orderDetail.id || '-' }}</span>
+              <el-button v-if="orderDetail.id" link @click="copyOrderId">复制</el-button>
             </div>
-            <div class="logistics-item">
-              <span class="label">运单号码：</span>
-              <span class="value">{{ orderDetail.logistics.trackingNumber }}</span>
-              <el-button type="text" @click="copyTrackingNumber">复制</el-button>
-            </div>
-            <div class="logistics-item">
-              <span class="label">收货地址：</span>
-              <span class="value">{{ orderDetail.shippingAddress }}</span>
+            <div class="info-item">
+              <span class="info-label">下单时间：</span>
+              <span class="info-value">{{ formatDateTime(orderDetail.createdTime) }}</span>
             </div>
           </div>
-          <div v-else class="no-logistics">
-            暂未发货
+        </div>
+
+        <!-- 收货信息 -->
+        <div class="info-card">
+          <h3 class="info-title">收货信息</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">收货人：</span>
+              <span class="info-value">{{ orderDetail.receiverName || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">联系电话：</span>
+              <span class="info-value">{{ orderDetail.receiverPhone || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">收货地址：</span>
+              <span class="info-value">{{ orderDetail.receiverAddress || '-' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 商品信息 -->
+      <div class="products-section">
+        <div class="section-header">
+          <h3 class="section-title">商品信息</h3>
+        </div>
+        <div v-if="orderItems.length > 0" class="products-list">
+          <div v-for="item in orderItems" :key="item.id" class="product-item">
+            <div class="product-image">
+
+            </div>
+            <div class="product-info">
+              <div class="product-name">{{ item.productName }}</div>
+              <div class="product-spec">SKU ID: {{ item.skuId }}</div>
+              <div class="product-price">单价: ¥{{ item.unitPrice?.toFixed(2) || '0.00' }}</div>
+            </div>
+            <div class="product-quantity">数量: x{{ item.quantity }}</div>
+            <div class="product-subtotal">小计: ¥{{ item.totalPrice?.toFixed(2) || '0.00' }}</div>
+            <!-- 退款信息 -->
+            <div v-if="item.refundQuantity > 0" class="refund-info">
+              <span class="refund-label">已退款：</span>
+              <span class="refund-value">{{ item.refundQuantity }}件 / ¥{{ item.refundAmount?.toFixed(2) || '0.00' }}</span>
+              <span class="refund-status" :class="getRefundStatusClass(item.refundStatus)">
+                {{ getRefundStatusText(item.refundStatus) }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div v-else class="empty-products">
+          <div class="empty-icon">📦</div>
+          <div class="empty-text">暂无商品信息</div>
+        </div>
+      </div>
+
+      <!-- 价格信息 -->
+      <div class="price-section">
+        <div class="price-card">
+          <h3 class="section-title">价格明细</h3>
+          <div class="price-list">
+            <div class="price-item">
+              <span class="label">商品总价：</span>
+              <span class="value">¥ {{ calculateTotalAmount().toFixed(2) }}</span>
+            </div>
+            <div class="price-item total">
+              <span class="label">实付金额：</span>
+              <span class="value">¥ {{ calculateTotalAmount().toFixed(2) }}</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- 商品信息 -->
-    <div class="products-section">
-      <div class="section-header">
-        <h3 class="section-title">商品信息</h3>
-      </div>
-      <div class="products-list">
-        <div v-for="product in orderDetail.products" :key="product.id" class="product-item">
-          <div class="product-image">
-            <img :src="product.image" :alt="product.name" @click="goToProductDetail(product.id)">
-          </div>
-          <div class="product-info">
-            <div class="product-name" @click="goToProductDetail(product.id)">{{ product.name }}</div>
-            <div class="product-spec">{{ product.spec }}</div>
-            <div class="product-price">¥{{ product.price.toFixed(2) }}</div>
-          </div>
-          <div class="product-quantity">x{{ product.quantity }}</div>
-          <div class="product-subtotal">¥{{ (product.price * product.quantity).toFixed(2) }}</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 价格信息 -->
-    <div class="price-section">
-      <div class="price-card">
-        <h3 class="section-title">价格明细</h3>
-        <div class="price-list">
-          <div class="price-item">
-            <span class="label">商品总价：</span>
-            <span class="value">¥{{ orderDetail.totalAmount.toFixed(2) }}</span>
-          </div>
-          <div class="price-item">
-            <span class="label">运费：</span>
-            <span class="value">¥{{ orderDetail.shippingFee.toFixed(2) }}</span>
-          </div>
-          <div class="price-item">
-            <span class="label">优惠金额：</span>
-            <span class="value discount">-¥{{ orderDetail.discountAmount.toFixed(2) }}</span>
-          </div>
-          <div class="price-item total">
-            <span class="label">实付金额：</span>
-            <span class="value">¥{{ orderDetail.finalAmount.toFixed(2) }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 物流跟踪 -->
-    <div v-if="orderDetail.logistics && orderDetail.logistics.tracking" class="logistics-track">
-      <div class="section-header">
-        <h3 class="section-title">物流跟踪</h3>
-      </div>
-      <div class="track-timeline">
-        <el-timeline>
-          <el-timeline-item
-            v-for="(track, index) in orderDetail.logistics.tracking"
-            :key="index"
-            :timestamp="formatTrackTime(track.time)"
-            :type="index === 0 ? 'primary' : ''"
-          >
-            {{ track.description }}
-          </el-timeline-item>
-        </el-timeline>
-      </div>
-    </div>
-
-    <!-- 操作按钮 -->
-    <div class="action-buttons">
-      <div class="button-group">
-        <el-button @click="contactCustomerService">联系客服</el-button>
-        <el-button v-if="orderDetail.status === 'pending_payment'" type="primary" @click="handlePay">
-          立即支付
-        </el-button>
-        <el-button v-if="orderDetail.status === 'pending_payment'" @click="handleCancel">
-          取消订单
-        </el-button>
-        <el-button v-if="orderDetail.status === 'pending_shipment'" @click="handleRemind">
-          提醒发货
-        </el-button>
-        <el-button v-if="orderDetail.status === 'shipped'" type="primary" @click="handleConfirm">
-          确认收货
-        </el-button>
-        <el-button v-if="orderDetail.status === 'pending_review'" type="primary" @click="handleReview">
-          评价商品
-        </el-button>
-        <el-button v-if="orderDetail.status === 'completed'" type="primary" @click="handleRebuy">
-          再次购买
-        </el-button>
-        <el-button v-if="orderDetail.status !== 'pending_payment'" @click="handleAfterSale">
-          申请售后
-        </el-button>
-      </div>
-    </div>
-
-    <!-- 再次购买结果弹窗 -->
-    <el-dialog
-      v-model="rebuyDialogVisible"
-      title="再次购买结果"
-      width="500px"
-      center
-    >
-      <div v-if="rebuyResult">
-        <p v-if="rebuyResult.successItems.length > 0" class="success-text">
-          成功添加 {{ rebuyResult.successItems.length }} 件商品到购物车：
-        </p>
-        <ul v-if="rebuyResult.successItems.length > 0" class="item-list">
-          <li v-for="item in rebuyResult.successItems" :key="item.id">
-            {{ item.name }}
-          </li>
-        </ul>
-
-        <p v-if="rebuyResult.failedItems.length > 0" class="error-text">
-          以下商品添加失败：
-        </p>
-        <ul v-if="rebuyResult.failedItems.length > 0" class="item-list">
-          <li v-for="item in rebuyResult.failedItems" :key="item.id">
-            {{ item.name }} - {{ item.reason }}
-          </li>
-        </ul>
-      </div>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="rebuyDialogVisible = false">继续购物</el-button>
-          <el-button type="primary" @click="goToCart">去购物车结算</el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
+import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
-
 const orderId = route.params.orderId
 
-// 订单详情数据
-const orderDetail = ref({
-  id: orderId,
-  createTime: '2023-11-15 14:30:22',
-  status: 'completed',
-  paymentMethod: '微信支付',
-  payTime: '2023-11-15 14:35:18',
-  totalAmount: 2580.00,
-  shippingFee: 0.00,
-  discountAmount: 0.00,
-  finalAmount: 2580.00,
-  shippingAddress: '北京市朝阳区建国路88号SOHO现代城A座1001室 张三 13800138000',
-  logistics: {
-    company: '顺丰速运',
-    trackingNumber: 'SF1234567890123',
-    tracking: [
-      {
-        time: '2023-11-16 09:30:00',
-        description: '已签收，感谢使用顺丰速运'
-      },
-      {
-        time: '2023-11-16 08:15:00',
-        description: '快件已到达【北京朝阳建国路营业点】'
-      },
-      {
-        time: '2023-11-15 19:20:00',
-        description: '快件已发车'
-      },
-      {
-        time: '2023-11-15 18:30:00',
-        description: '顺丰速运已收件'
-      }
-    ]
-  },
-  products: [
-    {
-      id: 'P001',
-      name: '璀璨钻石项链',
-      image: 'https://via.placeholder.com/100x100/4f46e5/ffffff?text=Diamond',
-      spec: '链长40cm，玫瑰金',
-      quantity: 1,
-      price: 2580.00
-    }
-  ]
-})
+// 响应式数据
+const loading = ref(false)
+const orderDetail = ref({})
+const orderItems = ref([])
 
-// 再次购买相关
-const rebuyDialogVisible = ref(false)
-const rebuyResult = ref(null)
-
-// 状态文本映射
-const statusTextMap = {
-  pending_payment: '待付款',
-  pending_shipment: '待发货',
-  shipped: '运输中',
-  pending_review: '待评价',
-  completed: '交易成功'
-}
-
-// 获取订单详情
-const fetchOrderDetail = async () => {
-  try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
-    // 实际项目中这里应该调用API获取订单详情
-    // const response = await orderApi.getOrderDetail(orderId)
-    // orderDetail.value = response.data
-  } catch (error) {
-    ElMessage.error('获取订单详情失败')
+// 初始化订单详情
+const initOrderDetail = () => {
+  orderDetail.value = {
+    id: orderId,
+    createdTime: '',
+    receiverName: '',
+    receiverPhone: '',
+    receiverAddress: '',
+    totalAmount: 0,
+    status: 1
   }
 }
 
-// 格式化日期
-const formatDate = (dateString) => {
-  if (!dateString) return '-'
-  return new Date(dateString).toLocaleString('zh-CN')
+// 获取订单详情数据 - 只调用一个接口
+const fetchOrderDetail = async () => {
+  loading.value = true
+  console.log('开始获取订单详情，订单ID:', orderId)
+
+  try {
+    // 调用后端提供的唯一接口 - 获取订单商品列表
+    const response = await axios.get(`/api/order-item/order/${orderId}`)
+    console.log('订单商品列表响应:', response.data)
+
+    if (response.data && response.data.code === 200) {
+      // 直接使用后端返回的商品列表数据
+      orderItems.value = response.data.data || []
+      console.log('订单商品列表数据:', orderItems.value)
+
+      // 从商品列表中提取显示所需的信息
+      if (orderItems.value.length > 0) {
+        const firstItem = orderItems.value[0]
+        orderDetail.value = {
+          id: orderId,
+          createdTime: firstItem.createdTime || '',
+          receiverName: '收货人',
+          receiverPhone: '联系电话',
+          receiverAddress: '收货地址',
+          totalAmount: calculateTotalAmount(),
+          status: 3
+        }
+      } else {
+        // 如果没有商品，使用默认信息
+        orderDetail.value = {
+          id: orderId,
+          createdTime: '',
+          receiverName: '无收货信息',
+          receiverPhone: '无联系电话',
+          receiverAddress: '无收货地址',
+          totalAmount: 0,
+          status: 1
+        }
+      }
+    } else {
+      console.error('获取订单商品失败:', response.data)
+      ElMessage.error('获取订单详情失败：' + (response.data.message || '未知错误'))
+    }
+  } catch (error) {
+    console.error('获取订单详情失败:', error)
+    ElMessage.error('获取订单详情失败，请稍后重试')
+  } finally {
+    loading.value = false
+  }
 }
 
-// 格式化物流时间
-const formatTrackTime = (timeString) => {
-  return new Date(timeString).toLocaleString('zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+// 计算商品总金额
+const calculateTotalAmount = () => {
+  return orderItems.value.reduce((total, item) => {
+    return total + (item.totalPrice || 0)
+  }, 0)
 }
 
-// 获取状态文本
+// 获取商品图片
+const getProductImage = (item) => {
+  return `https://via.placeholder.com/100x100/4f46e5/ffffff?text=${encodeURIComponent(item.productName?.substring(0, 2) || 'PD')}`
+}
+
+// 处理图片加载错误
+const handleImageError = (event) => {
+  event.target.src = 'https://via.placeholder.com/100x100/64748b/ffffff?text=No+Image'
+}
+
+// 格式化日期时间
+const formatDateTime = (dateTime) => {
+  if (!dateTime) return '-'
+  try {
+    return new Date(dateTime).toLocaleString('zh-CN')
+  } catch (error) {
+    return dateTime
+  }
+}
+
+// 获取订单状态文本
 const getStatusText = (status) => {
-  return statusTextMap[status] || status
+  const statusMap = {
+    1: '待付款',
+    2: '待发货',
+    3: '待收货',
+    4: '已完成',
+    5: '已关闭'
+  }
+  return statusMap[status] || '未知状态'
 }
 
-// 复制订单号
+// 获取订单状态类名
+const getStatusClass = (status) => {
+  const statusClassMap = {
+    1: 'status-pending_payment',
+    2: 'status-pending_shipment',
+    3: 'status-shipped',
+    4: 'status-completed',
+    5: 'status-closed'
+  }
+  return statusClassMap[status] || ''
+}
+
+// 获取退款状态文本
+const getRefundStatusText = (refundStatus) => {
+  const refundStatusMap = {
+    0: '无退款',
+    1: '部分退款',
+    2: '全部退款'
+  }
+  return refundStatusMap[refundStatus] || '未知'
+}
+
+// 获取退款状态类名
+const getRefundStatusClass = (refundStatus) => {
+  const refundStatusClassMap = {
+    0: 'refund-none',
+    1: 'refund-partial',
+    2: 'refund-full'
+  }
+  return refundStatusClassMap[refundStatus] || ''
+}
+
+// 复制订单ID
 const copyOrderId = async () => {
   try {
     await navigator.clipboard.writeText(orderDetail.value.id)
-    ElMessage.success('订单号已复制到剪贴板')
+    ElMessage.success('订单ID已复制到剪贴板')
   } catch (err) {
     ElMessage.error('复制失败')
   }
-}
-
-// 复制运单号
-const copyTrackingNumber = async () => {
-  try {
-    await navigator.clipboard.writeText(orderDetail.value.logistics.trackingNumber)
-    ElMessage.success('运单号已复制到剪贴板')
-  } catch (err) {
-    ElMessage.error('复制失败')
-  }
-}
-
-// 跳转到商品详情
-const goToProductDetail = (productId) => {
-  router.push(`/product/${productId}`)
-}
-
-// 联系客服
-const contactCustomerService = () => {
-  ElMessage.info('正在联系客服...')
-  // 实际项目中可以跳转到客服页面或打开客服对话框
-}
-
-// 立即支付
-const handlePay = () => {
-  ElMessage.info('跳转到支付页面...')
-  // 实际项目中跳转到支付页面
-}
-
-// 取消订单
-const handleCancel = async () => {
-  try {
-    await ElMessageBox.confirm('确定要取消此订单吗？', '提示', {
-      type: 'warning'
-    })
-    // 调用取消订单API
-    ElMessage.success('订单已取消')
-    // 重新加载订单详情
-    fetchOrderDetail()
-  } catch {
-    // 用户取消操作
-  }
-}
-
-// 提醒发货
-const handleRemind = () => {
-  ElMessage.success('已提醒卖家尽快发货')
-}
-
-// 确认收货
-const handleConfirm = async () => {
-  try {
-    await ElMessageBox.confirm('确认收到商品后，货款将支付给卖家。请确保商品无误后再确认收货。', '确认收货', {
-      type: 'warning'
-    })
-    // 调用确认收货API
-    ElMessage.success('确认收货成功')
-    fetchOrderDetail()
-  } catch {
-    // 用户取消操作
-  }
-}
-
-// 评价商品
-const handleReview = () => {
-  router.push(`/order/review/${orderId}`)
-}
-
-// 再次购买
-const handleRebuy = async () => {
-  try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    const mockResponse = {
-      success: true,
-      successItems: orderDetail.value.products,
-      failedItems: []
-    }
-
-    if (mockResponse.successItems.length === orderDetail.value.products.length) {
-      ElMessage.success('商品已成功加入购物车！')
-      setTimeout(() => {
-        router.push('/cart')
-      }, 1500)
-    } else {
-      rebuyResult.value = mockResponse
-      rebuyDialogVisible.value = true
-    }
-  } catch (error) {
-    ElMessage.error('操作失败，请稍后重试')
-  }
-}
-
-// 申请售后
-const handleAfterSale = () => {
-  router.push(`/after-sale/apply/${orderId}`)
-}
-
-// 去购物车
-const goToCart = () => {
-  rebuyDialogVisible.value = false
-  router.push('/cart')
 }
 
 // 初始化
 onMounted(() => {
+  console.log('订单详情页面初始化，订单ID:', orderId)
+  initOrderDetail()
   fetchOrderDetail()
 })
 </script>
@@ -422,8 +285,6 @@ onMounted(() => {
   background-color: #0f172a;
   color: #e2e8f0;
   padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 .page-header {
@@ -467,28 +328,39 @@ onMounted(() => {
 }
 
 .status-pending_payment {
-  background: #fef3c7;
+  background-color: #fef3c7;
   color: #92400e;
 }
 
 .status-pending_shipment {
-  background: #dbeafe;
+  background-color: #dbeafe;
   color: #1e40af;
 }
 
 .status-shipped {
-  background: #f0f9ff;
+  background-color: #f0f9ff;
   color: #0369a1;
 }
 
-.status-pending_review {
-  background: #f3e8ff;
-  color: #7e22ce;
+.status-completed {
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
-.status-completed {
-  background: #f0fdf4;
-  color: #166534;
+.status-closed {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.loading-container {
+  padding: 20px;
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 12px;
+}
+
+.order-content {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .order-basic-info {
@@ -502,7 +374,7 @@ onMounted(() => {
   background: rgba(30, 41, 59, 0.6);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .info-title {
@@ -535,23 +407,7 @@ onMounted(() => {
   flex: 1;
 }
 
-.logistics-info {
-  display: grid;
-  gap: 10px;
-}
-
-.logistics-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.no-logistics {
-  color: #94a3b8;
-  font-style: italic;
-}
-
-.products-section, .price-section, .logistics-track {
+.products-section, .price-section {
   margin-bottom: 30px;
 }
 
@@ -569,6 +425,7 @@ onMounted(() => {
   background: rgba(30, 41, 59, 0.6);
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .product-item {
@@ -578,6 +435,7 @@ onMounted(() => {
   padding: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   align-items: center;
+  position: relative;
 }
 
 .product-item:last-child {
@@ -589,7 +447,6 @@ onMounted(() => {
   height: 80px;
   border-radius: 8px;
   overflow: hidden;
-  cursor: pointer;
 }
 
 .product-image img {
@@ -607,11 +464,7 @@ onMounted(() => {
 .product-name {
   font-size: 16px;
   color: #f1f5f9;
-  cursor: pointer;
-}
-
-.product-name:hover {
-  color: #60a5fa;
+  font-weight: 500;
 }
 
 .product-spec {
@@ -636,12 +489,73 @@ onMounted(() => {
   font-weight: 600;
 }
 
+.refund-info {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.refund-label {
+  color: #94a3b8;
+}
+
+.refund-value {
+  color: #e2e8f0;
+}
+
+.refund-status {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.refund-none {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.refund-partial {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.refund-full {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.empty-products {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 12px;
+  color: #94a3b8;
+}
+
+.empty-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 16px;
+}
+
 .price-card {
   background: rgba(30, 41, 59, 0.6);
   border-radius: 12px;
   padding: 20px;
   max-width: 400px;
   margin-left: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .price-list {
@@ -668,51 +582,6 @@ onMounted(() => {
 
 .value {
   color: #e2e8f0;
-}
-
-.discount {
-  color: #10b981;
-}
-
-.track-timeline {
-  background: rgba(30, 41, 59, 0.6);
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
-}
-
-.button-group {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.success-text {
-  color: #10b981;
-  font-weight: 500;
-  margin-bottom: 10px;
-}
-
-.error-text {
-  color: #ef4444;
-  font-weight: 500;
-  margin-top: 15px;
-  margin-bottom: 10px;
-}
-
-.item-list {
-  margin-left: 20px;
-  margin-bottom: 10px;
-}
-
-.item-list li {
-  margin-bottom: 5px;
 }
 
 @media (max-width: 768px) {
@@ -744,15 +613,6 @@ onMounted(() => {
 
   .price-card {
     max-width: 100%;
-  }
-
-  .button-group {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .button-group .el-button {
-    width: 100%;
   }
 }
 </style>

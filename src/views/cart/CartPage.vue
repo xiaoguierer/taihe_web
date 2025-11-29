@@ -3,183 +3,102 @@
     <!-- 页面头部 -->
     <div class="page-header">
       <h1 class="page-title">购物车</h1>
-      <div class="header-actions">
-        <el-button type="text" @click="clearCart" :loading="loading">清空购物车</el-button>
-      </div>
     </div>
 
     <!-- 加载状态 -->
     <div v-if="loading" class="loading-container">
-      <el-skeleton :rows="5" animated />
+      <div class="loading-spinner">正在加载购物车数据...</div>
     </div>
 
-    <!-- 购物车内容区域 -->
+    <!-- 购物车内容 -->
     <div v-else class="cart-content">
-      <!-- 商品列表区 -->
-      <div class="product-list-section">
-        <!-- 全选操作栏 -->
-        <div class="select-all-bar">
-          <el-checkbox v-model="selectAll" @change="handleSelectAll" :disabled="cartItems.length === 0">
-            全选
-          </el-checkbox>
-          <span class="selected-count">已选 {{ selectedCount }} 件商品</span>
+      <!-- 全选操作栏 -->
+      <div class="select-all-bar" v-if="cartItems.length > 0">
+        <el-checkbox
+          :model-value="isAllSelected"
+          @change="handleSelectAll"
+        >
+          全选
+        </el-checkbox>
+        <span class="selected-count">已选 {{ selectedCount }} 件商品</span>
+      </div>
+
+      <!-- 商品列表 -->
+      <div class="product-list">
+        <div v-if="cartItems.length === 0" class="empty-cart">
+          <div class="empty-icon">🛒</div>
+          <div class="empty-text">购物车是空的</div>
+          <div class="empty-subtext">快去挑选心仪的商品吧</div>
+          <el-button type="primary" @click="$router.push('/')">去逛逛</el-button>
         </div>
 
-        <!-- 商品列表 -->
-        <div class="product-list">
-          <div v-if="cartItems.length === 0" class="empty-cart">
-            <div class="empty-icon">🛒🛒🛒</div>
-            <div class="empty-text">购物车是空的</div>
-            <div class="empty-subtext">快去挑选心仪的商品吧</div>
-            <el-button type="primary" @click="goShopping">去逛逛</el-button>
+        <!-- 商品卡片 -->
+        <div v-for="item in cartItems" :key="item.id" class="cart-item-card">
+          <div class="item-select">
+            <el-checkbox
+              :model-value="item.selected === 1"
+              @change="(val) => handleSelectItem(item.id, val)"
+            />
           </div>
 
-          <!-- 商品卡片 -->
-          <div v-for="item in cartItems" :key="item.id" class="cart-item-card" :class="{ 'invalid-item': !item.isValid }">
-            <div class="item-select">
-              <el-checkbox
-                :model-value="item.selected === 1"
-                :disabled="!item.isValid"
-                @change="(val) => handleItemSelection(item.id, val)"
-              />
-            </div>
-
-            <div class="item-image" @click="goToProductDetail(item.skuId)">
-
-            </div>
-
-            <div class="item-info">
-              <div class="product-name" @click="goToProductDetail(item.skuId)">{{ getProductName(item) }}</div>
-              <div class="product-spec">{{ getProductSpec(item) }}</div>
-              <div v-if="!item.isValid" class="stock-warning">
-                <el-icon><Warning /></el-icon>
-                <span>库存不足</span>
-              </div>
-            </div>
-
-            <div class="item-price">
-              <div class="price">¥{{ item.unitPrice.toFixed(2) }}</div>
-              <div class="currency">{{ item.currency }}</div>
-            </div>
-
-            <div class="item-quantity">
-              <el-input-number
-                v-model="item.quantity"
-                :min="1"
-                :max="getProductStock(item)"
-                :disabled="!item.isValid"
-                @change="(val) => handleQuantityChange(item.id, val)"
-              />
-            </div>
-
-            <div class="item-subtotal">
-              <div class="subtotal">¥{{ (item.unitPrice * item.quantity).toFixed(2) }}</div>
-            </div>
-
-            <div class="item-actions">
-              <el-button
-                type="danger"
-                text
-                @click="handleRemoveItem(item.id)"
-                :loading="item.deleteLoading"
-              >
-                删除
-              </el-button>
-            </div>
+          <div class="item-image">
+            <div class="image-placeholder">📦</div>
           </div>
-        </div>
 
-        <!-- 分页组件 -->
-        <div class="pagination-container" v-if="pagination.total > 0">
-          <el-pagination
-            v-model:current-page="pagination.currentPage"
-            v-model:page-size="pagination.pageSize"
-            :page-sizes="[5, 10, 20, 50]"
-            :total="pagination.total"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
+          <div class="item-info">
+            <div class="product-name">{{ item.productName || `商品 ${item.skuId}` }}</div>
+            <div class="product-spec">SKU: {{ item.skuId }}</div>
+            <div class="product-price">单价: ¥{{ (item.unitPrice || 0).toFixed(2) }}</div>
+          </div>
+
+          <div class="item-quantity">
+            <el-input-number
+              v-model="item.quantity"
+              :min="1"
+              :max="10"
+              @change="(val) => handleQuantityChange(item.id, val)"
+            />
+          </div>
+
+          <div class="item-subtotal">
+            <div class="subtotal">¥{{ ((item.unitPrice || 0) * item.quantity).toFixed(2) }}</div>
+          </div>
+
+          <div class="item-actions">
+            <el-button type="danger" text @click="handleRemoveItem(item.id)">
+              删除
+            </el-button>
+          </div>
         </div>
       </div>
 
-      <!-- 底部汇总栏 -->
-      <div class="summary-section">
-        <div class="cart-summary-bar">
-          <div class="summary-content">
-            <div class="summary-header">
-              <h3>订单汇总</h3>
-            </div>
-
-            <div class="summary-details">
-              <div class="detail-item">
-                <span class="label">商品总数：</span>
-                <span class="value">{{ selectedCount }}件</span>
-              </div>
-
-              <div class="detail-item">
-                <span class="label">商品小计：</span>
-                <span class="value">¥{{ totalAmount.toFixed(2) }}</span>
-              </div>
-
-              <div class="detail-item">
-                <span class="label">运费：</span>
-                <span class="value" :class="{ 'free-shipping': shippingFee === 0 }">
-                  {{ shippingFee === 0 ? '免费' : `¥${shippingFee.toFixed(2)}` }}
-                </span>
-              </div>
-
-              <div class="detail-item" v-if="discountAmount > 0">
-                <span class="label">优惠：</span>
-                <span class="value discount">-¥{{ discountAmount.toFixed(2) }}</span>
-              </div>
-
-              <div class="divider"></div>
-
-              <div class="detail-item total">
-                <span class="label">实付款：</span>
-                <span class="value total-amount">¥{{ finalAmount.toFixed(2) }}</span>
-              </div>
-            </div>
-
-            <div class="summary-actions">
-              <el-button
-                type="primary"
-                size="large"
-                :disabled="isCheckoutDisabled"
-                @click="handleCheckout"
-                class="checkout-btn"
-                :loading="checkoutLoading"
-              >
-                去结算
-              </el-button>
-            </div>
+      <!-- 汇总信息 -->
+      <div class="summary-section" v-if="cartItems.length > 0">
+        <div class="summary-content">
+          <div class="summary-info">
+            <span class="selected-count">已选 {{ selectedCount }} 件商品</span>
+            <span class="total-amount">总计: ¥{{ totalAmount.toFixed(2) }}</span>
           </div>
+          <el-button
+            type="primary"
+            size="large"
+            class="checkout-btn"
+            @click="handleCheckout"
+            :disabled="selectedCount === 0"
+          >
+            去结算
+          </el-button>
         </div>
       </div>
     </div>
-
-    <!-- 删除确认对话框 -->
-    <el-dialog
-      v-model="showDeleteConfirm"
-      title="确认删除"
-      width="400px"
-    >
-      <p>确定要删除「{{ itemToDeleteProductName }}」吗？</p>
-      <template #footer>
-        <el-button @click="showDeleteConfirm = false">取消</el-button>
-        <el-button type="primary" @click="confirmDelete" :loading="deleteLoading">确定</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Warning } from '@element-plus/icons-vue'
-import { getCartList, updateCartItem, deleteCartItem, clearCartItems } from '@/router/modules/cart'
+import {ref, reactive, computed, onMounted} from 'vue'
+import {useRouter} from 'vue-router'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {Warning} from '@element-plus/icons-vue'
 
 export default {
   name: 'CartPage',
@@ -191,8 +110,6 @@ export default {
 
     // 响应式数据
     const loading = ref(false)
-    const checkoutLoading = ref(false)
-    const deleteLoading = ref(false)
     const cartItems = ref([])
 
     // 分页数据
@@ -202,9 +119,89 @@ export default {
       total: 0
     })
 
-    // 删除确认相关
-    const showDeleteConfirm = ref(false)
-    const itemToDelete = ref(null)
+    // 调用后端接口获取购物车数据
+    const getCartList = async (queryDTO, page = 1, size = 10) => {
+      try {
+        const response = await fetch(`/api/shopingcart/page?page=${page}&size=${size}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(queryDTO)
+        })
+        return await response.json()
+      } catch (error) {
+        console.error('API调用失败:', error)
+        throw error
+      }
+    }
+
+    // 更新购物车项
+    const updateCartItem = async (id, data) => {
+      try {
+        const response = await fetch(`/api/shopingcart/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        })
+        return await response.json()
+      } catch (error) {
+        console.error('更新失败:', error)
+        throw error
+      }
+    }
+
+    // 删除购物车项
+    // 修改 deleteCartItem 方法以匹配后端接口
+    const deleteCartItem = async (id) => {
+      try {
+        const response = await fetch(`/api/shopingcart/del/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        return await response.json()
+      } catch (error) {
+        console.error('删除失败:', error)
+        throw error
+      }
+    }
+
+    // 数据加载方法
+    // 在 loadCartData 方法中修改数据处理部分
+    const loadCartData = async () => {
+      loading.value = true
+      try {
+        const queryDTO = {
+          userId: localStorage.getItem('userId') || '0010010'
+        }
+
+        const response = await getCartList(queryDTO, pagination.currentPage, pagination.pageSize)
+
+        if (response.code === 200) {
+          // 修复：确保每个商品都有正确的 selected 和 isValid 字段
+          cartItems.value = (response.data.list || []).map(item => ({
+            ...item,
+            selected: item.selected || 0, // 确保有 selected 字段，默认 0
+            isValid: item.isValid !== false, // 确保有 isValid 字段，默认 true
+            quantity: item.quantity || 1 // 确保有 quantity 字段
+          }))
+          pagination.total = response.data.total || 0
+        } else {
+          ElMessage.error(response.message || '获取购物车数据失败')
+          cartItems.value = []
+        }
+      } catch (error) {
+        console.error('加载购物车数据失败:', error)
+        ElMessage.error('网络错误，请检查接口连接')
+        cartItems.value = []
+      } finally {
+        loading.value = false
+      }
+    }
 
     // 计算属性
     const selectedItems = computed(() => {
@@ -215,149 +212,25 @@ export default {
       return selectedItems.value.reduce((sum, item) => sum + item.quantity, 0)
     })
 
-    const selectAll = computed({
-      get: () => {
-        const validItems = cartItems.value.filter(item => item.isValid)
-        return validItems.length > 0 && validItems.every(item => item.selected === 1)
-      },
-      set: (value) => {
-        cartItems.value.forEach(item => {
-          if (item.isValid) {
-            item.selected = value ? 1 : 0
-          }
-        })
-      }
-    })
-
     const totalAmount = computed(() => {
       return selectedItems.value.reduce((sum, item) => {
         return sum + (item.unitPrice * item.quantity)
       }, 0)
     })
 
-    const discountAmount = computed(() => {
-      // 这里可以根据业务需求实现优惠券逻辑
-      return 0
+    const isAllSelected = computed(() => {
+      const validItems = cartItems.value.filter(item => item.isValid !== false)
+      return validItems.length > 0 && validItems.every(item => item.selected === 1)
     })
 
-    const shippingFee = computed(() => {
-      return totalAmount.value >= 5000 ? 0 : 15
-    })
-
-    const finalAmount = computed(() => {
-      return totalAmount.value - discountAmount.value + shippingFee.value
-    })
-
-    const isCheckoutDisabled = computed(() => {
-      return selectedItems.value.length === 0 || selectedItems.value.some(item => !item.isValid)
-    })
-
-    const itemToDeleteProductName = computed(() => {
-      return itemToDelete.value ? getProductName(itemToDelete.value) : ''
-    })
-
-    // 方法
-    const loadCartData = async () => {
-      loading.value = true
-      try {
-        const queryDTO = {
-          userId: '0010010'//getCurrentUserId()
-        }
-
-        const response = await getCartList(queryDTO, pagination.currentPage, pagination.pageSize)
-
-        if (response.code === 200) {
-          const result = response.data
-          cartItems.value = result.list.map(item => ({
-            ...item,
-            isValid: checkItemValid(item),
-            deleteLoading: false
-          }))
-
-          pagination.total = result.total
-        } else {
-          ElMessage.error(response.message || '获取购物车数据失败')
-        }
-      } catch (error) {
-        console.error('加载购物车数据失败:', error)
-        ElMessage.error('加载购物车数据失败')
-      } finally {
-        loading.value = false
-      }
-    }
-
-    const getProductImage = (item) => {
-      // 需要根据skuId从商品服务获取图片
-      // 这里返回空字符串，实际项目中需要调用商品服务接口
-      return ''
-    }
-
-    const getProductName = (item) => {
-      // 需要根据skuId从商品服务获取商品名称
-      // 这里返回默认名称，实际项目中需要调用商品服务接口
-      return `商品-${item.skuId}`
-    }
-
-    const getProductSpec = (item) => {
-      // 需要根据skuId从商品服务获取规格信息
-      // 这里返回默认规格，实际项目中需要调用商品服务接口
-      return '默认规格'
-    }
-
-    const getProductStock = (item) => {
-      // 需要根据skuId从商品服务获取库存信息
-      // 这里返回默认库存，实际项目中需要调用商品服务接口
-      return 10
-    }
-
-    const checkItemValid = (item) => {
-      // 校验商品是否有效（库存、状态等）
-      // 实际项目中需要根据业务逻辑实现
-      return true
-    }
-
-    const getCurrentUserId = () => {
-      // 实现获取当前用户ID的逻辑
-      return localStorage.getItem('userId') || ''
-    }
-
-    const handleSelectAll = async (value) => {
-      try {
-        const updatePromises = cartItems.value
-          .filter(item => item.isValid)
-          .map(item => {
-            item.selected = value ? 1 : 0
-            return updateCartItem(item.id, { selected: item.selected })
-          })
-
-        await Promise.all(updatePromises)
-        ElMessage.success(value ? '已全选' : '已取消全选')
-      } catch (error) {
-        console.error('全选操作失败:', error)
-        ElMessage.error('操作失败')
-      }
-    }
-
-    const handleItemSelection = async (itemId, selected) => {
-      const item = cartItems.value.find(item => item.id === itemId)
-      if (item) {
-        try {
-          await updateCartItem(itemId, { selected: selected ? 1 : 0 })
-          item.selected = selected ? 1 : 0
-        } catch (error) {
-          console.error('更新选中状态失败:', error)
-          ElMessage.error('更新失败')
-        }
-      }
-    }
-
+    // 操作方法
     const handleQuantityChange = async (itemId, quantity) => {
       const item = cartItems.value.find(item => item.id === itemId)
       if (item && quantity > 0) {
         try {
-          await updateCartItem(itemId, { quantity })
+          await updateCartItem(itemId, {quantity})
           item.quantity = quantity
-          ElMessage.success('购物车已更新')
+          ElMessage.success('数量已更新')
         } catch (error) {
           console.error('更新数量失败:', error)
           ElMessage.error('更新失败')
@@ -365,160 +238,91 @@ export default {
       }
     }
 
-    const handleRemoveItem = (itemId) => {
-      itemToDelete.value = cartItems.value.find(item => item.id === itemId)
-      showDeleteConfirm.value = true
-    }
-
-    const confirmDelete = async () => {
-      if (!itemToDelete.value) return
-
-      deleteLoading.value = true
+    const handleRemoveItem = async (itemId) => {
       try {
-        await deleteCartItem(itemToDelete.value.id)
-        const index = cartItems.value.findIndex(item => item.id === itemToDelete.value.id)
-        if (index !== -1) {
-          cartItems.value.splice(index, 1)
-          pagination.total -= 1
+        await ElMessageBox.confirm('确定要删除这个商品吗？', '提示', {
+          type: 'warning',
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        })
+        // 调用删除接口
+        const response = await deleteCartItem(itemId)
+
+        if (response.code === 200) {
           ElMessage.success('商品已删除')
+
+          // 删除成功后重新加载数据
+          await loadCartData()
+        } else {
+          ElMessage.error(response.message || '删除失败')
         }
-        showDeleteConfirm.value = false
-        itemToDelete.value = null
       } catch (error) {
-        console.error('删除商品失败:', error)
-        ElMessage.error('删除失败')
-      } finally {
-        deleteLoading.value = false
+        if (error !== 'cancel') {
+          console.error('删除商品失败:', error)
+          ElMessage.error('删除失败，请重试')
+        }
       }
     }
 
-    const handleCheckout = async () => {
-      if (isCheckoutDisabled.value) return
+      const handleSelectItem = async (itemId, selected) => {
+        const item = cartItems.value.find(item => item.id === itemId)
+        if (item) {
+          try {
+            await updateCartItem(itemId, {selected: selected ? 1 : 0})
+            item.selected = selected ? 1 : 0
+          } catch (error) {
+            console.error('更新选中状态失败:', error)
+            ElMessage.error('操作失败')
+          }
+        }
+      }
 
-      checkoutLoading.value = true
-      try {
-        const validationResult = await validateCartItems()
-        if (!validationResult.valid) {
-          ElMessage.error(validationResult.message)
+      const handleSelectAll = async (selected) => {
+        try {
+          const updatePromises = cartItems.value
+            .filter(item => item.isValid)
+            .map(item => {
+              item.selected = selected ? 1 : 0
+              return updateCartItem(item.id, {selected: item.selected})
+            })
+
+          await Promise.all(updatePromises)
+          ElMessage.success(selected ? '已全选' : '已取消全选')
+        } catch (error) {
+          console.error('全选操作失败:', error)
+          ElMessage.error('操作失败')
+        }
+      }
+
+      const handleCheckout = () => {
+        if (selectedItems.value.length === 0) {
+          ElMessage.warning('请选择要结算的商品')
           return
         }
-
-        // 跳转到结算页
         ElMessage.success('跳转到结算页面')
-        // router.push('/checkout')
-      } catch (error) {
-        console.error('结算失败:', error)
-        ElMessage.error('结算失败，请稍后重试')
-      } finally {
-        checkoutLoading.value = false
       }
-    }
 
-    const validateCartItems = async () => {
-      // 实现库存校验逻辑
-      return { valid: true }
-    }
+      onMounted(() => {
+        loadCartData()
+      })
 
-    const clearCart = async () => {
-      try {
-        await ElMessageBox.confirm('确定要清空购物车吗？', '提示', {
-          type: 'warning'
-        })
-
-        await clearCartItems(getCurrentUserId())
-        cartItems.value = []
-        pagination.total = 0
-        ElMessage.success('购物车已清空')
-      } catch {
-        // 用户取消操作
+      return {
+        loading,
+        cartItems,
+        pagination,
+        selectedCount,
+        totalAmount,
+        isAllSelected,
+        handleQuantityChange,
+        handleRemoveItem,
+        handleSelectItem,
+        handleSelectAll,
+        handleCheckout
       }
-    }
-
-    const goToProductDetail = (skuId) => {
-      // 跳转到商品详情页
-      // router.push(`/product/${skuId}`)
-    }
-
-    const goShopping = () => {
-      // 跳转到商品列表页
-      // router.push('/products')
-    }
-
-    const handleSizeChange = (newSize) => {
-      pagination.pageSize = newSize
-      pagination.currentPage = 1
-      loadCartData()
-    }
-
-    const handleCurrentChange = (newPage) => {
-      pagination.currentPage = newPage
-      loadCartData()
-    }
-
-    onMounted(() => {
-      loadCartData()
-    })
-
-    return {
-      // 响应式数据
-      loading,
-      checkoutLoading,
-      deleteLoading,
-      cartItems,
-      pagination,
-      showDeleteConfirm,
-      itemToDelete,
-
-      // 计算属性
-      selectedItems,
-      selectedCount,
-      selectAll,
-      totalAmount,
-      discountAmount,
-      shippingFee,
-      finalAmount,
-      isCheckoutDisabled,
-      itemToDeleteProductName,
-
-      // 方法
-      handleSelectAll,
-      handleItemSelection,
-      handleQuantityChange,
-      handleRemoveItem,
-      confirmDelete,
-      handleCheckout,
-      clearCart,
-      goToProductDetail,
-      goShopping,
-      handleSizeChange,
-      handleCurrentChange
     }
   }
-}
 </script>
-
 <style scoped>
-/* 保持原有的样式不变，只添加分页样式 */
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  padding: 20px;
-  background: rgba(30, 41, 59, 0.6);
-  border-radius: 12px;
-}
-
-.loading-container {
-  padding: 20px;
-}
-
-.currency {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-top: 5px;
-}
-
-/* 其他样式保持不变 */
 .cart-page {
   min-height: 100vh;
   background-color: #0f172a;
@@ -535,14 +339,33 @@ export default {
   margin-top: 80px;
 }
 
+.page-title {
+  font-size: 28px;
+  color: #f1f5f9;
+  font-weight: 600;
+  margin: 0;
+}
+
+.loading-container {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  color: #94a3b8;
+  font-size: 16px;
+}
+
 .select-all-bar {
   display: flex;
   align-items: center;
   gap: 15px;
   padding: 15px 20px;
-  background: rgba(30, 41, 59, 0.6);
+  background: rgba(30, 41, 59, 0.8);
   border-radius: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .selected-count {
@@ -558,47 +381,52 @@ export default {
 
 .empty-cart {
   text-align: center;
-  padding: 60px 20px;
-  background: rgba(30, 41, 59, 0.6);
+  padding: 80px 20px;
+  background: rgba(30, 41, 59, 0.8);
   border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .empty-icon {
-  font-size: 80px;
+  font-size: 64px;
   margin-bottom: 20px;
   opacity: 0.5;
+  color: #e2e8f0;
 }
 
 .empty-text {
   font-size: 20px;
   color: #f1f5f9;
   margin-bottom: 10px;
+  font-weight: 500;
 }
 
 .empty-subtext {
   color: #94a3b8;
   margin-bottom: 20px;
+  font-size: 14px;
 }
 
 .cart-item-card {
   display: grid;
-  grid-template-columns: 50px 100px 1fr auto auto auto 50px;
-  gap: 15px;
+  grid-template-columns: 50px 100px 1fr auto auto auto 100px;
+  gap: 20px;
   align-items: center;
   padding: 20px;
-  background: rgba(30, 41, 59, 0.6);
+  background: rgba(30, 41, 59, 0.8);
   border-radius: 12px;
-  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
 }
 
 .cart-item-card:hover {
-  background: rgba(30, 41, 59, 0.8);
+  background: rgba(30, 41, 59, 0.9);
   transform: translateY(-2px);
-}
-
-.cart-item-card.invalid-item {
-  opacity: 0.6;
-  background: rgba(30, 41, 59, 0.4);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .item-select {
@@ -611,60 +439,59 @@ export default {
   height: 100px;
   border-radius: 8px;
   overflow: hidden;
-  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.item-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.image-placeholder {
+  font-size: 40px;
+  opacity: 0.7;
+  color: #e2e8f0;
 }
 
 .item-info {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  color: #e2e8f0;
 }
 
 .product-name {
   font-size: 16px;
   color: #f1f5f9;
-  cursor: pointer;
   font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  margin: 0;
 }
 
 .product-name:hover {
   color: #60a5fa;
 }
 
-.product-spec {
+.product-spec, .product-price {
   font-size: 14px;
   color: #94a3b8;
-}
-
-.stock-warning {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #ef4444;
-  font-size: 14px;
-}
-
-.item-price,
-.item-subtotal {
-  text-align: right;
-}
-
-.price,
-.subtotal {
-  font-size: 16px;
-  color: #f1f5f9;
-  font-weight: 600;
+  margin: 0;
 }
 
 .item-quantity {
   display: flex;
   justify-content: center;
+}
+
+.item-subtotal {
+  text-align: right;
+}
+
+.subtotal {
+  font-size: 16px;
+  color: #f1f5f9;
+  font-weight: 600;
+  margin: 0;
 }
 
 .item-actions {
@@ -674,118 +501,71 @@ export default {
 
 .summary-section {
   position: sticky;
-  top: 20px;
-  height: fit-content;
-}
-
-.cart-summary-bar {
-  background: rgba(30, 41, 59, 0.8);
+  bottom: 20px;
+  margin-top: 20px;
+  background: rgba(30, 41, 59, 0.9);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-.summary-header {
-  margin-bottom: 20px;
-}
-
-.summary-header h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #f1f5f9;
-  margin: 0;
-}
-
-.summary-details {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.detail-item {
+.summary-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.detail-item.total {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 12px;
-  margin-top: 8px;
+.summary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.label {
+.summary-info .selected-count {
   color: #94a3b8;
   font-size: 14px;
 }
 
-.value {
-  color: #e2e8f0;
-  font-size: 14px;
-}
-
-.value.discount {
-  color: #10b981;
-}
-
-.value.free-shipping {
-  color: #10b981;
-  font-weight: 500;
-}
-
 .total-amount {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 600;
   color: #3b82f6;
-}
-
-.divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.1);
-  margin: 8px 0;
-}
-
-.summary-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  margin: 0;
 }
 
 .checkout-btn {
-  width: 100%;
+  width: 140px;
   height: 50px;
   font-size: 16px;
   font-weight: 500;
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  border: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.checkout-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
 }
 
 .checkout-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
+  background: #64748b;
 }
 
+/* 响应式设计 */
 @media (max-width: 968px) {
-  .cart-content {
-    grid-template-columns: 1fr;
-  }
-
-  .summary-section {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
   .cart-item-card {
     grid-template-columns: 40px 80px 1fr;
     grid-template-rows: auto auto;
-    gap: 10px;
+    gap: 15px;
     padding: 15px;
   }
 
@@ -798,16 +578,30 @@ export default {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-top: 10px;
   }
 
   .item-price::before {
     content: "单价：";
     color: #94a3b8;
+    font-size: 14px;
   }
 
   .item-subtotal::before {
     content: "小计：";
     color: #94a3b8;
+    font-size: 14px;
+  }
+
+  .summary-content {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .checkout-btn {
+    width: 100%;
+    margin-top: 10px;
   }
 }
 
@@ -817,9 +611,135 @@ export default {
   }
 
   .page-header {
+    margin-top: 60px;
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .cart-item-card {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .item-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .image-placeholder {
+    font-size: 32px;
+  }
+}
+
+/* Element Plus 组件样式覆盖 - 确保在深色主题下可见 */
+:deep(.el-checkbox) {
+  color: #e2e8f0;
+}
+
+:deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+:deep(.el-checkbox__inner) {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 03);
+}
+
+:deep(.el-checkbox__label) {
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+:deep(.el-input-number) {
+  width: 120px;
+}
+
+:deep(.el-input-number .el-input__inner) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #e2e8f0 !important;
+  font-weight: 500;
+  text-align: center;
+}
+
+:deep(.el-input-number .el-input-number__decrease),
+:deep(.el-input-number .el-input-number__increase) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  width: 32px;
+}
+
+:deep(.el-input-number .el-input-number__decrease:hover),
+:deep(.el-input-number .el-input-number__increase:hover) {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+:deep(.el-input-number.is-disabled .el-input__inner) {
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: #94a3b8 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:deep(.el-input__inner) {
+  background: rgba(255, 255, 2550.05);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #e2e8f0;
+}
+
+:deep(.el-input__inner:focus) {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+:deep(.el-button--danger) {
+  color: #ef4444;
+  background: transparent;
+  border: none;
+}
+
+:deep(.el-button--danger:hover) {
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+:deep(.el-button--primary) {
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  border: none;
+  color: white;
+}
+
+:deep(.el-button--primary:hover) {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+}
+
+:deep(.el-button--primary:disabled) {
+  background: #64748b;
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+:deep(.el-message) {
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+:deep(.el-message-box) {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+:deep(.el-message-box__content) {
+  color: #e2e8f0;
 }
 </style>

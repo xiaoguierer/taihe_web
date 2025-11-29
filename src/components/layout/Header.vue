@@ -171,18 +171,15 @@
       <div class="action-item" @click="search" title="搜索">
         <span class="action-icon">🔍</span>
       </div>
-      <div class="action-item" @click="navigateTo('/UserLogin')" title="用户">
+      <div class="action-item" @click="goToUser()" title="用户">
         <span class="action-icon">👤</span>
       </div>
       <div class="action-item cart-item" @click.stop="goToCart()" title="购物车">
         <span class="action-icon">🛒</span>
         <span v-if="cartCount > 0" class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
       </div>
-      <div class="action-item" @click="share" title="分享">
-        <span class="action-icon">↗</span>
-      </div>
-      <div class="action-item" @click="navigateTo('/wishlist')" title="收藏">
-        <span class="action-icon">❤️</span>
+      <div class="action-item" @click="goToOrders()" title="订单信息">
+        <span class="action-icon">📋</span>
       </div>
     </div>
   </header>
@@ -191,6 +188,7 @@
 <script>
 import {ref, onMounted, onUnmounted, nextTick} from 'vue'
 import {useRouter} from 'vue-router'
+import {useAuthStore} from "@/store/auth.js";
 
 export default {
   name: 'GlobalHeader',
@@ -579,16 +577,38 @@ export default {
       console.info("根据情感意图ID查看详情 :",url);
       router.push(url)// 通过路由路径导航
     }
+    // 购物车
     const goToCart = () =>{
       const url = `/shopingcart/page`
       console.info("购物车url is :",url);
       router.push(url)// 通过路由路径导航
     }
-
+    // 订单
+    const goToOrders = () =>{
+      const url = `/order/page`
+      console.info("订单url is :",url);
+      router.push(url)// 通过路由路径导航
+    }
     const goToHome = () => router.push('/')
-    const navigateTo = (path) => router.push(path)
+    // 用户信息
+    const goToUser = () => {
+      const authStore = useAuthStore()
+      console.log('🔐 认证信息:')
+      console.log('Token:', authStore.token)
+      console.log('User信息:', authStore.userInfo)
+      console.log('User的userId信息:', authStore.userInfo.userId)
+      console.log('是否已登录:', authStore.isLoggedIn)
+
+      if(authStore.isLoggedIn){
+        router.push('/')// 通过路由路径导航
+      }else {
+        const url = `/users/register`
+        console.info("用户注册url is :", url);
+        router.push(url)// 通过路由路径导航
+      }
+    }
     const search = () => console.log('打开搜索')
-    const share = () => console.log('分享功能')
+
 
     const retryLoadMenuData = async (intentId) => {
       await loadMegaMenuData(intentId)
@@ -663,9 +683,9 @@ export default {
       viewAllProducts,
       navigateToNav,
       goToHome,
-      navigateTo,
+      goToUser,
       search,
-      share,
+      goToOrders,
       retryLoadMenuData,
       goToCart
     }

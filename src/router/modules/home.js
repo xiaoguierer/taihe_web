@@ -59,6 +59,46 @@ const homeindexRoutes = [
       requiresAuth: false
     }
   },
+  // 购物车列表
+  {
+    path: '/shopingcart/page',
+    name: 'CartPage',
+    component: () => import('@/views/cart/CartPage.vue'),
+    meta: {
+      title: '购物车列表',
+      requiresAuth: true
+    }
+  },
+  // 订单列表
+  {
+    path: '/order/page',
+    name: 'OrderList',
+    component: () => import('@/views/orders/OrderList.vue'),
+    meta: {
+      title: '购物车列表',
+      requiresAuth: true
+    }
+  },
+  // 用户注册
+  {
+    path: '/users/register',
+    name: 'UserRegister',
+    component: () => import('@/views/user/UserRegister.vue'),
+    meta: {
+      title: '用户注册',
+      requiresAuth: false
+    }
+  },
+  //用户登录
+  {
+    path: '/users/login',
+    name: 'UserLogin',
+    component: () => import('@/views/user/UserLogin.vue'),
+    meta: {
+      title: '用户登录',
+      requiresAuth: false
+    }
+  },
 ]
 
 export default homeindexRoutes

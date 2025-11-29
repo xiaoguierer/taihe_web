@@ -1,6 +1,6 @@
 const userRoutes = [
   {
-    path: '/UserLogin',
+    path: '/users/login',
     name: 'UserLogin',
     component: () => import('@/views/user/UserLogin.vue'),
     meta: {
@@ -9,7 +9,7 @@ const userRoutes = [
     }
   },
   {
-    path: '/UserRegister',
+    path: '/users/register',
     name: 'UserRegister',
     component: () => import('@/views/user/UserRegister.vue'),
     meta: {
@@ -23,7 +23,7 @@ const userRoutes = [
     component: () => import('@/views/user/UserGetmima.vue'),
     meta: {
       title: '找回密码',
-      requiresAuth: false
+      requiresAuth: true
     }
   }
 ]

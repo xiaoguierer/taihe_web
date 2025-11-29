@@ -157,10 +157,12 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import {ElMessage,} from "element-plus";
+import { useAuthStore } from '@/store/auth';
+
 const router = useRouter()
 // 定义事件
 const switchtologin = () =>{
-  router.push('/UserLogin')
+  router.push('/users/login')
 }
 
 // 响应式数据
@@ -179,45 +181,104 @@ const handleRegister = async () => {
     alert('请先阅读并同意隐私政策')
     return
   }
-  console.log('原始日期:', formData.birthdaytime)
   try {
     const formDataToSend = new FormData()
-
     const requestData = {
       email: formData.email,
       password: formData.password,
       birthdaytime: formData.birthdaytime
     }
-    console.log('发送的请求数据:', JSON.stringify(requestData, null, 2))
     const requestBlob = new Blob([JSON.stringify(requestData)], {
       type: 'application/json'
     })
     formDataToSend.append('request', requestBlob)
-    formDataToSend.append('avatarFile', new Blob([]), 'empty.txt')
-    console.log('FormData 内容:',formDataToSend)
+    // 如果有头像文件，这样添加，否则可以省略
+    if (formData.avatarFile) {
+      formDataToSend.append('avatarFile', formData.avatarFile)
+    } else {
+      // 如果不传头像文件，后端可能要求必须有这个字段
+      formDataToSend.append('avatarFile', new Blob([]), 'empty.txt')
+    }
+
+    console.log('FormData表单参数 内容:')
+    for (let [key, value] of formDataToSend.entries()) {
+      console.log(key, value)
+    }
+
     const response = await fetch('/api/users/register', {
       method: 'POST',
       body: formDataToSend
     })
+    console.info("用户注册API返回数据 response：", response)
     if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('注册接口不存在，请检查后端服务')
-      }
-      try {
-        const errorData = await response.json()
-        throw new Error(errorData.message || '注册失败')
-      } catch (e) {
-        throw new Error(`HTTP错误: ${response.status}`)
-      }
+      ElMessage.error("注册失败")
     }
     const result = await response.json()
+    // 重点：输出 message 和 data 字段
+    console.info("=== 用户注册API返回数据详情 ===")
+    console.info("JWT Token (message):", result.message)
+    console.info("用户数据 (data):", result.data)
+    console.info("完整返回结果:", result)
+
+    // 单独输出 data 中的各个字段
+    console.info("=== 用户详细信息 ===")
+    console.info("用户ID:", result.data.id)
+    console.info("邮箱:", result.data.email)
+    console.info("昵称:", result.data.nickname)
+    console.info("头像:", result.data.avatar)
+    console.info("状态:", result.data.status)
+    console.info("时间:", result.data.createdAt)
+
     console.log('注册成功:', result)
-    ElMessage.success('注册成功！' + (formData.birthdaytime ? '您已获得200积分奖励！' : ''))
-  } catch (e) {
-    console.log('注册失败')
+    ElMessage.success('注册成功！')
+    console.log('注册成功:', result)
+    ElMessage.success('注册成功！')
+
+    // 🎯 【新增关键代码开始】注册成功后的处理逻辑
+    if (result.message && result.data) {
+      // 1. 从返回数据中提取token和用户信息
+      const token = result.message; // 你的token在message字段
+      const userInfo = {
+        userId: result.data.id,        // 注意字段映射
+        email: result.data.email,
+        nickname: result.data.nickname,
+        avatar: result.data.avatar,
+        status: result.data.status,
+        createdAt: result.data.createdAt
+      };
+
+      console.info("=== 准备保存认证信息 ===");
+      console.info("Token长度:", token.length);
+      console.info("用户信息:", userInfo);
+
+      // 2. 保存到认证状态管理（假设你已经有authStore）
+      if (typeof useAuthStore !== 'undefined') {
+        const authStore = useAuthStore();
+        authStore.loginSuccess(token, userInfo);
+        console.log('✅ 认证信息已保存到状态管理');
+      } else {
+        // 如果还没有authStore，先保存到localStorage
+        localStorage.setItem('auth_token', token);
+        localStorage.setItem('user_info', JSON.stringify(userInfo));
+        console.log('✅ 认证信息已保存到localStorage');
+      }
+
+      // 3. 注册成功后的逻辑，跳转首页
+      console.log('🔄 即将跳转到首页...');
+      setTimeout(() => {
+        router.push('/');
+      }, 1500); // 1.5秒后跳转，让用户看到成功提示
+
+    } else {
+      console.warn('⚠️ 返回数据格式异常，无法完成自动登录');
+      ElMessage.warning('注册成功，但自动登录失败，请手动登录');
+     router.push('/users/login');
+    }
+   // 🎯 【新增关键代码结束】
+  } catch (error) {
+    console.info('注册失败:')
+    ElMessage.error(`注册失败`)
   }
-  console.error('注册失败')
-  ElMessage.error(`注册失败: ${error.message}`)
 }
 </script>
 

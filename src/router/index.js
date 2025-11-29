@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from './routes'
+import { useAuthStore } from '@/store/auth'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -16,21 +17,28 @@ const router = createRouter({
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
-  // 设置页面标题
-  if (to.meta.title) {
-    document.title = `${to.meta.title} - 我的应用`
-  }
+  const authStore = useAuthStore()
+  console.log('🛡️ 路由守卫检查:', to.name, '需要登录:', to.meta.requiresAuth)
+  console.log('🛡️ 路由守卫详细调试信息:')
+  console.log('目标路由:', to.name)
+  console.log('需要登录:', to.meta?.requiresAuth)
+  console.log('当前登录状态:', authStore.isLoggedIn)
+  console.log('token值:', authStore.token)
+  console.log('用户信息:', authStore.user)
 
-  // 权限验证
-  if (to.meta.requiresAuth) {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      next('/UserLogin')
-      return
-    }
-  }
 
-  next()
+  // 如果需要登录且未登录
+  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
+    console.log('❌ 未登录，跳转到登录页')
+    next({
+      path: '/users/login',
+      query: { redirect: to.fullPath } // 记录要跳转的页面
+    })
+  } else {
+    console.log('✅ 已登录或无需登录，放行')
+    // 放行
+    next()
+  }
 })
 
 router.afterEach((to, from) => {

@@ -1,20 +1,12 @@
 const orderRoutes = [
+//用户订单详情
   {
-    path: '/OrderList',
-    name: 'OrderList',
-    component: () => import('@/views/orders/OrderList.vue'),
-    meta: {
-      title: '订单列表',
-      requiresAuth: false
-    }
-  },
-  {
-    path: '/OrderDatil',
+    path: '/order-item/order/:orderId',
     name: 'OrderDatil',
     component: () => import('@/views/orders/OrderDatil.vue'),
     meta: {
-      title: '服务详情',
-      requiresAuth: false
+      title: '订单详情',
+      requiresAuth: true
     }
   },
   {
@@ -23,7 +15,7 @@ const orderRoutes = [
     component: () => import('@/views/orders/OrderCard.vue'),
     meta: {
       title: '服务订单',
-      requiresAuth: false
+      requiresAuth: true
     }
   }
 ]

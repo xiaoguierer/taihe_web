@@ -100,19 +100,6 @@
               {{ isLoading ? '登录中...' : '登录' }}
             </button>
 
-            <!-- 社交登录 -->
-            <div class="social-login">
-              <div class="divider">
-                <span>或使用以下方式登录</span>
-              </div>
-              <div class="social-buttons">
-                <button type="button" class="social-button wechat" @click="socialLogin('wechat')">
-                  <span class="social-icon">💬</span>
-                  Gmail登录
-                </button>
-              </div>
-            </div>
-
             <!-- 注册链接 -->
             <p class="register-link">
               还没有账户？<a href="#" @click="switchToRegister">立即注册</a>
@@ -136,6 +123,9 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/store/auth';
+import {ElMessage} from "element-plus";
+
 const router = useRouter()
 // 定义事件
 const emit = defineEmits(['switch-to-register', 'switch-to-forgot-password'])
@@ -194,14 +184,47 @@ const checkSavedLogin = () => {
 // 登录处理函数
 const handleLogin = async () => {
   if (!isFormValid.value) return
-
   isLoading.value = true
 
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    // 调用后端登录接口
+    const response = await fetch('/api/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: formData.email,
+        password: formData.password
+      })
+    })
 
-    // 保存登录状态（实际项目中应使用安全的HttpOnly Token）
+    console.info("用户登录API返回数据 response：", response)
+    if (!response.ok) {
+      ElMessage.error("登录失败")
+    }
+    const result = await response.json()
+// 重点：输出 message 和 data 字段
+    console.info("=== 用户登录API返回数据详情 ===")
+    console.info("JWT Token (message):", result.message)
+    console.info("用户数据 (data):", result.data)
+    console.info("完整返回结果:", result)
+
+    // 单独输出 data 中的各个字段
+    console.info("=== 用户详细信息 ===")
+    console.info("用户ID:", result.data.id)
+    console.info("邮箱:", result.data.email)
+    console.info("昵称:", result.data.nickname)
+    console.info("头像:", result.data.avatar)
+    console.info("状态:", result.data.status)
+    console.info("时间:", result.data.createdAt)
+
+    console.log('登录成功:', result)
+    ElMessage.success('登录成功！')
+    console.log('登录成功:', result)
+    ElMessage.success('登录成功！')
+
+    // 保存记住我设置
     if (formData.rememberMe) {
       localStorage.setItem('savedEmail', formData.email)
       localStorage.setItem('rememberMe', 'true')
@@ -210,33 +233,58 @@ const handleLogin = async () => {
       localStorage.removeItem('rememberMe')
     }
 
-    // 显示成功通知
-    userDisplayName.value = formData.email.split('@')[0]
-    showSuccessNotification.value = true
+    // 🎯 【新增关键代码开始】注册成功后的处理逻辑
+    if (result.message && result.data) {
+      // 1. 从返回数据中提取token和用户信息
+      const token = result.message; // 你的token在message字段
+      const userInfo = {
+        userId: result.data.id,        // 注意字段映射
+        email: result.data.email,
+        nickname: result.data.nickname,
+        avatar: result.data.avatar,
+        status: result.data.status,
+        createdAt: result.data.createdAt
+      };
 
-    // 模拟登录成功后的操作
-    setTimeout(() => {
-      // 在实际项目中，这里会进行页面跳转或状态更新
-      console.log('登录成功:', formData)
-      isLoading.value = false
-    }, 1000)
+      console.info("=== 准备保存认证信息 ===");
+      console.info("Token长度:", token.length);
+      console.info("用户信息:", userInfo);
 
+      // 2. 保存到认证状态管理（假设你已经有authStore）
+      if (typeof useAuthStore !== 'undefined') {
+        const authStore = useAuthStore();
+        authStore.loginSuccess(token, userInfo);
+        console.log('✅ 认证信息已保存到状态管理');
+      } else {
+        // 如果还没有authStore，先保存到localStorage
+        localStorage.setItem('auth_token', token);
+        localStorage.setItem('user_info', JSON.stringify(userInfo));
+        console.log('✅ 认证信息已保存到localStorage');
+      }
+
+      // 3. 注册成功后的逻辑，跳转首页
+      console.log('🔄 即将跳转到首页...');
+      setTimeout(() => {
+        router.push('/');
+      }, 1500); // 1.5秒后跳转，让用户看到成功提示
+
+    } else {
+      console.warn('⚠️ 返回数据格式异常，无法完成自动登录');
+      ElMessage.warning('登录成功，但自动登录失败，请手动登录');
+      router.push('/users/login');
+    }
+    // 🎯 【新增关键代码结束】
   } catch (error) {
     console.error('登录失败:', error)
     isLoading.value = false
+    // 显示错误提示
+    ElMessage.error(error.message || '登录失败，请检查邮箱和密码')
   }
-}
-
-// 社交登录
-const socialLogin = (provider) => {
-  console.log(`使用 ${provider} 登录`)
-  // 实际项目中这里会进行OAuth跳转
-  alert(`即将跳转到${provider}授权页面`)
 }
 
 // 切换到注册页面
 const switchToRegister = () => {
-  router.push('/UserRegister')
+  router.push('/users/register')
 }
 
 // 切换到忘记密码页面
