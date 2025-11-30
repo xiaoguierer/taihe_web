@@ -99,6 +99,16 @@ const homeindexRoutes = [
       requiresAuth: false
     }
   },
+  //用户中心
+  {
+    path: '/users/:id',
+    name: 'UserInfor',
+    component: () => import('@/views/user/UserInfor.vue'),
+    meta: {
+      title: '用户中心',
+      requiresAuth: false
+    }
+  },
 ]
 
 export default homeindexRoutes

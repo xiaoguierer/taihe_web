@@ -6,7 +6,7 @@ import cartRoutes from "./modules/cart.js";
 import addressRoutes from "./modules/address.js";
 import homeindexRoutes from "./modules/home.js";
 // 自动加载所有模块
-const modules = import.meta.glob('./modules/*.js', { eager: true })
+const modules = import.meta.glob('./modules/*.js', {eager: true})
 
 // 方法1：手动导入（推荐，清晰明确）
 export const routes = [

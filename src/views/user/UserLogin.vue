@@ -249,31 +249,20 @@ const handleLogin = async () => {
       console.info("=== 准备保存认证信息 ===");
       console.info("Token长度:", token.length);
       console.info("用户信息:", userInfo);
+// ✅ 直接使用authStore，移除错误的条件判断
+      const authStore = useAuthStore()
+      authStore.loginSuccess(token, userInfo)
 
-      // 2. 保存到认证状态管理（假设你已经有authStore）
-      if (typeof useAuthStore !== 'undefined') {
-        const authStore = useAuthStore();
-        authStore.loginSuccess(token, userInfo);
-        console.log('✅ 认证信息已保存到状态管理');
-      } else {
-        // 如果还没有authStore，先保存到localStorage
-        localStorage.setItem('auth_token', token);
-        localStorage.setItem('user_info', JSON.stringify(userInfo));
-        console.log('✅ 认证信息已保存到localStorage');
-      }
+      ElMessage.success('登录成功！即将自动跳转...')
 
-      // 3. 注册成功后的逻辑，跳转首页
-      console.log('🔄 即将跳转到首页...');
+      // ✅ 统一跳转逻辑
       setTimeout(() => {
-        router.push('/');
-      }, 1500); // 1.5秒后跳转，让用户看到成功提示
+        router.push('/users/login')
+      }, 1500)
 
     } else {
-      console.warn('⚠️ 返回数据格式异常，无法完成自动登录');
-      ElMessage.warning('登录成功，但自动登录失败，请手动登录');
-      router.push('/users/login');
+      throw new Error('返回数据格式异常')
     }
-    // 🎯 【新增关键代码结束】
   } catch (error) {
     console.error('登录失败:', error)
     isLoading.value = false

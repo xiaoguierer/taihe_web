@@ -128,11 +128,15 @@
                             <h5 class="product-name">{{ product.productName }}</h5>
                             <div class="product-price">
                               <span class="retail-price">¥{{ formatPrice(product.price) }}</span>
-                              <span v-if="product.salePrice" class="sale-price">¥{{ formatPrice(product.salePrice) }}</span>
+                              <span v-if="product.salePrice" class="sale-price">¥{{
+                                  formatPrice(product.salePrice)
+                                }}</span>
                             </div>
                             <div class="product-tags">
                               <span v-if="product.energyType" class="tag energy-tag">{{ product.energyType }}</span>
-                              <span v-if="product.mainCategory" class="tag category-tag">{{ product.mainCategory }}</span>
+                              <span v-if="product.mainCategory" class="tag category-tag">{{
+                                  product.mainCategory
+                                }}</span>
                             </div>
                           </div>
                         </div>
@@ -167,19 +171,41 @@
       </div>
     </div>
 
+    <!-- 修复：将 user-actions 移到 header-actions 外部 -->
     <div class="header-actions">
       <div class="action-item" @click="search" title="搜索">
         <span class="action-icon">🔍</span>
       </div>
-      <div class="action-item" @click="goToUser()" title="用户">
-        <span class="action-icon">👤</span>
-      </div>
+
+      <!-- 购物车 -->
       <div class="action-item cart-item" @click.stop="goToCart()" title="购物车">
         <span class="action-icon">🛒</span>
         <span v-if="cartCount > 0" class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
       </div>
+
+      <!-- 订单 -->
       <div class="action-item" @click="goToOrders()" title="订单信息">
         <span class="action-icon">📋</span>
+      </div>
+    </div>
+
+    <!-- 修复：独立的用户操作区域 -->
+    <div class="user-actions">
+      <!-- 已登录状态 -->
+      <div v-if="authStore?.isLoggedIn" class="logged-in-actions">
+        <!-- 用户中心 -->
+        <div class="action-item" @click="goToUserInfor()" title="用户中心">
+          <span class="action-icon">⚙️</span>
+        </div>
+        <!-- 退出按钮 -->
+        <div class="action-item logout-btn" @click="handleLogout()" title="退出登录">
+          <span class="action-icon">🚪</span>
+        </div>
+      </div>
+
+      <!-- 未登录状态 -->
+      <div v-else class="action-item" @click="goToUser()" title="登录/注册">
+        <span class="action-icon">👤</span>
       </div>
     </div>
   </header>
@@ -194,6 +220,7 @@ export default {
   name: 'GlobalHeader',
   setup() {
     const router = useRouter()
+    const authStore = useAuthStore()
 
     // 响应式数据
     const emotionalIntents = ref([])
@@ -363,10 +390,10 @@ export default {
         // console.log("🔍 -----------开始获取标签数据------------")
         // console.log("🔍 开始获取品类数据，intentId:", intentId)
         const response = await fetch(`/api/product-category-tags/JewelryTagByIntentId/${intentId}`)
-      //  console.log("📡 JewelryTagByIntentId API响应状态:", response.status, response.ok)
+        //  console.log("📡 JewelryTagByIntentId API响应状态:", response.status, response.ok)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const result = await response.json()
-      //  console.log("📊 JewelryTagByIntentId 原始API数据:", JSON.stringify(result, null, 2))
+        //  console.log("📊 JewelryTagByIntentId 原始API数据:", JSON.stringify(result, null, 2))
         // 检查数据结构
         if (result.code === 200) {
           // console.log("✅ JewelryTagByIntentId 数据条数:", result.data?.length || 0)
@@ -384,10 +411,10 @@ export default {
         // console.log("🔍 -----------开始获取能量数据------------")
         // console.log("🔍 开始获取能量数据，intentId:", intentId)
         const response = await fetch(`/api/product-category-tags/JEnergyInfoByIntentId/${intentId}`)
-    //    console.log("📡 JEnergyInfoByIntentId API响应状态:", response.status, response.ok)
+        //    console.log("📡 JEnergyInfoByIntentId API响应状态:", response.status, response.ok)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const result = await response.json()
-     //   console.log("📊 JEnergyInfoByIntentId 原始API数据:", JSON.stringify(result, null, 2))
+        //   console.log("📊 JEnergyInfoByIntentId 原始API数据:", JSON.stringify(result, null, 2))
         // 检查数据结构
         if (result.code === 200) {
           // console.log("✅ JEnergyInfoByIntentId 数据条数:", result.data?.length || 0)
@@ -404,9 +431,9 @@ export default {
       try {
         const url = `/api/product-spu/getRecommendProducts/${intentId}/${limit}`
         //const url = `/api/getRecommendProducts/${intentId}?limit=${limit}`
-       // console.log("🌐 请求推荐商品:", url)
+        // console.log("🌐 请求推荐商品:", url)
         const response = await fetch(url)
-     //   console.log("📡 响应状态:", response.status, response.ok)
+        //   console.log("📡 响应状态:", response.status, response.ok)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const result = await response.json()
         // console.log("📊 API响应数据:", {
@@ -568,45 +595,156 @@ export default {
     // 根据情感意图id 查询商品信息
     const viewAllProducts = (intentId) => {
       const url = `/product-spu/selectSpuByIntentId/spu/${intentId}`;
-      console.info("根据情感意图id 查询商品信息url is :",url);
+      console.info("根据情感意图id 查询商品信息url is :", url);
       router.push(url)// 通过路由路径导航
     }
     // 情感意愿详情
     const navigateToNav = (navItem) => {
       const url = `/emotional-intent/getByid/${navItem.id}`;
-      console.info("根据情感意图ID查看详情 :",url);
+      console.info("根据情感意图ID查看详情 :", url);
       router.push(url)// 通过路由路径导航
     }
     // 购物车
-    const goToCart = () =>{
+    const goToCart = () => {
       const url = `/shopingcart/page`
-      console.info("购物车url is :",url);
+      console.info("购物车url is :", url);
       router.push(url)// 通过路由路径导航
     }
     // 订单
-    const goToOrders = () =>{
+    const goToOrders = () => {
       const url = `/order/page`
-      console.info("订单url is :",url);
+      console.info("订单url is :", url);
       router.push(url)// 通过路由路径导航
     }
     const goToHome = () => router.push('/')
+
     // 用户信息
     const goToUser = () => {
-      const authStore = useAuthStore()
-      console.log('🔐 认证信息:')
-      console.log('Token:', authStore.token)
-      console.log('User信息:', authStore.userInfo)
-      console.log('User的userId信息:', authStore.userInfo.userId)
-      console.log('是否已登录:', authStore.isLoggedIn)
+      // console.log('🔐 认证信息:')
+      // console.log('Token:', authStore.token)
+      // console.log('User信息:', authStore.userInfo)
+      // console.log('User的userId信息:', authStore.userInfo.userId)
+      // console.log('是否已登录:', authStore.isLoggedIn)
 
-      if(authStore.isLoggedIn){
-        router.push('/')// 通过路由路径导航
-      }else {
-        const url = `/users/register`
-        console.info("用户注册url is :", url);
-        router.push(url)// 通过路由路径导航
-      }
+      const url = `/users/login`
+      console.info("用户登錄url is :", url);
+      router.push(url)// 通过路由路径导航
     }
+    //导航用户中心
+    const goToUserInfor = () => {
+      console.log('🔐 用户中心信息:')
+      router.push(`/users/${authStore.userInfo.userId}`)// 通过路由路径导航
+    }
+    // 退出登录
+    const handleLogout = async () => {
+      console.log('🔐 开始退出登录流程');
+      try {
+        // 1. 获取当前认证状态
+        const token = authStore.token;
+        const hasValidToken = token && authStore.isLoggedIn;
+        console.log('🔍 当前认证状态:', {
+          hasToken: !!token,
+          isLoggedIn: authStore.isLoggedIn
+        });
+        // 2. 调用后端退出接口（如果有有效token）
+        if (hasValidToken) {
+          try {
+            console.log('📡 调用后端退出接口...');
+            const response = await fetch('/api/users/logout', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            if (response.ok) {
+              const result = await response.json();
+              console.log('✅ 后端退出成功:', result.message);
+            } else {
+              console.warn('⚠️ 后端退出失败，继续前端清理');
+            }
+          } catch (apiError) {
+            console.warn('⚠️ 后端退出接口调用失败，继续前端清理:', apiError.message);
+          }
+        } else {
+          console.log('ℹ️ 无有效token，跳过后端退出调用');
+        }
+        // 3. 统一清理前端状态
+        await performFrontendCleanup();
+        // 4. 跳转页面
+        console.log('🔄 跳转到首页...');
+        router.push('/');
+        // 5. 可选：重置页面状态
+        window.scrollTo(0, 0);
+        console.log('✅ 退出登录流程完成');
+      } catch (error) {
+        console.error('❌ 退出流程异常:', error);
+        // 异常情况下强制清理并跳转
+        await emergencyCleanup();
+        router.push('/');
+      }
+    };
+
+    /**
+     * 统一清理前端状态
+     */
+    const performFrontendCleanup = async () => {
+      console.log('🧹 开始清理前端状态...');
+
+      try {
+        // 1. 清除 Pinia Store 状态
+        authStore.logout();
+        console.log('✅ Pinia Store 状态已清除');
+
+        // 2. 统一清理 localStorage（避免重复和遗漏）
+        const itemsToRemove = [
+          'auth_token', 'user_info', 'token', 'userInfo',
+          'remember_me', 'saved_email', 'user_settings'
+        ];
+
+        itemsToRemove.forEach(key => {
+          localStorage.removeItem(key);
+        });
+        console.log('✅ localStorage 已清理');
+
+        // 3. 清理 sessionStorage
+        sessionStorage.clear();
+        console.log('✅ sessionStorage 已清理');
+
+        // 4. 清理定时器（如果存在）
+        if (refreshTokenTimer) {
+          clearInterval(refreshTokenTimer);
+          refreshTokenTimer = null;
+          console.log('✅ 定时器已清理');
+        }
+
+      } catch (cleanupError) {
+        console.error('❌ 前端清理失败:', cleanupError);
+        throw cleanupError;
+      }
+    };
+
+    /**
+     * 紧急清理（用于异常情况）
+     */
+    const emergencyCleanup = async () => {
+      console.warn('🚨 执行紧急清理...');
+
+      try {
+        // 强制清除所有存储
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // 重置 Store 状态
+        if (authStore && typeof authStore.logout === 'function') {
+          authStore.logout();
+        }
+
+        console.log('✅ 紧急清理完成');
+      } catch (error) {
+        console.error('❌ 紧急清理失败:', error);
+      }
+    };
     const search = () => console.log('打开搜索')
 
 
@@ -684,6 +822,8 @@ export default {
       navigateToNav,
       goToHome,
       goToUser,
+      goToUserInfor,
+      handleLogout,
       search,
       goToOrders,
       retryLoadMenuData,

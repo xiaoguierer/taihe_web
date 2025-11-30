@@ -18,13 +18,15 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
+  console.log('🛡️ 路由守卫检查--router/index.js輸出:')
   console.log('🛡️ 路由守卫检查:', to.name, '需要登录:', to.meta.requiresAuth)
   console.log('🛡️ 路由守卫详细调试信息:')
   console.log('目标路由:', to.name)
   console.log('需要登录:', to.meta?.requiresAuth)
+  console.log('当前authStore:', authStore)
   console.log('当前登录状态:', authStore.isLoggedIn)
   console.log('token值:', authStore.token)
-  console.log('用户信息:', authStore.user)
+  console.log('用户信息:', authStore.userInfo)
 
 
   // 如果需要登录且未登录
