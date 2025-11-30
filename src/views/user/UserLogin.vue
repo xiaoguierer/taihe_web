@@ -85,9 +85,9 @@
                 >
                 <label for="remember-me" class="checkbox-label">记住我</label>
               </div>
-              <a href="#" class="forgot-password" @click.prevent="switchToForgotPassword">
-                忘记密码？
-              </a>
+<!--              <a href="#" class="forgot-password" @click.prevent="switchToForgotPassword">-->
+<!--                忘记密码？-->
+<!--              </a>-->
             </div>
 
             <!-- 登录按钮 -->

@@ -36,7 +36,6 @@
               @mouseleave="handleMegaMenuLeave"
             >
               <div class="mega-menu-content">
-                <!-- 修复：移除所有注释，确保条件链连续 -->
                 <div v-if="getMenuData(navItem.id).loading" class="menu-loading">
                   <div class="loading-spinner"></div>
                   <span class="loading-text">加载中...</span>
@@ -359,7 +358,7 @@ export default {
         const [categories, energies, products] = await Promise.allSettled([
           fetchCategoriesByIntent(intentId),
           fetchEnergiesByIntent(intentId),
-          fetchFeaturedProducts(intentId, 3)
+          fetchFeaturedProducts(intentId, 5)
         ])
 
         menuData.categories = categories.status === 'fulfilled' ? (categories.value || []) : []
@@ -714,7 +713,6 @@ export default {
         // 4. 清理定时器（如果存在）
         if (refreshTokenTimer) {
           clearInterval(refreshTokenTimer);
-          refreshTokenTimer = null;
           console.log('✅ 定时器已清理');
         }
 

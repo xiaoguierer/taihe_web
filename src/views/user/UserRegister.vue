@@ -101,7 +101,7 @@
               <div class="incentive-icon">🎁</div>
               <div class="incentive-content">
                 <h3>完善您的灵性档案</h3>
-                <p>填写出生日期，即可获得<strong>200积分</strong>，并解锁高级运势报告</p>
+                <p>填写出生日期，解锁高级运势报告</p>
               </div>
             </div>
 
