@@ -14,7 +14,7 @@
           <div v-else class="image-placeholder">标签展示图</div>
         </div>
         <div class="hero-content">
-          <h2 class="hero-title">{{ heroData.tagKey }}-{{ heroData.tagNameZh }}-</h2>
+          <h2 class="hero-title">{{ heroData.tagKey }}-{{ heroData.tagNameEn }}-</h2>
           <p class="hero-description">{{ heroData.descriptionEn }}</p>
         </div>
       </div>

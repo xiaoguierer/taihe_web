@@ -3,13 +3,13 @@
     <!-- 加载状态 -->
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner"></div>
-      <p>正在加载商品信息...</p>
+      <p>Loading data...</p>
     </div>
 
     <!-- 错误状态 -->
     <div v-else-if="error" class="error-container">
       <p>{{ error }}</p>
-      <button @click="fetchProductData">重新加载</button>
+      <button @click="fetchProductData">Reload</button>
     </div>
 
     <!-- 商品详情内容 -->
@@ -17,7 +17,6 @@
       <!-- 第一部分：商品展示区 -->
       <section class="product-display-section">
         <div class="display-container">
-
           <!-- 左侧图片展示区 -->
           <div class="image-section">
             <!-- 左侧SKU选择器（缩略图区域） -->
@@ -34,7 +33,7 @@
                   :src="sku.mainImageUrl"
                   @error="handleImageError"
                   class="thumbnail-img"
-                  :alt="sku.skuNameZh"
+                  :alt="sku.skuNameEn"
                 />
               </div>
             </div>
@@ -50,8 +49,8 @@
                   :key="currentImage.uniqueKey"
                 />
                 <div class="image-meta">
-                  当前展示: {{ currentImage.alt }} ({{ currentImageIndex + 1 }}/{{ imageList.length }})
-                  <span style="font-size: 12px; color: #ccc;">来源: {{ currentImage.fieldName }}</span>
+                  {{ currentImage.alt }} ({{ currentImageIndex + 1 }}/{{ imageList.length }})
+                  <span style="font-size: 12px; color: #ccc;">{{ currentImage.fieldName }}</span>
                 </div>
 
                 <!-- 图片导航 -->
@@ -74,7 +73,7 @@
                 </div>
               </div>
               <div v-else class="image-placeholder">
-                暂无商品图片
+                NO Data
               </div>
             </div>
           </div>
@@ -83,8 +82,8 @@
           <div class="info-section">
             <div class="product-info">
               <!-- SPU基本信息 -->
-              <h1 class="product-name">{{ productData.spu.productNameZh }}</h1>
-              <p class="product-subtitle">{{ productData.spu.shortDescriptionZh }}</p>
+              <h1 class="product-name">{{ productData.spu.productNameEn }}</h1>
+              <p class="product-subtitle">{{ productData.spu.shortDescriptionEn }}</p>
 
               <div class="basic-info">
                   <span v-if="productData.spu.productCode" class="info-tag">编码: {{
@@ -109,56 +108,36 @@
               <div class="metaphysical-tags">
                 <div class="tag-item" v-if="currentSkuElement">
                   <span class="icon">🌍</span>
-                  <span>五行: {{ currentSkuElement }}</span>
+                  <span>Five Elements: {{ currentSkuElement }}</span>
                 </div>
                 <div class="tag-item" v-if="productData.spu.primaryElement">
                   <span class="icon">☯️</span>
-                  <span>元素: {{ getElementName(productData.spu.primaryElement) }}</span>
+                  <span>Element: {{ getElementName(productData.spu.primaryElement) }}</span>
                 </div>
                 <div class="tag-item" v-if="productData.spu.secondaryElement">
                   <span class="icon">🌟</span>
-                  <span>次元素: {{ getElementName(productData.spu.secondaryElement) }}</span>
+                  <span>Secondary Element: {{ getElementName(productData.spu.secondaryElement) }}</span>
                 </div>
                 <div class="tag-item" v-if="currentSku.gemstoneType">
                   <span class="icon">💎</span>
-                  <span>宝石: {{ currentSku.gemstoneType }}</span>
+                  <span>Gemstone: {{ currentSku.gemstoneType }}</span>
                 </div>
                 <div class="tag-item" v-if="productData.spu.targetZodiacSigns">
                   <span class="icon">♏️</span>
-                  <span>星座: {{ productData.spu.targetZodiacSigns }}</span>
+                  <span>Zodiac: {{ productData.spu.targetZodiacSigns }}</span>
                 </div>
                 <div class="tag-item" v-if="productData.spu.targetChakra">
                   <span class="icon">🌀</span>
-                  <span>脉轮: {{ productData.spu.targetChakra }}</span>
+                  <span>Chakra: {{ productData.spu.targetChakra }}</span>
                 </div>
-                <div class="tag-item" v-if="currentSku.variantYuyiZh || productData.spu.emotionalPurposeZh">
+                <div class="tag-item" v-if="currentSku.variantYuyiEn">
                   <span class="icon">✨</span>
-                  <span>寓意: {{ currentSku.variantYuyiZh || productData.spu.emotionalPurposeZh }}</span>
+                  <span>Symbolism: {{ currentSku.variantYuyiEn }}</span>
                 </div>
               </div>
-
-              <!-- SKU选择器 -->
-<!--              <div class="sku-selector" v-if="skuList.length > 0">-->
-<!--                <h3>选择规格:</h3>-->
-<!--                <div class="sku-options">-->
-<!--                  <div-->
-<!--                    v-for="sku in skuList"-->
-<!--                    :key="sku.id"-->
-<!--                    class="sku-option"-->
-<!--                    :class="{ active: currentSku.id === sku.id }"-->
-<!--                    @click="selectSku(sku)"-->
-<!--                  >-->
-<!--                    <div class="sku-info">-->
-<!--                      <span class="sku-name">{{ sku.skuNameZh || sku.skuName }}</span>-->
-<!--                      <span class="sku-code" v-if="sku.skuCode">({{ sku.skuCode }})</span>-->
-<!--                    </div>-->
-<!--                    <span class="sku-price">￥{{ formatPrice(sku.finalPrice || sku.retailPrice || sku.price) }}</span>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
               <!-- SKU选择器 -->
               <div class="sku-selector" v-if="skuList.length > 0">
-                <h3>选择规格:</h3>
+                <h3>Select Specifications:</h3>
                 <div class="sku-dropdown">
                   <select
                     v-model="currentSkuIndex"
@@ -172,7 +151,7 @@
                     >
                       {{ sku.skuNameZh || sku.skuName }}
                       <span v-if="sku.skuCode">({{ sku.skuCode }})</span>
-                      - ￥{{ formatPrice(sku.finalPrice || sku.retailPrice || sku.price) }}
+                      - ${{ formatPrice(sku.finalPrice || sku.retailPrice || sku.price) }}
                     </option>
                   </select>
                 </div>
@@ -180,9 +159,9 @@
 
               <!-- 价格信息 -->
               <div class="price-section">
-                <span class="price">￥{{ formatPrice(currentPrice) }}</span>
+                <span class="price">${{ formatPrice(currentPrice) }}</span>
                 <span v-if="hasDiscount" class="original-price">
-                  ￥{{ formatPrice(currentSku.retailPrice) }}
+                  ${{ formatPrice(currentSku.retailPrice) }}
                 </span>
                 <span v-if="currentSku.discountRate" class="discount-rate">-{{ currentSku.discountRate }}%</span>
                 <span v-if="currentSku.priceUnit" class="price-unit">{{ currentSku.priceUnit }}</span>
@@ -190,19 +169,19 @@
 
               <!-- 库存信息 -->
               <div class="stock-info">
-                <span class="stock-label">库存:</span>
+                <span class="stock-label">Stock:</span>
                 <span class="stock-quantity" :class="{ 'low-stock': currentSku.stockQuantity < 10 }">
-                  {{ currentSku.stockQuantity || 0 }}件
+                 {{ currentSku.stockQuantity || 0 }} pcs
                 </span>
-                <span v-if="currentSku.stockQuantity < 10" class="stock-warning">（库存紧张）</span>
+                <span v-if="currentSku.stockQuantity < 10" class="stock-warning">(Low Stock)</span>
                 <span v-if="currentSku.safetyStockQuantity" class="safety-stock">
-                  安全库存: {{ currentSku.safetyStockQuantity }}件
+                Safety Stock: {{ currentSku.safetyStockQuantity }} pcs
                 </span>
                 <span v-if="currentSku.reservedQuantity" class="reserved-stock">
-                  预留: {{ currentSku.reservedQuantity }}件
+                  Reserved: {{ currentSku.reservedQuantity }} pcs
                 </span>
                 <span v-if="currentSku.availableQuantity" class="available-stock">
-                  可用: {{ currentSku.availableQuantity }}件
+                 Available: {{ currentSku.availableQuantity }} pcs
                 </span>
               </div>
 
@@ -210,19 +189,15 @@
               <div class="trust-badges">
                 <div class="badge-item">
                   <span class="icon">⛭</span>
-                  <span>全球免邮</span>
+                  <span>Free Global Shipping</span>
                 </div>
                 <div class="badge-item" v-if="currentSku.certificationType">
                   <span class="icon">📜</span>
-                  <span>{{ currentSku.certificationType }}认证</span>
+                  <span>{{ currentSku.certificationType }} Certified</span>
                 </div>
                 <div class="badge-item">
                   <span class="icon">↻</span>
-                  <span>30天无忧退货</span>
-                </div>
-                <div class="badge-item">
-                  <span class="icon">🔒</span>
-                  <span>终身保养</span>
+                  <span>30-Day Return (No Questions Asked)</span>
                 </div>
               </div>
               <!-- 操作按钮 -->
@@ -233,21 +208,20 @@
               <!-- 快速信息 -->
               <div class="quick-info-grid">
                 <div class="info-item" v-if="currentSku.skuCode">
-                  <span class="label">SKU编码:</span>
                   <span class="value">{{ currentSku.skuCode }}</span>
                 </div>
-                <div class="info-item" v-if="currentSku.barCode">
-                  <span class="label">条形码:</span>
-                  <span class="value">{{ currentSku.barCode }}</span>
-                </div>
-                <div class="info-item" v-if="currentSku.modelNumber">
-                  <span class="label">型号:</span>
-                  <span class="value">{{ currentSku.modelNumber }}</span>
-                </div>
-                <div class="info-item" v-if="currentSku.countryOfOrigin">
-                  <span class="label">原产国:</span>
-                  <span class="value">{{ currentSku.countryOfOrigin }}</span>
-                </div>
+                <!--                <div class="info-item" v-if="currentSku.barCode">-->
+                <!--                  <span class="label">条形码:</span>-->
+                <!--                  <span class="value">{{ currentSku.barCode }}</span>-->
+                <!--                </div>-->
+                <!--                <div class="info-item" v-if="currentSku.modelNumber">-->
+                <!--                  <span class="label">型号:</span>-->
+                <!--                  <span class="value">{{ currentSku.modelNumber }}</span>-->
+                <!--                </div>-->
+                <!--                <div class="info-item" v-if="currentSku.countryOfOrigin">-->
+                <!--                  <span class="label">原产国:</span>-->
+                <!--                  <span class="value">{{ currentSku.countryOfOrigin }}</span>-->
+                <!--                </div>-->
               </div>
             </div>
           </div>
@@ -546,15 +520,15 @@
                     <div class="specs-grid">
                       <div class="spec-item" v-if="currentSku.costPrice">
                         <span class="spec-label">成本价:</span>
-                        <span class="spec-value">￥{{ formatPrice(currentSku.costPrice) }}</span>
+                        <span class="spec-value">${{ formatPrice(currentSku.costPrice) }}</span>
                       </div>
                       <div class="spec-item" v-if="currentSku.retailPrice">
                         <span class="spec-label">零售价:</span>
-                        <span class="spec-value">￥{{ formatPrice(currentSku.retailPrice) }}</span>
+                        <span class="spec-value">${{ formatPrice(currentSku.retailPrice) }}</span>
                       </div>
                       <div class="spec-item" v-if="currentSku.finalPrice">
                         <span class="spec-label">最终价:</span>
-                        <span class="spec-value">￥{{ formatPrice(currentSku.finalPrice) }}</span>
+                        <span class="spec-value">${{ formatPrice(currentSku.finalPrice) }}</span>
                       </div>
                       <div class="spec-item" v-if="currentSku.taxRate">
                         <span class="spec-label">税率:</span>
@@ -696,11 +670,11 @@
               </div>
               <div class="shipping-item" v-if="currentSku.shippingCost">
                 <span class="icon">💰</span>
-                <span>运费: ￥{{ formatPrice(currentSku.shippingCost) }}</span>
+                <span>运费: ${{ formatPrice(currentSku.shippingCost) }}</span>
               </div>
               <div class="shipping-item" v-if="currentSku.freeShippingThreshold">
                 <span class="icon">🎁</span>
-                <span>包邮门槛: ￥{{ formatPrice(currentSku.freeShippingThreshold) }}</span>
+                <span>包邮门槛: ${{ formatPrice(currentSku.freeShippingThreshold) }}</span>
               </div>
               <div class="shipping-item" v-if="currentSku.shippingMethod">
                 <span class="icon">📦</span>
@@ -966,11 +940,11 @@ const hasDiscount = computed(() => {
 const currentSkuElement = computed(() => {
   const element = productData.value?.spu?.primaryElement
   const elementMap = {
-    'earth': '土',
-    'water': '水',
-    'fire': '火',
-    'metal': '金',
-    'wood': '木'
+    'earth': '🏔️⛰️🏜️ EARTH',
+    'water': '💧🌊💦 WATER',
+    'fire': '🔥🌋🎇 WATER',
+    'metal': '💎🔗✨METAL',
+    'wood': '🌳🌿🍃 WOOD'
   }
   return elementMap[element] || element
 })
@@ -1077,16 +1051,86 @@ const fetchProductData = async () => {
     skuList.value.forEach((sku, index) => {
       console.log(`SKU ${index + 1}:`, {
         id: sku.id,
+        spuId: sku.spuId,
+        skuCode: sku.skuCode,
+        skuNameEn: sku.skuNameEn,
         skuNameZh: sku.skuNameZh,
-        finalPrice: sku.finalPrice,
+        skuNameAr: sku.skuNameAr,
+        variantDescriptionEn: sku.variantDescriptionEn,
+        variantDescriptionZh: sku.variantDescriptionZh,
+        variantDescriptionAr: sku.variantDescriptionAr,
+        variantYuyiEn: sku.variantYuyiEn,
+        variantYuyiZh: sku.variantYuyiZh,
+        variantYuyiAr: sku.variantYuyiAr,
+        primaryMaterial: sku.primaryMaterial,
+        materialPurity: sku.materialPurity,
+        materialColor: sku.materialColor,
+        materialFinish: sku.materialFinish,
+        materialThicknessMm: sku.materialThicknessMm,
+        gemstoneType: sku.gemstoneType,
+        gemstoneShape: sku.gemstoneShape,
+        gemstoneCut: sku.gemstoneCut,
+        gemstoneSizeMm: sku.gemstoneSizeMm,
+        gemstoneWeightCt: sku.gemstoneWeightCt,
+        gemstoneQuality: sku.gemstoneQuality,
+        gemstoneCount: sku.gemstoneCount,
+        lengthCm: sku.lengthCm,
+        widthCm: sku.widthCm,
+        heightCm: sku.heightCm,
+        chainLengthCm: sku.chainLengthCm,
+        pendantSizeMm: sku.pendantSizeMm,
+        totalWeightG: sku.totalWeightG,
+        metalWeightG: sku.metalWeightG,
+        gemstoneWeightG: sku.gemstoneWeightG,
+        craftsmanshipLevel: sku.craftsmanshipLevel,
+        settingTechnique: sku.settingTechnique,
+        claspType: sku.claspType,
+        chainType: sku.chainType,
+        suitableGender: sku.suitableGender,
+        suitableAgeMin: sku.suitableAgeMin,
+        suitableAgeMax: sku.suitableAgeMax,
+        sizeStandard: sku.sizeStandard,
         stockQuantity: sku.stockQuantity,
+        reservedQuantity: sku.reservedQuantity,
+        safetyStock: sku.safetyStock,
+        reorderPoint: sku.reorderPoint,
+        stockStatus: sku.stockStatus,
+        lowStockAlert: sku.lowStockAlert,
+        lastStockUpdate: sku.lastStockUpdate,
+        costPrice: sku.costPrice,
+        retailPrice: sku.retailPrice,
+        salePrice: sku.salePrice,
+        memberPrice: sku.memberPrice,
+        priceCurrency: sku.priceCurrency,
+        discountRate: sku.discountRate,
+        discountAmount: sku.discountAmount,
+        discountStartDate: sku.discountStartDate,
+        discountEndDate: sku.discountEndDate,
+        taxRate: sku.taxRate,
+        priceAdjustmentReason: sku.priceAdjustmentReason,
+        lastPriceUpdate: sku.lastPriceUpdate,
+        mainImageId: sku.mainImageId,
         mainImageUrl: sku.mainImageUrl,
         image1Url: sku.image1Url,
         image2Url: sku.image2Url,
         image3Url: sku.image3Url,
         image4Url: sku.image4Url,
         image5Url: sku.image5Url,
-
+        availableDate: sku.availableDate,
+        availableEndDate: sku.availableEndDate,
+        isNewArrival: sku.isNewArrival,
+        status: sku.status,
+        isAvailable: sku.isAvailable,
+        isFeatured: sku.isFeatured,
+        isBestSeller: sku.isBestSeller,
+        sortOrder: sku.sortOrder,
+        visibility: sku.visibility,
+        createdBy: sku.createdBy,
+        updatedBy: sku.updatedBy,
+        createdTime: sku.createdTime,
+        updatedTime: sku.updatedTime,
+        availableQuantity: sku.availableQuantity,
+        finalPrice: sku.finalPrice
       })
     })
     console.log('=======================')
@@ -1157,21 +1201,21 @@ const onSkuDropdownChange = (event) => {
 
 const getElementName = (element) => {
   const elementMap = {
-    'earth': '土元素',
-    'water': '水元素',
-    'fire': '火元素',
-    'metal': '金元素',
-    'wood': '木元素'
+    'earth': '🏔️',
+    'water': '🌊',
+    'fire': '🔥',
+    'metal': '💎',
+    'wood': '🌿'
   }
   return elementMap[element] || element
 }
 
 const getGenderText = (genderCode) => {
   const genderMap = {
-    1: '男性',
-    2: '女性',
-    3: '中性',
-    4: '通用'
+    1: 'Men',
+    2: 'Women',
+    3: 'Unisex',
+    4: 'Universal'
   }
   return genderMap[genderCode] || '通用'
 }
@@ -1212,7 +1256,7 @@ const addToCart = async () => {
   cartLoading.value = true
   try {
     const cartData = {
-      userId:'0010010',
+      userId: '0010010',
       skuId: currentSku.value.id, // 商品SKU ID（必填）
       quantity: 1, // 购买数量（默认1）
       selected: 1, // 是否选中: 0-否, 1-是（默认1）
@@ -1285,7 +1329,7 @@ watch([currentSku, imageList], ([newSku, newImages]) => {
     console.log(`  ${i}. ${img.src} (${img.type})`)
   })
   console.groupEnd()
-}, { immediate: true })
+}, {immediate: true})
 
 // 生命周期
 onMounted(() => {
@@ -1388,6 +1432,7 @@ const nextImage = () => {
 .retry-button:hover {
   background: #45b7aa;
 }
+
 /* 修正加载状态类名 */
 .loading-container {
   display: flex;
@@ -1436,6 +1481,7 @@ const nextImage = () => {
 .error-container button:hover {
   background: #45b7aa;
 }
+
 /* 商品内容区域 */
 .product-content {
   max-width: 1400px;
@@ -1518,6 +1564,7 @@ const nextImage = () => {
   border: 1px dashed rgba(255, 255, 255, 0.3);
   font-size: 1.2rem;
 }
+
 .thumbnail-img {
   width: 60px;
   height: 60px;
@@ -1525,6 +1572,7 @@ const nextImage = () => {
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 /* 主图容器样式 */
 .main-image-container {
   flex: 1;
@@ -1609,6 +1657,7 @@ const nextImage = () => {
   color: #ffd700;
   font-size: 1.2rem;
 }
+
 /* 信息展示区 */
 .info-section {
   flex: 1;
@@ -1690,6 +1739,7 @@ const nextImage = () => {
   color: #fff;
   font-weight: bold;
 }
+
 /* SKU下拉选择器样式 */
 .sku-dropdown {
   margin-bottom: 15px;
@@ -1722,6 +1772,7 @@ const nextImage = () => {
   color: #fff;
   padding: 10px;
 }
+
 .sku-options {
   display: flex;
   flex-direction: column;

@@ -3,13 +3,13 @@
     <!-- 加载状态 -->
     <div v-if="loading" class="loading-state">
       <div class="loading-spinner"></div>
-      <p>正在加载情感意图数据...</p>
+      <p>Fetching emotional intent data...</p>
     </div>
 
     <!-- 错误状态 -->
     <div v-else-if="error" class="error-state">
-      <p>数据加载失败，请稍后重试</p>
-      <button @click="loadIntentData" class="retry-button">重新加载</button>
+      <p>Failed to load data. Please try again later again.</p>
+      <button @click="loadIntentData" class="retry-button">reloadData</button>
     </div>
 
     <!-- 主内容区域 -->
@@ -31,11 +31,13 @@
           <div class="hero-content">
             <div class="intent-badge">
               <span class="category-tag">{{ intentData.intentCategory }}</span>
-              <span class="intensity-tag">强度: {{ intentData.emotionalIntensity }}/100</span>
+              <span class="intensity-tag">Emotional Intensity: {{ intentData.emotionalIntensity }}/100</span>
             </div>
-            <h1 class="hero-title">{{ intentData.intentNameZh }}</h1>
-            <h2 class="hero-subtitle">{{ intentData.intentNameEn }}</h2>
-            <p class="hero-description">{{ intentData.modernInterpretationZh }}</p>
+            <h1 class="hero-title">{{ intentData.intentNameEn }}</h1>
+
+            <h2 class="hero-subtitle">Featured :  {{ intentData.intensityLevel }}   --  Popular : {{ intentData.popularityScore }}</h2>
+
+            <p class="hero-description">{{ intentData.modernInterpretationEn }}</p>
             <div class="symbol-display">
               <span class="symbol" :style="{ color: intentData.symbolColor }">
                 {{ intentData.symbolCharacter }}
@@ -51,61 +53,34 @@
         <div class="details-container">
           <!-- 基础信息卡片 -->
           <div class="info-card">
-            <h3 class="card-title">基础信息</h3>
+            <h3 class="card-title">Base-Infor</h3>
             <div class="info-grid">
               <div class="info-item">
-                <label>意图键名:</label>
-                <span>{{ intentData.intentKey }}</span>
-              </div>
-              <div class="info-item">
-                <label>意图代码:</label>
-                <span>{{ intentData.intentCode }}</span>
-              </div>
-              <div class="info-item">
-                <label>意图分类:</label>
                 <span class="category-badge">{{ intentData.intentCategory }}</span>
               </div>
               <div class="info-item">
-                <label>阿拉伯语名称:</label>
-                <span>{{ intentData.intentNameAr }}</span>
+                <span>{{ intentData.intentKey }}</span>
+              </div>
+              <div class="info-item">
+                <span>{{ intentData.intentCode }}</span>
+              </div>
+              <div class="info-item">
+                <span>{{ intentData.intentNameEn }}</span>
               </div>
             </div>
           </div>
 
           <!-- 情感属性卡片 -->
           <div class="info-card">
-            <h3 class="card-title">情感属性</h3>
+            <h3 class="card-title">Emotional Attributes</h3>
             <div class="info-grid">
               <div class="info-item">
-                <label>主要情感-中文:</label>
-                <span>{{ intentData.primaryEmotionZh }} </span>
-              </div>
-              <div class="info-item">
-                <label>主要情感-英文:</label>
                 <span>{{ intentData.primaryEmotionEn }}</span>
               </div>
               <div class="info-item">
-                <label>阿拉伯语主要情感:</label>
-                <span>{{ intentData.primaryEmotionAr }}</span>
-              </div>
-              <div class="info-item">
-                <label>次要情感:</label>
-                <span>{{ intentData.secondaryEmotionsZh }}</span>
-              </div>
-              <div class="info-item">
-                <label>英文次要情感:</label>
-                <span>{{ intentData.secondaryEmotionsEn }}</span>
-              </div>
-              <div class="info-item">
-                <label>阿拉伯语次要情感:</label>
-                <span>{{ intentData.secondaryEmotionsAr }}</span>
-              </div>
-              <div class="info-item">
-                <label>情感方向:</label>
                 <span>{{ intentData.emotionalDirection }}</span>
               </div>
               <div class="info-item">
-                <label>情感频率:</label>
                 <span>{{ intentData.emotionalFrequency }}</span>
               </div>
             </div>
@@ -113,29 +88,25 @@
 
           <!-- 象征属性卡片 -->
           <div class="info-card">
-            <h3 class="card-title">象征属性</h3>
+            <h3 class="card-title">Symbolic Attributes</h3>
             <div class="info-grid">
               <div class="info-item">
-                <label>象征字符:</label>
                 <span class="symbol-large">{{ intentData.symbolCharacter }}</span>
               </div>
               <div class="info-item">
-                <label>象征颜色:</label>
                 <div class="color-display">
                   <span>{{ intentData.symbolColor }}</span>
                   <div class="color-sample" :style="{ background: intentData.symbolColor }"></div>
                 </div>
               </div>
               <div class="info-item full-width">
-                <label>渐变色系:</label>
                 <span>{{ intentData.symbolColorGradient }}</span>
               </div>
             </div>
           </div>
-
           <!-- 在象征属性卡片后新增 -->
           <div class="info-card full-width">
-            <h3 class="card-title">实用属性描述</h3>
+            <h3 class="card-title">Life Guidance</h3>
             <div class="language-tabs">
               <button
                 v-for="lang in ['Zh', 'En', 'Ar']"
@@ -143,173 +114,72 @@
                 :class="['tab-button', { active: activeTab === lang }]"
                 @click="activeTab = lang"
               >
-                {{ { Zh: '中文', En: '英文', Ar: '阿拉伯语' }[lang] }}
+                {{ { Zh: 'Chinese', En: 'English', Ar: 'Arabic' }[lang] }}
               </button>
             </div>
             <div class="meaning-content">
               <div class="meaning-item">
-                <strong>人格原型:</strong>
                 <p>{{ activeTab === 'Zh' ? intentData.personalityArchetypeZh : activeTab === 'En' ? intentData.personalityArchetypeEn : intentData.personalityArchetypeAr }}</p>
               </div>
               <div class="meaning-item">
-                <strong>人生指引:</strong>
                 <p>{{ activeTab === 'Zh' ? intentData.lifeGuidanceZh : activeTab === 'En' ? intentData.lifeGuidanceEn : intentData.lifeGuidanceAr }}</p>
               </div>
               <div class="meaning-item">
-                <strong>疗愈属性:</strong>
                 <p>{{ activeTab === 'Zh' ? intentData.healingPropertyZh : activeTab === 'En' ? intentData.healingPropertyEn : intentData.healingPropertyAr }}</p>
               </div>
               <div class="meaning-item">
-                <strong>关系影响:</strong>
                 <p>{{ activeTab === 'Zh' ? intentData.relationshipImpactZh : activeTab === 'En' ? intentData.relationshipImpactEn : intentData.relationshipImpactAr }}</p>
               </div>
               <div class="meaning-item">
-                <strong>职业契合:</strong>
                 <p>{{ activeTab === 'Zh' ? intentData.careerAlignmentZh : activeTab === 'En' ? intentData.careerAlignmentEn : intentData.careerAlignmentAr }}</p>
+              </div>
+              <div class="meaning-item">
+                <p>{{ activeTab === 'Zh' ? intentData.philosophyMeaningZh : activeTab === 'En' ? intentData.philosophyMeaningEn : intentData.philosophyMeaningAr }}</p>
+              </div>
+              <div class="meaning-item">
+                <p>{{ activeTab === 'Zh' ? intentData.culturalSignificanceZh : activeTab === 'En' ? intentData.culturalSignificanceEn : intentData.culturalSignificanceAr }}</p>
+              </div>
+              <div class="meaning-item">
+                <p>{{ activeTab === 'Zh' ? intentData.spiritualMeaningZh : activeTab === 'En' ? intentData.spiritualMeaningEn : intentData.spiritualMeaningAr }}</p>
+              </div>
+              <div class="meaning-item">
+                <p>{{ activeTab === 'Zh' ? intentData.modernInterpretationZh : activeTab === 'En' ? intentData.modernInterpretationEn : intentData.modernInterpretationAr }}</p>
+              </div>
+              <div class="meaning-item">
+                <p>{{ activeTab === 'Zh' ? intentData.metaTitleZh : activeTab === 'En' ? intentData.metaTitleEn : intentData.metaTitleAr }}</p>
+              </div>
+              <div class="meaning-item">
+                <p>{{ activeTab === 'Zh' ? intentData.metaDescriptionZh : activeTab === 'En' ? intentData.metaDescriptionEn : intentData.metaDescriptionAr }}</p>
+              </div>
+              <div class="meaning-item">
+                <p>{{ activeTab === 'Zh' ? intentData.metaKeywordsZh : activeTab === 'En' ? intentData.metaKeywordsEn : intentData.metaKeywordsAr }}</p>
               </div>
             </div>
           </div>
 
-          <!-- 多语言含义卡片 -->
-          <div class="info-card full-width">
-            <h3 class="card-title">哲学文化含义</h3>
-            <div class="language-tabs">
-              <button
-                v-for="lang in ['Zh', 'En', 'Ar']"
-                :key="lang"
-                :class="['tab-button', { active: activeLanguage === lang }]"
-                @click="activeLanguage = lang"
-              >
-                {{ { Zh: '中文', En: '英文', Ar: '阿拉伯语' }[lang] }}
-              </button>
-            </div>
-            <div class="meaning-content">
-              <div class="meaning-item">
-                <strong>哲学含义:</strong>
-                <p>{{ activeLanguage === 'Zh' ? intentData.philosophyMeaningZh : activeLanguage === 'En' ? intentData.philosophyMeaningEn : intentData.philosophyMeaningAr }}</p>
-              </div>
-              <div class="meaning-item">
-                <strong>文化意义:</strong>
-                <p>{{ activeLanguage === 'Zh' ? intentData.culturalSignificanceZh : activeLanguage === 'En' ? intentData.culturalSignificanceEn : intentData.culturalSignificanceAr }}</p>
-              </div>
-              <div class="meaning-item">
-                <strong>灵性意义:</strong>
-                <p>{{ activeLanguage === 'Zh' ? intentData.spiritualMeaningZh : activeLanguage === 'En' ? intentData.spiritualMeaningEn : intentData.spiritualMeaningAr }}</p>
-              </div>
-              <div class="meaning-item">
-                <strong>现代诠释:</strong>
-                <p>{{ activeLanguage === 'Zh' ? intentData.modernInterpretationZh : activeLanguage === 'En' ? intentData.modernInterpretationEn : intentData.modernInterpretationAr }}</p>
-              </div>
-            </div>
-          </div>
 
           <!-- 图片资源卡片 -->
           <div class="info-card full-width">
-            <h3 class="card-title">图片资源</h3>
+            <h3 class="card-title">Picture</h3>
             <div class="image-grid">
               <div class="image-item" v-if="intentData.iconUrl">
                 <img :src="intentData.iconUrl" alt="图标" class="resource-img">
-                <span class="image-label">图标</span>
               </div>
               <div class="image-item" v-if="intentData.symbolImageUrl">
                 <img :src="intentData.symbolImageUrl" alt="象征图" class="resource-img">
-                <span class="image-label">象征图</span>
               </div>
               <div class="image-item" v-if="intentData.energyImageUrl">
                 <img :src="intentData.energyImageUrl" alt="能量图" class="resource-img">
-                <span class="image-label">能量图</span>
               </div>
               <!-- 在图片资源卡片中补充 -->
               <div class="image-item" v-if="intentData.applicationImageUrl">
                 <img :src="intentData.applicationImageUrl" alt="应用场景图" class="resource-img">
-                <span class="image-label">应用场景图</span>
               </div>
               <div class="image-item" v-if="intentData.meditationImageUrl">
                 <img :src="intentData.meditationImageUrl" alt="冥想引导图" class="resource-img">
-                <span class="image-label">冥想引导图</span>
               </div>
               <div class="image-item no-image" v-if="!intentData.iconUrl && !intentData.symbolImageUrl && !intentData.energyImageUrl && !intentData.applicationImageUrl && !intentData.meditationImageUrl">
                 <span>暂无图片资源</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 控制属性卡片 -->
-          <div class="info-card">
-            <h3 class="card-title">控制属性</h3>
-            <div class="status-grid">
-              <div class="status-item" :class="{ active: intentData.isActive === 1 }">
-                <span class="status-dot"></span>
-                <span>状态: {{ intentData.isActive }}</span>
-              </div>
-              <div class="status-item" :class="{ active: intentData.showInNavigation === 1 }">
-                <span class="status-dot"></span>
-                <span>导航显示: {{ intentData.showInNavigation }}</span>
-              </div>
-              <div class="status-item" :class="{ active: intentData.showInFilter === 1 }">
-                <span class="status-dot"></span>
-                <span>筛选显示: {{ intentData.showInFilter }}</span>
-              </div>
-              <div class="status-item" :class="{ active: intentData.isFeatured === 1 }">
-                <span class="status-dot"></span>
-                <span>推荐: {{ intentData.isFeatured }}</span>
-              </div>
-              <!-- 在现有的控制属性卡片中补充 -->
-              <div class="status-item">
-                <span class="status-dot"></span>
-                <span>排序值: {{ intentData.sortOrder }}</span>
-              </div>
-              <div class="status-item">
-                <span class="status-dot"></span>
-                <span>强度等级: {{ intentData.intensityLevel }}</span>
-              </div>
-              <div class="status-item">
-                <span class="status-dot"></span>
-                <span>受欢迎度: {{ intentData.popularityScore }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 在控制属性卡片后新增 -->
-          <div class="info-card full-width">
-            <h3 class="card-title">SEO优化信息</h3>
-            <div class="language-tabs">
-              <button
-                v-for="lang in ['Zh', 'En', 'Ar']"
-                :key="lang"
-                :class="['tab-button', { active: activeSeoTab === lang }]"
-                @click="activeSeoTab = lang"
-              >
-                {{ { Zh: '中文', En: '英文', Ar: '阿拉伯语' }[lang] }}
-              </button>
-            </div>
-            <div class="meaning-content">
-              <div class="meaning-item">
-                <strong>SEO标题:</strong>
-                <p>{{ activeSeoTab === 'Zh' ? intentData.metaTitleZh : activeSeoTab === 'En' ? intentData.metaTitleEn : intentData.metaTitleAr }}</p>
-              </div>
-              <div class="meaning-item">
-                <strong>SEO描述:</strong>
-                <p>{{ activeSeoTab === 'Zh' ? intentData.metaDescriptionZh : activeSeoTab === 'En' ? intentData.metaDescriptionEn : intentData.metaDescriptionAr }}</p>
-              </div>
-              <div class="meaning-item">
-                <strong>SEO关键词:</strong>
-                <p>{{ activeSeoTab === 'Zh' ? intentData.metaKeywordsZh : activeSeoTab === 'En' ? intentData.metaKeywordsEn : intentData.metaKeywordsAr }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- 审计字段卡片 -->
-          <div class="info-card">
-            <h3 class="card-title">审计信息</h3>
-            <div class="info-grid">
-              <div class="info-item">
-                <label>创建时间:</label>
-                <span>{{ intentData.createdTime }}</span>
-              </div>
-              <div class="info-item">
-                <label>更新时间:</label>
-                <span>{{ intentData.updatedTime }}</span>
               </div>
             </div>
           </div>
@@ -319,23 +189,23 @@
 
     <!-- 无数据状态 -->
     <div v-else class="no-data-state">
-      <p>未找到对应的情感意图数据</p>
+      <p>No matching emotional intent data found</p>
     </div>
   </div>
 </template>
 
 <script>
 import { useRoute } from 'vue-router'
+import {Picture} from "@element-plus/icons-vue";
 
 export default {
   name: 'EmotionalIntentDetail',
+  components: {Picture},
 
   data() {
     return {
       // 路由参数
       intentId: '',
-
-      // 情感意图数据（完整映射文档2的所有字段）
       // 情感意图数据（完整映射文档2的所有字段）
       intentData: {
         // ==================== 主键字段 ====================
@@ -478,31 +348,27 @@ export default {
     // 加载情感意图数据 - 仅获取和赋值，不处理数据
     async loadIntentData() {
       try {
-        console.log(`开始请求情感意图数据，ID: ${this.intentId}`)
-
+        //console.log(`开始请求情感意图数据，ID: ${this.intentId}`)
         // 1. 发起请求
         const response = await fetch(`/api/emotional-intent/getByid/${this.intentId}`)
-        console.log("原始响应对象:", response)  // 这是Response对象，不是数据
-
+       // console.log("原始响应对象:", response)  // 这是Response对象，不是数据
         // 2. 检查响应状态
         if (!response.ok) {
           throw new Error(`HTTP错误! 状态: ${response.status}`)
         }
-
         // 3. 解析JSON数据
         const result = await response.json()
-        console.log("解析后的JSON数据:", result)
-
+        //console.log("解析后的JSON数据:", result)
         // 4. 检查数据结构
         if (result && result.data) {
           this.intentData = result.data
-          console.log("成功设置intentData:", this.intentData)
+          //console.log("成功设置intentData:", this.intentData)
         } else {
           throw new Error("返回数据格式不正确，缺少data字段")
         }
 
       } catch (error) {
-        console.error('加载情感意图数据失败:', error)
+        //console.error('加载情感意图数据失败:', error)
         this.error = true
       }
     },

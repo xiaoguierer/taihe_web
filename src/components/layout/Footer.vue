@@ -1,36 +1,36 @@
 <template>
-  <!-- 页脚 -->
+  <!-- Footer -->
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-content">
         <div class="footer-section">
-          <h3>太和珠宝</h3>
-          <a href="#">联系我们</a>
-          <a href="#">品牌故事</a>
-          <a href="#">东方哲学</a>
+          <h3>Taihe Jewelry</h3>
+          <a href="#">Contact Us</a>
+          <a href="#">Brand Story</a>
+          <a href="#">Eastern Philosophy</a>
         </div>
         <div class="footer-section">
-          <h4>客户服务</h4>
-          <a href="#">配送信息</a>
-          <a href="#">退换政策</a>
-          <a href="#">保养指南</a>
+          <h4>Customer Service</h4>
+          <a href="#">Shipping Information</a>
+          <a href="#">Return Policy</a>
+          <a href="#">Care Guide</a>
         </div>
         <div class="footer-section">
-          <h4>关于我们</h4>
-          <a href="#">能量哲学</a>
-          <a href="#">大师团队</a>
-          <a href="#">社会责任</a>
+          <h4>About Us</h4>
+          <a href="#">Energy Philosophy</a>
+          <a href="#">Master Team</a>
+          <a href="#">Social Responsibility</a>
         </div>
         <div class="footer-section">
-          <h4>关注我们</h4>
-          <a href="#">微信</a>
-          <a href="#">微博</a>
-          <a href="#">小红书</a>
+          <h4>Follow Us</h4>
+          <a href="#">WeChat</a>
+          <a href="#">Weibo</a>
+          <a href="#">Little Red Book</a>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>©2026 太和珠宝 版权所有</p>
-        <p>©TAIHE 高端珠宝 | 传承东方美学，演绎玉之雅韵</p>
+        <p>©2026 Taihe Jewelry. All Rights Reserved.</p>
+        <p>©TAIHE High Jewelry | Inheriting Eastern Aesthetics, Interpreting the Elegance of Jade</p>
       </div>
     </div>
   </footer>
