@@ -12,6 +12,9 @@
                 <h1 class="module-title">{{ intent.symbolCharacter }} {{ intent.intentNameEn }}</h1>
                 <div class="content-grid">
                   <div class="content-item">
+                    <p class="content-text strict-text">{{ intent.id }}</p>
+                  </div>
+                  <div class="content-item">
                     <p class="content-text strict-text">{{ intent.primaryEmotionEn }}</p>
                   </div>
                   <div class="content-item">
@@ -87,6 +90,9 @@
                 <h1 class="module-title">{{ intent.symbolCharacter }} {{ intent.intentNameEn }}</h1>
                 <div class="content-grid">
                   <div class="content-item">
+                    <p class="content-text strict-text">{{ intent.id }}</p>
+                  </div>
+                  <div class="content-item">
                     <p class="content-text strict-text">{{ intent.primaryEmotionEn }}</p>
                   </div>
                   <div class="content-item">
@@ -152,6 +158,9 @@
               <div class="text-bottom">
                 <h1 class="module-title">{{ intent.symbolCharacter }} {{ intent.intentNameEn }}</h1>
                 <div class="content-list">
+                  <div class="content-item">
+                    <p class="content-text strict-text">{{ intent.id }}</p>
+                  </div>
                   <div class="content-item">
                     <p class="content-text strict-text">{{ intent.primaryEmotionEn }}</p>
                   </div>
@@ -344,24 +353,20 @@ const handleProductClick = (product) => {
 // API调用方法
 const fetchEmotionalIntents = async () => {
   try {
-    console.info('----------------------开始获取情感意图数据---------------------------...')
+    //console.info('----------------------开始获取情感意图数据---------------------------...')
     const response = await fetch('/api/emotional-intent/list')
-    console.info("获取情感意图 API 数据response:",response)
+   // console.info("获取情感意图 API 数据response:",response)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-
     const result = await response.json()
-    console.info('情感意图API原始响应:', result)
-
+   // console.info('情感意图API原始响应:', result)
     const intentsData = extractDataFromResponse(result)
-
     if (!Array.isArray(intentsData)) {
       throw new Error('情感意图数据格式不正确')
     }
-
     emotionalIntents.value = intentsData.map(preprocessIntentData)
-    console.info('情感意图数据获取成功:', intentsData.length, '条记录')
+  //  console.info('情感意图数据获取成功:', intentsData.length, '条记录')
 
     if (intentsData.length > 0) {
       await fetchAllIntentProducts(intentsData)
@@ -374,27 +379,25 @@ const fetchEmotionalIntents = async () => {
 
 const fetchIntentProducts = async (intentId) => {
   try {
-    console.info('----------------------开始获所属取情感意图SPU数据---------------------------...')
-    console.log(`获取意图 ${intentId} 的商品数据...`)
+    console.log('----------------------开始获所属取情感意图   ${intentId}   SPU数据---------------------------')
+   // console.log(`获取意图 ${intentId} 的商品数据...`)
     // 使用现有正常工作的接口格式
-    const response = await fetch(`/api/product-spu/getRecommendProducts/${intentId}/10`)
+    const response = await fetch(`/api/product-spu/selectProductsByIntentIdIndex/${intentId}/10`)
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
     const result = await response.json()
-    console.log(`意图 ${intentId} 商品API原始响应:`, result)
+   // console.log(`意图 ${intentId} 商品API原始响应:`, result)
 
     const productsData = extractDataFromResponse(result)
-
     if (!Array.isArray(productsData)) {
       console.warn(`意图 ${intentId} 商品数据格式不正确:`, productsData)
       return []
     }
-
     const processedProducts = productsData.map(preprocessProductData)
-    console.log(`意图 ${intentId} 商品数据获取成功:`, processedProducts.length, '个商品')
+    console.log(`----888-----意图 ${intentId} 商品数据获取成功:`, processedProducts.length, '个SPU商品')
     return processedProducts
   } catch (error) {
     console.error(`获取意图 ${intentId} 商品数据失败:`, error)
@@ -476,7 +479,7 @@ const preprocessProductData = (product) => {
     shortDescriptionEn: processText(product.shortDescriptionEn || '', 25),
     mainImageUrl: product.mainImageUrl || DEFAULT_PRODUCT_IMAGE
   }
-  console.log(`商品数据映射: spuId=${product.spuId} -> id=${processedProduct.id}`)
+  //console.log(`商品数据映射: spuId=${product.id} -> id=${processedProduct.id}`)
   return processedProduct
 }
 
