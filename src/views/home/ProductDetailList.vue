@@ -105,6 +105,7 @@
               </div>
 
               <!-- 玄学标签 -->
+
               <div class="metaphysical-tags">
                 <div class="tag-item" v-if="currentSkuElement">
                   <span class="icon">🌍</span>
@@ -210,365 +211,172 @@
                 <div class="info-item" v-if="currentSku.skuCode">
                   <span class="value">{{ currentSku.skuCode }}</span>
                 </div>
-                <!--                <div class="info-item" v-if="currentSku.barCode">-->
-                <!--                  <span class="label">条形码:</span>-->
-                <!--                  <span class="value">{{ currentSku.barCode }}</span>-->
-                <!--                </div>-->
-                <!--                <div class="info-item" v-if="currentSku.modelNumber">-->
-                <!--                  <span class="label">型号:</span>-->
-                <!--                  <span class="value">{{ currentSku.modelNumber }}</span>-->
-                <!--                </div>-->
-                <!--                <div class="info-item" v-if="currentSku.countryOfOrigin">-->
-                <!--                  <span class="label">原产国:</span>-->
-                <!--                  <span class="value">{{ currentSku.countryOfOrigin }}</span>-->
-                <!--                </div>-->
               </div>
             </div>
           </div>
         </div>
       </section>
-      <!-- 第二部分：深度叙事与玄学内涵区 -->
+
+
+      <!-- 第二部分：深度叙事与内涵区 -->
       <section class="narrative-section">
         <div class="section-container">
-          <h2 class="section-title">深度叙事与玄学内涵</h2>
+          <h2 class="section-title">Deep Narrative and Connotation</h2>
           <div class="tab-container">
-            <div class="tab-headers">
-              <div
-                v-for="(tab, index) in tabs"
-                :key="index"
-                class="tab-header"
-                :class="{ active: activeTab === index }"
-                @click="activeTab = index"
-              >
-                {{ tab.title }}
-              </div>
-            </div>
-
             <div class="tab-content">
-              <!-- 能量故事 -->
-              <div v-if="activeTab === 0" class="tab-panel">
-                <h3>这件珠宝的起源</h3>
-
-                <!-- SPU叙事信息 -->
-                <div class="info-block" v-if="productData.spu.designConceptZh">
-                  <h4>🎨 灵感叙事</h4>
-                  <p>{{ productData.spu.designConceptZh }}</p>
-                </div>
-
-                <div class="info-block" v-if="productData.spu.spiritualSignificanceZh">
-                  <h4>💎 宝石寓意</h4>
-                  <p>{{ productData.spu.spiritualSignificanceZh }}</p>
-                </div>
-
-                <div class="info-block" v-if="productData.spu.emotionalPurposeZh">
-                  <h4>❤️ 情感目的</h4>
-                  <p>{{ productData.spu.emotionalPurposeZh }}</p>
-                </div>
-
-                <div class="info-block" v-if="productData.spu.energyPropertiesZh">
-                  <h4>⚡ 能量属性</h4>
-                  <p>{{ productData.spu.energyPropertiesZh }}</p>
-                </div>
-
-                <div class="info-block" v-if="productData.spu.intendedUsageZh">
-                  <h4>🏠 使用场景</h4>
-                  <p>{{ productData.spu.intendedUsageZh }}</p>
-                </div>
-
-                <div class="info-block" v-if="productData.spu.creationStoryZh">
-                  <h4>📖 创作故事</h4>
-                  <p>{{ productData.spu.creationStoryZh }}</p>
-                </div>
-
-                <div class="info-block" v-if="productData.spu.culturalContextZh">
-                  <h4>🌍 文化背景</h4>
-                  <p>{{ productData.spu.culturalContextZh }}</p>
-                </div>
-
-                <div class="info-block" v-if="productData.spu.metaphysicalBenefitsZh">
-                  <h4>✨ 玄学益处</h4>
-                  <p>{{ productData.spu.metaphysicalBenefitsZh }}</p>
-                </div>
-
-                <!-- SKU叙事信息 -->
-                <div class="info-block" v-if="currentSku.variantStoryZh">
-                  <h4>📝 规格故事</h4>
-                  <p>{{ currentSku.variantStoryZh }}</p>
-                </div>
-
-                <div class="info-block" v-if="currentSku.variantYuyiZh">
-                  <h4>💫 规格寓意</h4>
-                  <p>{{ currentSku.variantYuyiZh }}</p>
-                </div>
-
-                <!-- 评分信息 -->
-                <div class="score-section">
-                  <h4>🏆 评分信息</h4>
-                  <div class="scores-grid">
-                    <div class="score-item" v-if="productData.spu.aiDesignScore">
-                      <span class="score-label">AI设计评分:</span>
-                      <span class="score-value">{{ productData.spu.aiDesignScore }}/100</span>
-                    </div>
-
-                    <div class="score-item" v-if="productData.spu.energyScore">
-                      <span class="score-label">能量评分:</span>
-                      <span class="score-value">{{ productData.spu.energyScore }}/10</span>
-                    </div>
-
-                    <div class="score-item" v-if="productData.spu.craftsmanshipScore">
-                      <span class="score-label">工艺评分:</span>
-                      <span class="score-value">{{ productData.spu.craftsmanshipScore }}/10</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               <!-- 工艺与材质 -->
-              <div v-if="activeTab === 1" class="tab-panel">
-                <h3>工艺与材质细节</h3>
-
+              <div class="tab-panel">
                 <div class="specs-categories">
-                  <!-- 基础信息 -->
-                  <div class="spec-category">
-                    <h4>📋 基础信息</h4>
-                    <div class="specs-grid">
-                      <div class="spec-item" v-if="productData.spu.productType">
-                        <span class="spec-label">产品类型:</span>
-                        <span class="spec-value">{{ productData.spu.productType }}</span>
-                      </div>
-                      <div class="spec-item" v-if="productData.spu.style">
-                        <span class="spec-label">风格:</span>
-                        <span class="spec-value">{{ productData.spu.style }}</span>
-                      </div>
-                      <div class="spec-item" v-if="productData.spu.theme">
-                        <span class="spec-label">主题:</span>
-                        <span class="spec-value">{{ productData.spu.theme }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.variantType">
-                        <span class="spec-label">规格类型:</span>
-                        <span class="spec-value">{{ currentSku.variantType }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.variantValue">
-                        <span class="spec-label">规格值:</span>
-                        <span class="spec-value">{{ currentSku.variantValue }}</span>
-                      </div>
-                    </div>
-                  </div>
-
                   <!-- 宝石信息 -->
                   <div class="spec-category">
-                    <h4>💎 宝石信息</h4>
                     <div class="specs-grid">
                       <div class="spec-item" v-if="currentSku.gemstoneType">
-                        <span class="spec-label">宝石类型:</span>
                         <span class="spec-value">{{ currentSku.gemstoneType }}</span>
                       </div>
                       <div class="spec-item" v-if="currentSku.gemstoneWeightCt">
-                        <span class="spec-label">宝石重量:</span>
-                        <span class="spec-value">{{ currentSku.gemstoneWeightCt }}克拉</span>
+                        <span class="spec-value">{{ currentSku.gemstoneWeightCt }}</span>
                       </div>
                       <div class="spec-item" v-if="currentSku.gemstoneCut">
-                        <span class="spec-label">切割工艺:</span>
                         <span class="spec-value">{{ currentSku.gemstoneCut }}</span>
                       </div>
                       <div class="spec-item" v-if="currentSku.gemstoneQuality">
-                        <span class="spec-label">宝石品质:</span>
                         <span class="spec-value">{{ currentSku.gemstoneQuality }}</span>
                       </div>
-                      <div class="spec-item" v-if="currentSku.gemstoneColor">
-                        <span class="spec-label">宝石颜色:</span>
-                        <span class="spec-value">{{ currentSku.gemstoneColor }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.gemstoneClarity">
-                        <span class="spec-label">宝石净度:</span>
-                        <span class="spec-value">{{ currentSku.gemstoneClarity }}</span>
-                      </div>
                       <div class="spec-item" v-if="currentSku.gemstoneShape">
-                        <span class="spec-label">宝石形状:</span>
                         <span class="spec-value">{{ currentSku.gemstoneShape }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.gemstoneTreatment">
-                        <span class="spec-label">宝石处理:</span>
-                        <span class="spec-value">{{ currentSku.gemstoneTreatment }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.gemstoneOrigin">
-                        <span class="spec-label">宝石产地:</span>
-                        <span class="spec-value">{{ currentSku.gemstoneOrigin }}</span>
                       </div>
                     </div>
                   </div>
-
                   <!-- 金属信息 -->
                   <div class="spec-category">
-                    <h4>⚱️ 金属信息</h4>
                     <div class="specs-grid">
                       <div class="spec-item" v-if="currentSku.primaryMaterial">
-                        <span class="spec-label">主要材质:</span>
                         <span class="spec-value">{{ currentSku.primaryMaterial }}</span>
                       </div>
                       <div class="spec-item" v-if="currentSku.metalWeightG">
-                        <span class="spec-label">金属重量:</span>
-                        <span class="spec-value">{{ currentSku.metalWeightG }}克</span>
+                        <span class="spec-value">{{ currentSku.metalWeightG }}</span>
                       </div>
                       <div class="spec-item" v-if="currentSku.materialFinish">
-                        <span class="spec-label">表面处理:</span>
                         <span class="spec-value">{{ currentSku.materialFinish }}</span>
                       </div>
                       <div class="spec-item" v-if="currentSku.settingTechnique">
-                        <span class="spec-label">镶嵌技术:</span>
                         <span class="spec-value">{{ currentSku.settingTechnique }}</span>
                       </div>
-                      <div class="spec-item" v-if="currentSku.metalPurity">
-                        <span class="spec-label">金属纯度:</span>
-                        <span class="spec-value">{{ currentSku.metalPurity }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.metalColor">
-                        <span class="spec-label">金属颜色:</span>
-                        <span class="spec-value">{{ currentSku.metalColor }}</span>
-                      </div>
                     </div>
                   </div>
-
                   <!-- 尺寸信息 -->
                   <div class="spec-category">
-                    <h4>📏 尺寸信息</h4>
                     <div class="specs-grid">
                       <div class="spec-item" v-if="currentSku.chainLengthCm">
-                        <span class="spec-label">链长:</span>
-                        <span class="spec-value">{{ currentSku.chainLengthCm }}厘米</span>
+                        <span class="spec-value">{{ currentSku.chainLengthCm }}CM</span>
                       </div>
                       <div class="spec-item" v-if="currentSku.pendantSizeMm">
-                        <span class="spec-label">吊坠尺寸:</span>
-                        <span class="spec-value">{{ currentSku.pendantSizeMm }}毫米</span>
+                        <span class="spec-value">{{ currentSku.pendantSizeMm }}</span>
                       </div>
                       <div class="spec-item" v-if="currentSku.totalWeightG">
-                        <span class="spec-label">总重量:</span>
-                        <span class="spec-value">{{ currentSku.totalWeightG }}克</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.ringSize">
-                        <span class="spec-label">戒圈尺寸:</span>
-                        <span class="spec-value">{{ currentSku.ringSize }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.lengthMm">
-                        <span class="spec-label">长度:</span>
-                        <span class="spec-value">{{ currentSku.lengthMm }}毫米</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.widthMm">
-                        <span class="spec-label">宽度:</span>
-                        <span class="spec-value">{{ currentSku.widthMm }}毫米</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.heightMm">
-                        <span class="spec-label">高度:</span>
-                        <span class="spec-value">{{ currentSku.heightMm }}毫米</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- 技术信息 -->
-                  <div class="spec-category">
-                    <h4>🔧 技术信息</h4>
-                    <div class="specs-grid">
-                      <div class="spec-item" v-if="currentSku.certificationType">
-                        <span class="spec-label">认证类型:</span>
-                        <span class="spec-value">{{ currentSku.certificationType }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.certificationNumber">
-                        <span class="spec-label">认证编号:</span>
-                        <span class="spec-value">{{ currentSku.certificationNumber }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.careInstructions">
-                        <span class="spec-label">保养说明:</span>
-                        <span class="spec-value">{{ currentSku.careInstructions }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.waterResistance">
-                        <span class="spec-label">防水等级:</span>
-                        <span class="spec-value">{{ currentSku.waterResistance }}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- 功能属性 -->
-                  <div class="spec-category">
-                    <h4>✨ 功能属性</h4>
-                    <div class="specs-grid">
-                      <div class="spec-item" v-if="currentSku.specialFeature">
-                        <span class="spec-label">特色功能:</span>
-                        <span class="spec-value">{{ currentSku.specialFeature }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.energyAttribute">
-                        <span class="spec-label">能量属性:</span>
-                        <span class="spec-value">{{ currentSku.energyAttribute }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.healingProperty">
-                        <span class="spec-label">疗愈属性:</span>
-                        <span class="spec-value">{{ currentSku.healingProperty }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.astrologicalAssociation">
-                        <span class="spec-label">星座关联:</span>
-                        <span class="spec-value">{{ currentSku.astrologicalAssociation }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.chakraAlignment">
-                        <span class="spec-label">脉轮对应:</span>
-                        <span class="spec-value">{{ currentSku.chakraAlignment }}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- 商业信息 -->
-                  <div class="spec-category">
-                    <h4>💰 商业信息</h4>
-                    <div class="specs-grid">
-                      <div class="spec-item" v-if="currentSku.costPrice">
-                        <span class="spec-label">成本价:</span>
-                        <span class="spec-value">${{ formatPrice(currentSku.costPrice) }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.retailPrice">
-                        <span class="spec-label">零售价:</span>
-                        <span class="spec-value">${{ formatPrice(currentSku.retailPrice) }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.finalPrice">
-                        <span class="spec-label">最终价:</span>
-                        <span class="spec-value">${{ formatPrice(currentSku.finalPrice) }}</span>
-                      </div>
-                      <div class="spec-item" v-if="currentSku.taxRate">
-                        <span class="spec-label">税率:</span>
-                        <span class="spec-value">{{ currentSku.taxRate }}%</span>
+                        <span class="spec-value">{{ currentSku.totalWeightG }}g</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- 专属推荐 -->
-              <div v-if="activeTab === 2" class="tab-panel">
-                <h3>您的专属能量搭配建议</h3>
 
-                <div class="recommendations">
-                  <div class="recommendation-item" v-if="currentSkuElement">
-                    <h4>能量搭配</h4>
-                    <p>根据{{ currentSkuElement }}元素特性，建议搭配水元素饰品增强流动性。</p>
-                  </div>
+              <div class="tab-panel">
+                <div class="info-block">
+                  <img
+                    v-if="productData.spu.mainImageUrl"
+                    :src="productData.spu.mainImageUrl"
+                  >
+                </div>
+                <!-- SPU叙事信息 -->
+                <div class="info-block" v-if="productData.spu.primaryElement">
+                  <p>{{ productData.spu.primaryElement }}</p>
+                </div>
+                <div class="info-block" v-if="productData.spu.elementCombination">
+                  <p>{{ productData.spu.elementCombination }}</p>
+                </div>
+<!--                <div class="info-block" v-if="productData.spu.materialStandards">-->
+<!--                  <p>{{ productData.spu.materialStandards }}</p>-->
+<!--                </div>-->
+                <div class="info-block">
+                  <img
+                    v-if="productData.spu.designImageUrl"
+                    :src="productData.spu.designImageUrl"
+                  >
+                </div>
+<!--                <div class="info-block" v-if="productData.spu.craftsmanshipStandards">-->
+<!--                  <p>{{ productData.spu.craftsmanshipStandards }}</p>-->
+<!--                </div>-->
+<!--                <div class="info-block" v-if="productData.spu.qualityStandards">-->
+<!--                  <p>{{ productData.spu.qualityStandards }}</p>-->
+<!--                </div>-->
+                <div class="info-block" v-if="productData.spu.productionGuidelinesEn">
+                  <p>{{ productData.spu.productionGuidelinesEn }}</p>
+                </div>
+                <img
+                  v-if="productData.spu.prototypeImageUrl"
+                  :src="productData.spu.prototypeImageUrl"
+                >
+                <div class="info-block" v-if="productData.spu.productNameEn">
+                  <p>{{ productData.spu.productNameEn }}</p>
+                </div>
+                <div class="info-block" v-if="productData.spu.shortDescriptionEn">
+                  <p>{{ productData.spu.shortDescriptionEn }}</p>
+                </div>
+                <div class="info-block" v-if="productData.spu.fullDescriptionEn">
+                  <p>{{ productData.spu.fullDescriptionEn }}</p>
+                </div>
+                <div class="info-block">
+                  <img
+                    v-if="productData.spu.conceptImageUrl"
+                    :src="productData.spu.conceptImageUrl"
+                  >
+                </div>
+                <div class="info-block" v-if="productData.spu.designConceptEn">
+                  <p>{{ productData.spu.designConceptEn }}</p>
+                </div>
+                <div class="info-block" v-if="productData.spu.intendedUsageEn">
+                  <p>{{ productData.spu.intendedUsageEn }}</p>
+                </div>
+                <div class="info-block" v-if="productData.spu.emotionalPurposeEn">
+                  <p>{{ productData.spu.emotionalPurposeEn }}</p>
+                </div>
+                <div class="info-block">
+                  <img
+                    v-if="productData.spu.usageImageUrl"
+                    :src="productData.spu.usageImageUrl"
+                  >
+                </div>
+                <div class="info-block" v-if="productData.spu.spiritualSignificanceEn">
+                  <p>{{ productData.spu.spiritualSignificanceEn }}</p>
+                </div>
+                <div class="info-block" v-if="productData.spu.energyPropertiesEn">
+                  <p>{{ productData.spu.energyPropertiesEn }}</p>
+                </div>
 
-                  <div class="recommendation-item" v-if="currentSku.suitableGender">
-                    <h4>适合人群</h4>
-                    <p>{{ getGenderText(currentSku.suitableGender) }}，年龄{{
-                        currentSku.suitableAgeMin
-                      }}-{{ currentSku.suitableAgeMax }}岁</p>
-                  </div>
-
-                  <div class="recommendation-item" v-if="productData.spu.productionLeadTime">
-                    <h4>制作周期</h4>
-                    <p>预计{{ productData.spu.productionLeadTime }}天完成制作</p>
-                  </div>
-
-                  <div class="recommendation-item" v-if="currentSku.specialFeature">
-                    <h4>特色功能</h4>
-                    <p>{{ currentSku.specialFeature }}</p>
-                  </div>
-
-                  <div class="recommendation-item" v-if="currentSku.energyAttribute">
-                    <h4>能量属性</h4>
-                    <p>{{ currentSku.energyAttribute }}</p>
+                <div class="info-block" v-if="productData.spu.metaTitleEn">
+                  <p>{{ productData.spu.metaTitleEn }}</p>
+                </div>
+                <div class="info-block" v-if="productData.spu.metaDescriptionEn">
+                  <p>{{ productData.spu.metaDescriptionEn }}</p>
+                </div>
+                <div class="info-block" v-if="productData.spu.metaKeywordsEn">
+                  <p>{{ productData.spu.metaKeywordsEn }}</p>
+                </div>
+                <div class="info-block">
+                  <img
+                    v-if="productData.spu.technicalImageUrl"
+                    :src="productData.spu.technicalImageUrl"
+                  >
+                </div>
+                <!-- 评分信息 -->
+                <div class="score-section">
+                  <h4>Sorts 🏆</h4>
+                  <div class="scores-grid">
+                    <div class="score-item" v-if="productData.spu.aiDesignScore">
+                      <span class="score-value">{{ productData.spu.aiDesignScore }}/100</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -576,269 +384,122 @@
           </div>
         </div>
       </section>
-      <!-- 第三部分：建立信任与社群证明区 -->
-      <section class="trust-section">
+
+      <!-- 第三部分：五行叙事信息 -->
+      <section class="narrative-section">
         <div class="section-container">
-          <!-- 品质保障 -->
-          <div class="quality-standards" v-if="hasQualityData">
-            <h2 class="section-title">品质保障</h2>
-            <div class="standards-list">
-              <div class="standard-item" v-if="qualityData.warranty_period">
-                <span class="icon">🛡️</span>
-                <span>质保期限: {{ qualityData.warranty_period }}</span>
-              </div>
-              <div class="standard-item" v-if="qualityData.quality_grade">
-                <span class="icon">⭐</span>
-                <span>品质等级: {{ qualityData.quality_grade }}</span>
-              </div>
-              <div class="standard-item" v-if="qualityData.certification_required">
-                <span class="icon">📋</span>
-                <span>认证要求: {{ qualityData.certification_required ? '是' : '否' }}</span>
-              </div>
-              <div class="standard-item" v-if="qualityData.inspection_standard">
-                <span class="icon">🔍</span>
-                <span>检验标准: {{ qualityData.inspection_standard }}</span>
-              </div>
-              <div class="standard-item" v-if="qualityData.safety_standard">
-                <span class="icon">⚠️</span>
-                <span>安全标准: {{ qualityData.safety_standard }}</span>
-              </div>
-              <div class="standard-item" v-if="qualityData.environmental_standard">
-                <span class="icon">🌱</span>
-                <span>环保标准: {{ qualityData.environmental_standard }}</span>
-              </div>
-            </div>
-          </div>
+          <h2 class="section-title">Five Elements Attribute Details</h2>
+          <div class="tab-container"  v-if="wuxingList && wuxingList.length > 0">
+            <div class="tab-content"  v-for="(wuxing, index) in wuxingList" :key="wuxing.id || index">
+              <div class="tab-panel">
+                <div class="info-block">
+                  <img
+                    v-if="wuxing.energyFlowImageUrl"
+                    :src="wuxing.energyFlowImageUrl"
+                  >
+                </div>
+                <div class="info-block" v-if="wuxing.elementNameEn">
+                  <span>{{ wuxing.elementNameEn }}</span>
+                </div>
 
-          <!-- 保修信息 -->
-          <div class="warranty-info" v-if="productData.spu.warrantyInfo || currentSku.warrantyPeriod">
-            <h2 class="section-title">保修服务</h2>
-            <div class="warranty-details">
-              <div class="warranty-item" v-if="productData.spu.warrantyInfo">
-                <span class="icon">📄</span>
-                <span>保修说明: {{ productData.spu.warrantyInfo }}</span>
-              </div>
-              <div class="warranty-item" v-if="currentSku.warrantyPeriod">
-                <span class="icon">⏱️</span>
-                <span>保修期限: {{ currentSku.warrantyPeriod }}</span>
-              </div>
-              <div class="warranty-item" v-if="productData.spu.warrantyType">
-                <span class="icon">🔧</span>
-                <span>保修类型: {{ productData.spu.warrantyType }}</span>
-              </div>
-              <div class="warranty-item" v-if="productData.spu.warrantyCoverage">
-                <span class="icon">📊</span>
-                <span>保修范围: {{ productData.spu.warrantyCoverage }}</span>
-              </div>
-            </div>
-          </div>
+                <div class="info-block" v-if="wuxing.artisticExpressionEn">
+                  <span> {{ wuxing.artisticExpressionEn }}</span>
+                </div>
+                <div class="info-block" v-if="wuxing.changePrincipleEn">
+                  <span>{{ wuxing.changePrincipleEn }}</span>
+                </div>
 
-          <!-- 退换政策 -->
-          <div class="return-policy" v-if="productData.spu.returnPolicy || currentSku.returnDays">
-            <h2 class="section-title">退换政策</h2>
-            <div class="policy-details">
-              <div class="policy-item" v-if="productData.spu.returnPolicy">
-                <span class="icon">🔄</span>
-                <span>退换政策: {{ productData.spu.returnPolicy }}</span>
-              </div>
-              <div class="policy-item" v-if="currentSku.returnDays">
-                <span class="icon">📅</span>
-                <span>退换天数: {{ currentSku.returnDays }}天</span>
-              </div>
-              <div class="policy-item" v-if="productData.spu.refundPolicy">
-                <span class="icon">💳</span>
-                <span>退款政策: {{ productData.spu.refundPolicy }}</span>
-              </div>
-              <div class="policy-item" v-if="productData.spu.exchangePolicy">
-                <span class="icon">🔄</span>
-                <span>换货政策: {{ productData.spu.exchangePolicy }}</span>
-              </div>
-            </div>
-          </div>
+                <div class="info-block" v-if="wuxing.cosmologyMeaningEn">
+                  <span> {{ wuxing.cosmologyMeaningEn }}</span>
+                  <div class="info-block">
+                    <img
+                      v-if="wuxing.symbolIconUrl"
+                      :src="wuxing.symbolIconUrl"
+                    >
+                  </div>
+                </div>
+                <div class="info-block" v-if="wuxing.culturalSymbolismEn">
+                  <span>{{ wuxing.culturalSymbolismEn }}</span>
+                </div>
+                <div class="info-block" v-if="wuxing.energyEssenceEn">
+                  <span> {{ wuxing.energyEssenceEn }}</span>
+                </div>
+                <div class="info-block" v-if="wuxing.energyManifestationEn">
+                  <span>{{ wuxing.energyManifestationEn }}</span>
+                </div>
 
-          <!-- 配送信息 -->
-          <div class="shipping-info" v-if="hasShippingInfo">
-            <h2 class="section-title">配送信息</h2>
-            <div class="shipping-details">
-              <div class="shipping-item" v-if="currentSku.shippingWeightKg">
-                <span class="icon">⚖️</span>
-                <span>运输重量: {{ currentSku.shippingWeightKg }}kg</span>
-              </div>
-              <div class="shipping-item" v-if="currentSku.deliveryTimeDays">
-                <span class="icon">🚚</span>
-                <span>配送时间: {{ currentSku.deliveryTimeDays }}天</span>
-              </div>
-              <div class="shipping-item" v-if="currentSku.shippingCost">
-                <span class="icon">💰</span>
-                <span>运费: ${{ formatPrice(currentSku.shippingCost) }}</span>
-              </div>
-              <div class="shipping-item" v-if="currentSku.freeShippingThreshold">
-                <span class="icon">🎁</span>
-                <span>包邮门槛: ${{ formatPrice(currentSku.freeShippingThreshold) }}</span>
-              </div>
-              <div class="shipping-item" v-if="currentSku.shippingMethod">
-                <span class="icon">📦</span>
-                <span>配送方式: {{ currentSku.shippingMethod }}</span>
-              </div>
-              <div class="shipping-item" v-if="currentSku.shippingCarrier">
-                <span class="icon">🏢</span>
-                <span>承运商: {{ currentSku.shippingCarrier }}</span>
-              </div>
-            </div>
-          </div>
+                <div class="info-block" v-if="wuxing.healingPropertyEn">
+                  <span> {{ wuxing.healingPropertyEn }}</span>
+                </div>
+                <div class="info-block" v-if="wuxing.historicalReferenceEn">
+                  <span>{{ wuxing.historicalReferenceEn }}</span>
+                </div>
 
-          <!-- 供应商信息 -->
-          <div class="supplier-info" v-if="hasSupplierInfo">
-            <h2 class="section-title">供应商信息</h2>
-            <div class="supplier-details">
-              <div class="supplier-item" v-if="currentSku.supplierCode">
-                <span class="icon">🏷️</span>
-                <span>供应商编码: {{ currentSku.supplierCode }}</span>
-              </div>
-              <div class="supplier-item" v-if="currentSku.supplierName">
-                <span class="icon">🏢</span>
-                <span>供应商名称: {{ currentSku.supplierName }}</span>
-              </div>
-              <div class="supplier-item" v-if="currentSku.manufacturer">
-                <span class="icon">🏭</span>
-                <span>制造商: {{ currentSku.manufacturer }}</span>
-              </div>
-              <div class="supplier-item" v-if="currentSku.manufacturerCountry">
-                <span class="icon">🌍</span>
-                <span>生产国: {{ currentSku.manufacturerCountry }}</span>
-              </div>
-              <div class="supplier-item" v-if="currentSku.manufacturerAddress">
-                <span class="icon">📍</span>
-                <span>生产地址: {{ currentSku.manufacturerAddress }}</span>
-              </div>
-              <div class="supplier-item" v-if="currentSku.manufacturerContact">
-                <span class="icon">📞</span>
-                <span>联系方式: {{ currentSku.manufacturerContact }}</span>
-              </div>
-            </div>
-          </div>
+                <div class="info-block" v-if="wuxing.lifePhilosophyEn">
+                  <span> {{ wuxing.lifePhilosophyEn }}</span>
+                </div>
+                <div class="info-block" v-if="wuxing.mythologicalAssociationEn">
+                  <span>{{ wuxing.mythologicalAssociationEn }}</span>
+                </div>
+                <div class="info-block">
+                  <img
+                    v-if="wuxing.symbolIconUrl"
+                    :src="wuxing.symbolIconUrl"
+                  >
+                </div>
+                <div class="info-block" v-if="wuxing.personalityArchetypeEn">
+                  <span> {{ wuxing.personalityArchetypeEn }}</span>
+                </div>
+                <div class="info-block" v-if="wuxing.philosophyMeaningEn">
+                  <span>{{ wuxing.philosophyMeaningEn }}</span>
+                </div>
 
-          <!-- 包装信息 -->
-          <div class="packaging-info" v-if="hasPackagingInfo">
-            <h2 class="section-title">包装信息</h2>
-            <div class="packaging-details">
-              <div class="packaging-item" v-if="currentSku.packagingType">
-                <span class="icon">🎁</span>
-                <span>包装类型: {{ currentSku.packagingType }}</span>
-              </div>
-              <div class="packaging-item" v-if="currentSku.packagingMaterial">
-                <span class="icon">📦</span>
-                <span>包装材料: {{ currentSku.packagingMaterial }}</span>
-              </div>
-              <div class="packaging-item" v-if="currentSku.packagingWeightG">
-                <span class="icon">⚖️</span>
-                <span>包装重量: {{ currentSku.packagingWeightG }}克</span>
-              </div>
-              <div class="packaging-item" v-if="currentSku.packagingDimensions">
-                <span class="icon">📐</span>
-                <span>包装尺寸: {{ currentSku.packagingDimensions }}</span>
-              </div>
-              <div class="packaging-item" v-if="currentSku.giftWrappingAvailable">
-                <span class="icon">🎀</span>
-                <span>礼品包装: {{ currentSku.giftWrappingAvailable ? '支持' : '不支持' }}</span>
-              </div>
-              <div class="packaging-item" v-if="currentSku.giftMessageAvailable">
-                <span class="icon">💌</span>
-                <span>礼品留言: {{ currentSku.giftMessageAvailable ? '支持' : '不支持' }}</span>
-              </div>
-            </div>
-          </div>
+                <div class="info-block" v-if="wuxing.relationshipMeaningEn">
+                  <span> {{ wuxing.relationshipMeaningEn }}</span>
+                </div>
+                <div class="info-block" v-if="wuxing.spiritualMeaningEn">
+                  <span>{{ wuxing.spiritualMeaningEn }}</span>
+                </div>
 
-          <!-- 合规信息 -->
-          <div class="compliance-info" v-if="hasComplianceInfo">
-            <h2 class="section-title">合规信息</h2>
-            <div class="compliance-details">
-              <div class="compliance-item" v-if="currentSku.complianceCertification">
-                <span class="icon">📜</span>
-                <span>合规认证: {{ currentSku.complianceCertification }}</span>
-              </div>
-              <div class="compliance-item" v-if="currentSku.safetyCertification">
-                <span class="icon">⚠️</span>
-                <span>安全认证: {{ currentSku.safetyCertification }}</span>
-              </div>
-              <div class="compliance-item" v-if="currentSku.environmentalCertification">
-                <span class="icon">🌱</span>
-                <span>环保认证: {{ currentSku.environmentalCertification }}</span>
-              </div>
-              <div class="compliance-item" v-if="currentSku.industryStandard">
-                <span class="icon">🏭</span>
-                <span>行业标准: {{ currentSku.industryStandard }}</span>
-              </div>
-              <div class="compliance-item" v-if="currentSku.regulatoryApproval">
-                <span class="icon">✅</span>
-                <span>监管批准: {{ currentSku.regulatoryApproval }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 其他技术信息 -->
-          <div class="technical-info" v-if="hasTechnicalInfo">
-            <h2 class="section-title">技术信息</h2>
-            <div class="technical-details">
-              <div class="technical-item" v-if="currentSku.hardness">
-                <span class="icon">💎</span>
-                <span>硬度: {{ currentSku.hardness }}</span>
-              </div>
-              <div class="technical-item" v-if="currentSku.durability">
-                <span class="icon">🔨</span>
-                <span>耐久性: {{ currentSku.durability }}</span>
-              </div>
-              <div class="technical-item" v-if="currentSku.materialComposition">
-                <span class="icon">🧪</span>
-                <span>材料成分: {{ currentSku.materialComposition }}</span>
-              </div>
-              <div class="technical-item" v-if="currentSku.manufacturingProcess">
-                <span class="icon">⚙️</span>
-                <span>制造工艺: {{ currentSku.manufacturingProcess }}</span>
-              </div>
-              <div class="technical-item" v-if="currentSku.qualityControl">
-                <span class="icon">🔍</span>
-                <span>质量控制: {{ currentSku.qualityControl }}</span>
-              </div>
-              <div class="technical-item" v-if="currentSku.testingMethod">
-                <span class="icon">🧪</span>
-                <span>测试方法: {{ currentSku.testingMethod }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 时间戳信息 -->
-          <div class="timestamp-info" v-if="hasTimestampInfo">
-            <h2 class="section-title">时间信息</h2>
-            <div class="timestamp-details">
-              <div class="timestamp-item" v-if="productData.spu.creationDate">
-                <span class="icon">📅</span>
-                <span>创建日期: {{ formatDate(productData.spu.creationDate) }}</span>
-              </div>
-              <div class="timestamp-item" v-if="productData.spu.updateDate">
-                <span class="icon">🔄</span>
-                <span>更新日期: {{ formatDate(productData.spu.updateDate) }}</span>
-              </div>
-              <div class="timestamp-item" v-if="productData.spu.releaseDate">
-                <span class="icon">🚀</span>
-                <span>发布日期: {{ formatDate(productData.spu.releaseDate) }}</span>
-              </div>
-              <div class="timestamp-item" v-if="currentSku.manufactureDate">
-                <span class="icon">🏭</span>
-                <span>生产日期: {{ formatDate(currentSku.manufactureDate) }}</span>
-              </div>
-              <div class="timestamp-item" v-if="currentSku.expirationDate">
-                <span class="icon">⏰</span>
-                <span>保质期: {{ formatDate(currentSku.expirationDate) }}</span>
-              </div>
-              <div class="timestamp-item" v-if="currentSku.shelfLifeDays">
-                <span class="icon">📆</span>
-                <span>保质天数: {{ currentSku.shelfLifeDays }}天</span>
+                <div class="info-block" v-if="wuxing.lifePhilosophyEn">
+                  <span> {{ wuxing.lifePhilosophyEn }}</span>
+                </div>
+                <div class="info-block" v-if="wuxing.mythologicalAssociationEn">
+                  <span>{{ wuxing.mythologicalAssociationEn }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
+      <!-- ------------------ -->
+<!--      <section class="trust-section">-->
+<!--        <div class="section-container">-->
+<!--          &lt;!&ndash; 保修信息 &ndash;&gt;-->
+<!--          <div class="warranty-info" v-if="productData.spu.warrantyInfo || currentSku.warrantyPeriod">-->
+<!--            <h2 class="section-title">保修服务</h2>-->
+<!--            <div class="warranty-details">-->
+<!--              <div class="warranty-item" v-if="productData.spu.warrantyInfo">-->
+<!--                <span class="icon">📄</span>-->
+<!--                <span>保修说明: {{ productData.spu.warrantyInfo }}</span>-->
+<!--              </div>-->
+<!--              <div class="warranty-item" v-if="currentSku.warrantyPeriod">-->
+<!--                <span class="icon">⏱️</span>-->
+<!--                <span>保修期限: {{ currentSku.warrantyPeriod }}</span>-->
+<!--              </div>-->
+<!--              <div class="warranty-item" v-if="productData.spu.warrantyType">-->
+<!--                <span class="icon">🔧</span>-->
+<!--                <span>保修类型: {{ productData.spu.warrantyType }}</span>-->
+<!--              </div>-->
+<!--              <div class="warranty-item" v-if="productData.spu.warrantyCoverage">-->
+<!--                <span class="icon">📊</span>-->
+<!--                <span>保修范围: {{ productData.spu.warrantyCoverage }}</span>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </section>-->
+
     </div>
   </div>
 </template>
@@ -873,10 +534,18 @@ const tabs = [
 const skuList = computed(() => {
   return productData.value?.sku?.data || productData.value?.sku || []
 })
-
 const currentSku = computed(() => {
   return skuList.value[currentSkuIndex.value] || {}
 })
+
+const wuxingList = computed(() => {
+  return productData.value?.wuxing?.data || productData.value?.wuxing || []
+})
+
+const currentWuxing = computed(() => {
+  return wuxingList.value[currentWuxing.value] || {}
+})
+
 // 图片列表计算 - 不去重版本
 const imageList = computed(() => {
   if (!currentSku.value) return []
@@ -1008,9 +677,10 @@ const fetchProductData = async () => {
     }
 
     // 并行请求SPU和SKU数据
-    const [spuResponse, skuResponse] = await Promise.all([
+    const [spuResponse, skuResponse, wuxingResponse] = await Promise.all([
       fetch(`/api/product-spu/getByid/${productId}`),
-      fetch(`/api/product-sku/spu/${productId}`)
+      fetch(`/api/product-sku/spu/${productId}`),
+      fetch(`/api/wu-xing-attributes/selectBySpuID/${productId}`)
     ])
 
     if (!spuResponse.ok) {
@@ -1019,34 +689,177 @@ const fetchProductData = async () => {
     if (!skuResponse.ok) {
       throw new Error(`SKU数据获取失败: ${skuResponse.status}`)
     }
+    if (!wuxingResponse.ok) {
+      throw new Error(`五行数据获取失败: ${wuxingResponse.status}`)
+    }
 
     const spuResult = await spuResponse.json()
     const skuResult = await skuResponse.json()
+    const wuxingResult = await wuxingResponse.json()
 
     // 处理API响应数据结构
     const spuData = spuResult.data || spuResult
     const skuData = skuResult.data || skuResult
+    const wuxingData = wuxingResult.data || wuxingResult
+    console.info('=11111== spuData ===', spuData)
+    console.info('=22222== skuData ===', skuData)
+    console.info('=33333== wuxingData ===', wuxingData)
 
     if (!spuData) {
       throw new Error('SPU数据为空')
     }
-
+    // 添加数据集合
     productData.value = {
       spu: spuData,
-      sku: Array.isArray(skuData) ? {data: skuData} : skuData
+      sku: Array.isArray(skuData) ? {data: skuData} : skuData,
+      wuxing: Array.isArray(wuxingData) ? {data: wuxingData} : wuxingData
     }
-    // 添加SKU ID日志输出
-    console.log('=== SKU数据加载完成 ===')
+    //输出集合数据
+    console.info('=== productData ===')
+    console.log('SKU列表数量:', skuList.value.length)
+    console.log('wuxing列表数量:', wuxingList.value.length)
+    //输出spu输出
+    console.log('productData is', productData.value)
     console.log('SPU ID:', productData.value.spu.id)
-
+    console.log('SPU spuCode:', productData.value.spu.spuCode)
+    console.log('SPU productNameEn:', productData.value.spu.productNameEn)
+    console.log('SPU productNameZh:', productData.value.spu.productNameZh)
+    console.log('SPU productNameAr:', productData.value.spu.productNameAr)
+    console.log('SPU shortDescriptionEn:', productData.value.spu.shortDescriptionEn)
+    console.log('SPU shortDescriptionZh:', productData.value.spu.shortDescriptionZh)
+    console.log('SPU shortDescriptionAr:', productData.value.spu.shortDescriptionAr)
+    console.log('SPU fullDescriptionEn:', productData.value.spu.fullDescriptionEn)
+    console.log('SPU fullDescriptionZh:', productData.value.spu.fullDescriptionZh)
+    console.log('SPU fullDescriptionAr:', productData.value.spu.fullDescriptionAr)
+    console.log('SPU designConceptEn:', productData.value.spu.designConceptEn)
+    console.log('SPU designConceptZh:', productData.value.spu.designConceptZh)
+    console.log('SPU designConceptAr:', productData.value.spu.designConceptAr)
+    console.log('SPU intendedUsageEn:', productData.value.spu.intendedUsageEn)
+    console.log('SPU intendedUsageZh:', productData.value.spu.intendedUsageZh)
+    console.log('SPU intendedUsageAr:', productData.value.spu.intendedUsageAr)
+    console.log('SPU emotionalPurposeEn:', productData.value.spu.emotionalPurposeEn)
+    console.log('SPU emotionalPurposeZh:', productData.value.spu.emotionalPurposeZh)
+    console.log('SPU emotionalPurposeAr:', productData.value.spu.emotionalPurposeAr)
+    console.log('SPU spiritualSignificanceEn:', productData.value.spu.spiritualSignificanceEn)
+    console.log('SPU spiritualSignificanceZh:', productData.value.spu.spiritualSignificanceZh)
+    console.log('SPU spiritualSignificanceAr:', productData.value.spu.spiritualSignificanceAr)
+    console.log('SPU energyPropertiesEn:', productData.value.spu.energyPropertiesEn)
+    console.log('SPU energyPropertiesZh:', productData.value.spu.energyPropertiesZh)
+    console.log('SPU energyPropertiesAr:', productData.value.spu.energyPropertiesAr)
+    console.log('SPU primaryElement:', productData.value.spu.primaryElement)
+    console.log('SPU elementCombination:', productData.value.spu.elementCombination)
+    console.log('SPU energyIntensityDefault:', productData.value.spu.energyIntensityDefault)
+    console.log('SPU materialStandards:', productData.value.spu.materialStandards)
+    console.log('SPU craftsmanshipStandards:', productData.value.spu.craftsmanshipStandards)
+    console.log('SPU qualityStandards:', productData.value.spu.qualityStandards)
+    console.log('SPU productionGuidelinesEn:', productData.value.spu.productionGuidelinesEn)
+    console.log('SPU productionGuidelinesZh:', productData.value.spu.productionGuidelinesZh)
+    console.log('SPU productionGuidelinesAr:', productData.value.spu.productionGuidelinesAr)
+    console.log('SPU variantDefinition:', productData.value.spu.variantDefinition)
+    console.log('SPU customizationOptions:', productData.value.spu.customizationOptions)
+    console.log('SPU productionLeadTime:', productData.value.spu.productionLeadTime)
     console.log('SPU mainImageUrl:', productData.value.spu.mainImageUrl)
     console.log('SPU conceptImageUrl:', productData.value.spu.conceptImageUrl)
     console.log('SPU designImageUrl:', productData.value.spu.designImageUrl)
     console.log('SPU prototypeImageUrl:', productData.value.spu.prototypeImageUrl)
     console.log('SPU usageImageUrl:', productData.value.spu.usageImageUrl)
     console.log('SPU technicalImageUrl:', productData.value.spu.technicalImageUrl)
+    console.log('SPU sortOrder:', productData.value.spu.sortOrder)
+    console.log('SPU isFeatured:', productData.value.spu.isFeatured)
+    console.log('SPU isNewArrival:', productData.value.spu.isNewArrival)
+    console.log('SPU isAiDesigned:', productData.value.spu.isAiDesigned)
+    console.log('SPU aiDesignScore:', productData.value.spu.aiDesignScore)
+    console.log('SPU isActive:', productData.value.spu.isActive)
+    console.log('SPU metaTitleEn:', productData.value.spu.metaTitleEn)
+    console.log('SPU metaTitleZh:', productData.value.spu.metaTitleZh)
+    console.log('SPU metaTitleAr:', productData.value.spu.metaTitleAr)
+    console.log('SPU metaDescriptionEn:', productData.value.spu.metaDescriptionEn)
+    console.log('SPU metaDescriptionZh:', productData.value.spu.metaDescriptionZh)
+    console.log('SPU metaDescriptionAr:', productData.value.spu.metaDescriptionAr)
+    console.log('SPU metaKeywordsEn:', productData.value.spu.metaKeywordsEn)
+    console.log('SPU metaKeywordsZh:', productData.value.spu.metaKeywordsZh)
+    console.log('SPU metaKeywordsAr:', productData.value.spu.metaKeywordsAr)
+    console.log('SPU createdBy:', productData.value.spu.createdBy)
+    console.log('SPU updatedBy:', productData.value.spu.updatedBy)
+    console.log('SPU createdTime:', productData.value.spu.createdTime)
+    console.log('SPU updatedTime:', productData.value.spu.updatedTime)
 
-    console.log('SKU列表数量:', skuList.value.length)
+    //循环输出skuID  只输出2个数据值
+    console.log('wuxing is', productData.value.wuxing)
+    wuxingList.value.forEach((wuxing, index) => {
+      console.log(`WUXING ${index + 1}:`, {
+        elementKey: wuxing.elementKey,
+        elementCode: wuxing.elementCode,
+        elementCategory: wuxing.elementCategory,
+        elementNameEn: wuxing.elementNameEn,
+        elementNameZh: wuxing.elementNameZh,
+        elementNameAr: wuxing.elementNameAr,
+        symbolCharacter: wuxing.symbolCharacter,
+        symbolColor: wuxing.symbolColor,
+        symbolColorGradient: wuxing.symbolColorGradient,
+        symbolDirection: wuxing.symbolDirection,
+        symbolSeason: wuxing.symbolSeason,
+        symbolTime: wuxing.symbolTime,
+        symbolPlanet: wuxing.symbolPlanet,
+        symbolWeather: wuxing.symbolWeather,
+        symbolLandform: wuxing.symbolLandform,
+        symbolAnimal: wuxing.symbolAnimal,
+        symbolPlant: wuxing.symbolPlant,
+        symbolOrgan: wuxing.symbolOrgan,
+        symbolSense: wuxing.symbolSense,
+        symbolTissue: wuxing.symbolTissue,
+        symbolEmotion: wuxing.symbolEmotion,
+        symbolSound: wuxing.symbolSound,
+        symbolTaste: wuxing.symbolTaste,
+        symbolVirtue: wuxing.symbolVirtue,
+        symbolCareer: wuxing.symbolCareer,
+        symbolNumber: wuxing.symbolNumber,
+        symbolMusic: wuxing.symbolMusic,
+        philosophyMeaningZh: wuxing.philosophyMeaningZh,
+        philosophyMeaningEn: wuxing.philosophyMeaningEn,
+        cosmologyMeaningZh: wuxing.cosmologyMeaningZh,
+        cosmologyMeaningEn: wuxing.cosmologyMeaningEn,
+        lifePhilosophyZh: wuxing.lifePhilosophyZh,
+        lifePhilosophyEn: wuxing.lifePhilosophyEn,
+        changePrincipleZh: wuxing.changePrincipleZh,
+        changePrincipleEn: wuxing.changePrincipleEn,
+        culturalSymbolismZh: wuxing.culturalSymbolismZh,
+        culturalSymbolismEn: wuxing.culturalSymbolismEn,
+        mythologicalAssociationZh: wuxing.mythologicalAssociationZh,
+        mythologicalAssociationEn: wuxing.mythologicalAssociationEn,
+        historicalReferenceZh: wuxing.historicalReferenceZh,
+        historicalReferenceEn: wuxing.historicalReferenceEn,
+        artisticExpressionZh: wuxing.artisticExpressionZh,
+        artisticExpressionEn: wuxing.artisticExpressionEn,
+        energyEssenceZh: wuxing.energyEssenceZh,
+        energyEssenceEn: wuxing.energyEssenceEn,
+        energyManifestationZh: wuxing.energyManifestationZh,
+        energyManifestationEn: wuxing.energyManifestationEn,
+        spiritualMeaningZh: wuxing.spiritualMeaningZh,
+        spiritualMeaningEn: wuxing.spiritualMeaningEn,
+        personalityArchetypeZh: wuxing.personalityArchetypeZh,
+        personalityArchetypeEn: wuxing.personalityArchetypeEn,
+        lifeGuidanceZh: wuxing.lifeGuidanceZh,
+        lifeGuidanceEn: wuxing.lifeGuidanceEn,
+        healingPropertyZh: wuxing.healingPropertyZh,
+        healingPropertyEn: wuxing.healingPropertyEn,
+        generatesElement: wuxing.generatesElement,
+        generatedByElement: wuxing.generatedByElement,
+        restrainsElement: wuxing.restrainsElement,
+        restrainedByElement: wuxing.restrainedByElement,
+        relationshipMeaningZh: wuxing.relationshipMeaningZh,
+        relationshipMeaningEn: wuxing.relationshipMeaningEn,
+        symbolIconUrl: wuxing.symbolIconUrl,
+        philosophyImageUrl: wuxing.philosophyImageUrl,
+        energyFlowImageUrl: wuxing.energyFlowImageUrl,
+        sortOrder: wuxing.sortOrder,
+        elementTier: wuxing.elementTier,
+        isActive: wuxing.isActive,
+        createdTime: wuxing.createdTime,
+        updatedTime: wuxing.updatedTime
+      })
+    })
+
     //循环输出skuID
     skuList.value.forEach((sku, index) => {
       console.log(`SKU ${index + 1}:`, {
@@ -1109,7 +922,6 @@ const fetchProductData = async () => {
         taxRate: sku.taxRate,
         priceAdjustmentReason: sku.priceAdjustmentReason,
         lastPriceUpdate: sku.lastPriceUpdate,
-        mainImageId: sku.mainImageId,
         mainImageUrl: sku.mainImageUrl,
         image1Url: sku.image1Url,
         image2Url: sku.image2Url,
@@ -1133,8 +945,6 @@ const fetchProductData = async () => {
         finalPrice: sku.finalPrice
       })
     })
-    console.log('=======================')
-
     // 如果有SKU数据，设置默认选中的SKU
     if (skuList.value.length > 0) {
       currentSkuIndex.value = 0
@@ -2048,16 +1858,6 @@ const nextImage = () => {
   color: #b0b0b0;
 }
 
-.tab-header.active {
-  color: #ffd700;
-  border-bottom-color: #ffd700;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px 8px 0 0;
-}
-
-.tab-header:hover:not(.active) {
-  color: #ffd700;
-}
 
 .tab-content {
   min-height: 400px;
@@ -2077,7 +1877,6 @@ const nextImage = () => {
   padding: 20px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
-  border-left: 4px solid #ffd700;
   transition: transform 0.2s;
 }
 

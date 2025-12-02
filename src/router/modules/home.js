@@ -59,6 +59,16 @@ const homeindexRoutes = [
       requiresAuth: false
     }
   },
+  //五行
+  {
+    path: '/wu-xing-attributes/getById/:id',
+    name: 'WuXingDatil',
+    component: () => import('/src/views/wuxing/WuXingDatil.vue'),
+    meta: {
+      title: '五行详情',
+      requiresAuth: false
+    }
+  },
   // 购物车列表
   {
     path: '/shopingcart/page',

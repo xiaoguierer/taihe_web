@@ -47,7 +47,6 @@
           </div>
         </div>
       </section>
-
       <!-- 详细信息区域 -->
       <section class="details-section">
         <div class="details-container">
@@ -107,52 +106,42 @@
           <!-- 在象征属性卡片后新增 -->
           <div class="info-card full-width">
             <h3 class="card-title">Life Guidance</h3>
-            <div class="language-tabs">
-              <button
-                v-for="lang in ['Zh', 'En', 'Ar']"
-                :key="lang"
-                :class="['tab-button', { active: activeTab === lang }]"
-                @click="activeTab = lang"
-              >
-                {{ { Zh: 'Chinese', En: 'English', Ar: 'Arabic' }[lang] }}
-              </button>
-            </div>
             <div class="meaning-content">
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.personalityArchetypeZh : activeTab === 'En' ? intentData.personalityArchetypeEn : intentData.personalityArchetypeAr }}</p>
+                <p>{{ intentData.personalityArchetypeEn }}</p>
               </div>
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.lifeGuidanceZh : activeTab === 'En' ? intentData.lifeGuidanceEn : intentData.lifeGuidanceAr }}</p>
+                <p>{{ intentData.lifeGuidanceEn }}</p>
               </div>
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.healingPropertyZh : activeTab === 'En' ? intentData.healingPropertyEn : intentData.healingPropertyAr }}</p>
+                <p>{{ intentData.healingPropertyEn  }}</p>
               </div>
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.relationshipImpactZh : activeTab === 'En' ? intentData.relationshipImpactEn : intentData.relationshipImpactAr }}</p>
+                <p>{{ intentData.relationshipImpactEn }}</p>
               </div>
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.careerAlignmentZh : activeTab === 'En' ? intentData.careerAlignmentEn : intentData.careerAlignmentAr }}</p>
+                <p>{{ intentData.careerAlignmentEn  }}</p>
               </div>
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.philosophyMeaningZh : activeTab === 'En' ? intentData.philosophyMeaningEn : intentData.philosophyMeaningAr }}</p>
+                <p>{{ intentData.philosophyMeaningEn }}</p>
               </div>
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.culturalSignificanceZh : activeTab === 'En' ? intentData.culturalSignificanceEn : intentData.culturalSignificanceAr }}</p>
+                <p>{{ intentData.culturalSignificanceEn }}</p>
               </div>
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.spiritualMeaningZh : activeTab === 'En' ? intentData.spiritualMeaningEn : intentData.spiritualMeaningAr }}</p>
+                <p>{{ intentData.spiritualMeaningEn  }}</p>
               </div>
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.modernInterpretationZh : activeTab === 'En' ? intentData.modernInterpretationEn : intentData.modernInterpretationAr }}</p>
+                <p>{{ intentData.modernInterpretationEn }}</p>
               </div>
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.metaTitleZh : activeTab === 'En' ? intentData.metaTitleEn : intentData.metaTitleAr }}</p>
+                <p>{{ intentData.metaTitleEn  }}</p>
               </div>
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.metaDescriptionZh : activeTab === 'En' ? intentData.metaDescriptionEn : intentData.metaDescriptionAr }}</p>
+                <p>{{  intentData.metaDescriptionEn }}</p>
               </div>
               <div class="meaning-item">
-                <p>{{ activeTab === 'Zh' ? intentData.metaKeywordsZh : activeTab === 'En' ? intentData.metaKeywordsEn : intentData.metaKeywordsAr }}</p>
+                <p>{{ intentData.metaKeywordsEn }}</p>
               </div>
             </div>
           </div>

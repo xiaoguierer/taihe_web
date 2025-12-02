@@ -292,7 +292,7 @@ const navigateToProduct = (productId) => {
   if (!productId || productId.includes('placeholder')) return
   router.push(`/product-spu/getByid/${productId}`)
 }
-
+// 五行
 const navigateToWuXing = (elementId) => {
   console.info("导航navigateToWuXing - 五行详情，elementId is ：",elementId)
   if (!elementId) return
