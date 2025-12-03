@@ -9,20 +9,20 @@
       <!-- 左侧品牌展示区 -->
       <div class="brand-section">
         <div class="brand-content">
-          <h1 class="brand-title">灵性珠宝</h1>
-          <p class="brand-subtitle">发现属于您的能量宝石</p>
+          <h1 class="brand-title">Jewels of the Soul</h1>
+          <p class="brand-subtitle">Discover the Gem That Resonates with Your Soul</p>
           <div class="brand-features">
             <div class="feature-item">
               <span class="feature-icon">💎</span>
-              <span>个性化宝石推荐</span>
+              <span>Curated Jewels for Your Unique Essence</span>
             </div>
             <div class="feature-item">
               <span class="feature-icon">✨</span>
-              <span>专属能量分析</span>
+              <span>An Energy Reading Tailored to Your Soul</span>
             </div>
             <div class="feature-item">
               <span class="feature-icon">🔮</span>
-              <span>深度灵性洞察</span>
+              <span>Profound Illumination of the Soul’s Wisdom</span>
             </div>
           </div>
         </div>
@@ -31,32 +31,32 @@
       <!-- 右侧注册表单区 -->
       <div class="form-section">
         <div class="form-container">
-          <h2 class="form-title">开启您的灵性之旅</h2>
-          <p class="form-subtitle">注册会员，发现与您能量共鸣的珠宝</p>
+          <h2 class="form-title">Embark Upon the Journey of Your Soul</h2>
+          <p class="form-subtitle">Unearth the Gems Aligned with Your Radiant Energy</p>
 
           <form @submit.prevent="handleRegister" class="register-form">
             <!-- 邮箱输入 -->
             <div class="form-group">
-              <label for="email" class="form-label">电子邮箱</label>
+              <label for="email" class="form-label">Sanctuary of Messages</label>
               <input
                 id="email"
                 v-model="formData.email"
                 type="email"
                 class="form-input"
-                placeholder="请输入您的电子邮箱"
+                placeholder="Sanctuary of Messages"
                 required
               >
             </div>
 
             <!-- 密码输入 -->
             <div class="form-group">
-              <label for="password" class="form-label">密码</label>
+              <label for="password" class="form-label">Key of Passage</label>
               <input
                 id="password"
                 v-model="formData.password"
                 type="password"
                 class="form-input"
-                placeholder="请设置登录密码（至少8位字符）"
+                placeholder="Key of Passage"
                 required
                 minlength="8"
               >
@@ -65,8 +65,8 @@
             <!-- 出生日期输入 -->
             <div class="form-group">
               <label for="birthdaytime" class="form-label">
-                出生时间
-                <span class="optional-label">（选填）</span>
+                Soul’s Genesis Moment
+                <span class="optional-label">（Optional → If You Feel Called）</span>
               </label>
               <el-date-picker
                 v-model="formData.birthdaytime"
@@ -76,7 +76,7 @@
                 format="YYYY-MM-DD HH:mm:ss"
                 style="width: 100%"
               />
-              <p class="field-description">您的出生日期仅用于为您提供个性化的星座运势和产品推荐</p>
+              <p class="field-description">Birth date → Soul’s Genesis Day / Celestial Arrival</p>
             </div>
 
             <!-- 隐私政策同意 -->
@@ -90,18 +90,18 @@
                   required
                 >
                 <label for="privacy-agree" class="checkbox-label">
-                  我已阅读并同意
-                  <a href="#" class="privacy-link" @click.prevent="showPrivacyModal = true">《隐私政策》</a>
+                  I Have Received and Embraced the Covenant
+                  <a href="#" class="privacy-link" @click.prevent="showPrivacyModal = true">《Sanctuary’s Covenant of Protection》</a>
                 </label>
               </div>
             </div>
 
             <!-- 激励提示 -->
             <div class="incentive-card" v-if="!formData.birthdaytime">
-              <div class="incentive-icon">🎁</div>
+              <div class="incentive-icon"></div>
               <div class="incentive-content">
-                <h3>完善您的灵性档案</h3>
-                <p>填写出生日期，解锁高级运势报告</p>
+                <h3>Deepen Your Soul’s Ledger</h3>
+                <p>Share Your Celestial Genesis Moment to Unlock Advanced Starborne Guidance</p>
               </div>
             </div>
 
@@ -112,12 +112,12 @@
               :class="{ 'with-incentive': !formData.birthdate }"
               :disabled="!privacyAgreed"
             >
-              注册会员
+              Join the Sanctuary as a Keeper of Radiant Gems
             </button>
 
             <!-- 登录链接 -->
             <p class="login-link">
-              已有账户？<a href="#" @click="switchtologin">立即登录</a>
+              Your Sanctuary Remembers You？<a href="#" @click="switchtologin">Enter Your Sanctuary Now</a>
             </p>
           </form>
         </div>
@@ -128,24 +128,26 @@
     <div v-if="showPrivacyModal" class="modal-overlay" @click="showPrivacyModal = false">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <h3>隐私政策</h3>
+          <h3>Sanctuary’s Covenant of Protection</h3>
           <button class="modal-close" @click="showPrivacyModal = false">×</button>
         </div>
         <div class="modal-body">
-          <h4>数据使用说明</h4>
-          <p>我们非常重视您的隐私权，并致力于保护您的个人信息。以下是我们的数据使用政策：</p>
+          <h4>How We Attune Your Radiant Imprint</h4>
+          <p>We hold your privacy as sacred as your soul’s essence.
+            Our sanctuary is pledged to protect your personal imprint, so you may explore in trust and light.
+            Below is how we attune your data to serve your journey:</p>
 
           <ul>
-            <li><strong>邮箱地址：</strong>用于账户验证、登录和重要通知</li>
-            <li><strong>密码：</strong>经过加密处理，我们无法查看您的原始密码</li>
-            <li><strong>出生日期：</strong>仅用于为您提供个性化的星座运势和产品推荐，您可以选择不提供此信息</li>
+            <li><strong>Sanctuary of Messages (Email)：</strong>Used for verifying your presence, entry to your realm, and bearing radiant notices</li>
+            <li><strong>Spirit Seal (Password)：</strong>Encrypted with care; the sanctuary cannot see your original seal</li>
+            <li><strong>Celestial Genesis Moment (Birth Date)：</strong>Only to illuminate your starborne path and curate jewels that resonate with your essence. You may choose to keep this truth veiled.</li>
           </ul>
 
-          <h4>数据安全承诺</h4>
-          <p>我们采用先进的加密技术保护您的数据，绝不会将您的个人信息出售给第三方。</p>
+          <h4>Our Sacred Vow of Safekeeping</h4>
+          <p>We guard your imprint with advanced light‑bound encryption, and will never sell your essence’s record to any outer realm</p>
 
           <div class="modal-actions">
-            <button class="btn-primary" @click="showPrivacyModal = false">我已了解</button>
+            <button class="btn-primary" @click="showPrivacyModal = false">I Acknowledge and Honor the Path We Begin Together</button>
           </div>
         </div>
       </div>
@@ -200,39 +202,37 @@ const handleRegister = async () => {
       formDataToSend.append('avatarFile', new Blob([]), 'empty.txt')
     }
 
-    console.log('FormData表单参数 内容:')
-    for (let [key, value] of formDataToSend.entries()) {
-      console.log(key, value)
-    }
+   // console.log('FormData表单参数 内容:')
+   //  for (let [key, value] of formDataToSend.entries()) {
+   //    console.log(key, value)
+   //  }
 
     const response = await fetch('/api/users/register', {
       method: 'POST',
       body: formDataToSend
     })
-    console.info("用户注册API返回数据 response：", response)
+   // console.info("用户注册API返回数据 response：", response)
     if (!response.ok) {
       ElMessage.error("注册失败")
     }
     const result = await response.json()
     // 重点：输出 message 和 data 字段
-    console.info("=== 用户注册API返回数据详情 ===")
-    console.info("JWT Token (message):", result.message)
-    console.info("用户数据 (data):", result.data)
-    console.info("完整返回结果:", result)
+    // console.info("=== 用户注册API返回数据详情 ===")
+    // console.info("JWT Token (message):", result.message)
+    // console.info("用户数据 (data):", result.data)
+    // console.info("完整返回结果:", result)
+    // // 单独输出 data 中的各个字段
+    // console.info("=== 用户详细信息 ===")
+    // console.info("用户ID:", result.data.id)
+    // console.info("邮箱:", result.data.email)
+    // console.info("昵称:", result.data.nickname)
+    // console.info("头像:", result.data.avatar)
+    // console.info("状态:", result.data.status)
+    // console.info("时间:", result.data.createdAt)
+    // console.log('注册成功:', result)
 
-    // 单独输出 data 中的各个字段
-    console.info("=== 用户详细信息 ===")
-    console.info("用户ID:", result.data.id)
-    console.info("邮箱:", result.data.email)
-    console.info("昵称:", result.data.nickname)
-    console.info("头像:", result.data.avatar)
-    console.info("状态:", result.data.status)
-    console.info("时间:", result.data.createdAt)
-
-    console.log('注册成功:', result)
     ElMessage.success('注册成功！')
     console.log('注册成功:', result)
-    ElMessage.success('注册成功！')
 
     // 🎯 【新增关键代码开始】注册成功后的处理逻辑
     if (result.message && result.data) {
@@ -247,21 +247,18 @@ const handleRegister = async () => {
         createdAt: result.data.createdAt
       };
 
-      console.info("=== 准备保存认证信息 ===");
-      console.info("Token长度:", token.length);
-      console.info("用户信息:", userInfo);
+      // console.info("=== 准备保存认证信息 ===");
+      // console.info("Token长度:", token.length);
+      // console.info("用户信息:", userInfo);
 
       // ✅ 直接使用authStore，移除错误的条件判断
       const authStore = useAuthStore()
       authStore.loginSuccess(token, userInfo)
-
       ElMessage.success('注册成功！即将自动登录...')
-
       // ✅ 统一跳转逻辑
       setTimeout(() => {
         router.push('/')
       }, 1500)
-
     } else {
       throw new Error('返回数据格式异常')
     }

@@ -282,19 +282,19 @@ const extractDataFromResponse = (result) => {
 
 // 导航方法-获取所属意图下的商品spu集合
 const navigateToIntentProducts = (intentId) => {
-  console.info("导航navigateToIntentProducts-获取所属情感意图商品SPU集合，参数intentId is ：",intentId)
+//  console.info("导航navigateToIntentProducts-获取所属情感意图商品SPU集合，参数intentId is ：",intentId)
   if (!intentId || intentId.includes('placeholder')) return
   router.push(`/product-spu/selectSpuByIntentId/spu/${intentId}`)
 }
 // 商品详情
 const navigateToProduct = (productId) => {
-  console.info("导航navigateToProduct - 获取商品详情，productId is ：",productId)
+ // console.info("导航navigateToProduct - 获取商品详情，productId is ：",productId)
   if (!productId || productId.includes('placeholder')) return
   router.push(`/product-spu/getByid/${productId}`)
 }
 // 五行
 const navigateToWuXing = (elementId) => {
-  console.info("导航navigateToWuXing - 五行详情，elementId is ：",elementId)
+ // console.info("导航navigateToWuXing - 五行详情，elementId is ：",elementId)
   if (!elementId) return
   router.push(`/wu-xing-attributes/getById/${elementId}`)
 }
@@ -319,16 +319,15 @@ const getIntentProducts = (intentId) => {
   return products.slice(0, PRODUCT_LIMIT)
 }
 
-// 商品点击处理
 // 修改商品点击处理，添加更详细的调试信息
 const handleProductClick = (product) => {
-  console.log('点击的商品完整信息:', product)
-  console.log('商品ID字段详情:', {
-    id: product.id,
-    spuId: product.spuId,
-    hasId: !!product.id,
-    hasSpuId: !!product.spuId
-  })
+  // console.log('点击的商品完整信息:', product)
+  // console.log('商品ID字段详情:', {
+  //   id: product.id,
+  //   spuId: product.spuId,
+  //   hasId: !!product.id,
+  //   hasSpuId: !!product.spuId
+  // })
 
   if (!product) {
     console.error('商品对象为空')
@@ -342,7 +341,7 @@ const handleProductClick = (product) => {
   }
 
   if (product.isPlaceholder) {
-    console.log('占位商品，不可点击')
+   // console.log('占位商品，不可点击')
     return
   }
 
@@ -379,25 +378,22 @@ const fetchEmotionalIntents = async () => {
 
 const fetchIntentProducts = async (intentId) => {
   try {
-    console.log('----------------------开始获所属取情感意图   ${intentId}   SPU数据---------------------------')
+  //  console.log('----------------------开始获所属取情感意图   ${intentId}   SPU数据---------------------------')
    // console.log(`获取意图 ${intentId} 的商品数据...`)
     // 使用现有正常工作的接口格式
     const response = await fetch(`/api/product-spu/selectProductsByIntentIdIndex/${intentId}/10`)
-
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-
     const result = await response.json()
    // console.log(`意图 ${intentId} 商品API原始响应:`, result)
-
     const productsData = extractDataFromResponse(result)
     if (!Array.isArray(productsData)) {
       console.warn(`意图 ${intentId} 商品数据格式不正确:`, productsData)
       return []
     }
     const processedProducts = productsData.map(preprocessProductData)
-    console.log(`----888-----意图 ${intentId} 商品数据获取成功:`, processedProducts.length, '个SPU商品')
+  //  console.log(`----888-----意图 ${intentId} 商品数据获取成功:`, processedProducts.length, '个SPU商品')
     return processedProducts
   } catch (error) {
     console.error(`获取意图 ${intentId} 商品数据失败:`, error)
@@ -407,7 +403,6 @@ const fetchIntentProducts = async (intentId) => {
 
 const fetchAllIntentProducts = async (intents) => {
   if (!intents || !Array.isArray(intents) || intents.length === 0) return
-
   try {
     const promises = intents.map(intent => fetchIntentProducts(intent.id))
     const results = await Promise.allSettled(promises)
@@ -428,28 +423,22 @@ const fetchAllIntentProducts = async (intents) => {
 
 const fetchWuXingAttributes = async () => {
   try {
-    console.log('---------------开始获取五行属性数据-------------...')
-
+ //   console.log('---------------开始获取五行属性数据-------------...')
     // 关键修正：使用现有正常工作的接口地址
     const response = await fetch('/api/wu-xing-attributes/tier/1')
-
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-
     const result = await response.json()
-    console.log('五行属性API原始响应:', result)
-
+  //  console.log('五行属性API原始响应:', result)
     const wuXingData = extractDataFromResponse(result)
-
     if (!Array.isArray(wuXingData)) {
       console.warn('五行属性数据格式不正确:', wuXingData)
       wuXingAttributes.value = []
       return
     }
-
     wuXingAttributes.value = wuXingData.map(preprocessWuXingData)
-    console.log('五行属性数据获取成功:', wuXingData.length, '条记录')
+   // console.log('五行属性数据获取成功:', wuXingData.length, '条记录')
   } catch (error) {
     console.error('获取五行属性数据失败:', error)
     wuXingAttributes.value = []

@@ -71,7 +71,7 @@ const homeindexRoutes = [
   },
   // 购物车列表
   {
-    path: '/shopingcart/page',
+    path: '/shopingcart/pageLst',
     name: 'CartPage',
     component: () => import('@/views/cart/CartPage.vue'),
     meta: {

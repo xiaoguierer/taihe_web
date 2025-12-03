@@ -188,6 +188,7 @@
       </div>
     </div>
 
+
     <!-- 修复：独立的用户操作区域 -->
     <div class="user-actions">
       <!-- 已登录状态 -->
@@ -201,7 +202,6 @@
           <span class="action-icon">🚪</span>
         </div>
       </div>
-
       <!-- 未登录状态 -->
       <div v-else class="action-item" @click="goToUser()" title="登录/注册">
         <span class="action-icon">👤</span>
@@ -214,13 +214,13 @@
 import {ref, onMounted, onUnmounted, nextTick} from 'vue'
 import {useRouter} from 'vue-router'
 import {useAuthStore} from "@/store/auth.js";
-
 export default {
   name: 'GlobalHeader',
   setup() {
     const router = useRouter()
     const authStore = useAuthStore()
-
+    // console.log('🔍 [GlobalHeader] 当前 authStore 对象:', authStore);
+    // console.log('🔍 [GlobalHeader] 当前登录状态:', authStore.isLoggedIn);
     // 响应式数据
     const emotionalIntents = ref([])
     const cartCount = ref(0)
@@ -233,7 +233,8 @@ export default {
     const hoverTimer = ref(null)
     const showScrollHint = ref(false)
     const navContainerRef = ref(null)
-
+    // console.log('🔍 当前 authStore 对象:', authStore);
+    // console.log('🔍 当前登录状态:', authStore?.isLoggedIn);
     // 配置常量 - 修正图标重复问题
     const ENERGY_CONFIG = {
       '木能量': {icon: '🌳', color: '#4CAF50'},
@@ -309,11 +310,9 @@ export default {
     const handleNavHover = async (navItem) => {
       clearTimeout(hoverTimer.value)
       activeNav.value = navItem.id
-
       if (navItem.megaMenu) {
         activeMegaMenu.value = navItem.id
         showMegaMenu.value = true
-
         const menuData = getMenuData(navItem.id)
         if (!menuData.loading && !menuData.error &&
           menuData.categories.length === 0 &&
@@ -465,7 +464,6 @@ export default {
           name: item.tagNameEn,           // 兼容name字段
           productCount: item.productCount || 0,  // 使用API返回的数量
           count: item.productCount || 0,          // 兼容count字段
-          // 保留其他可能用到的字段
           tagNameZh: item.tagNameZh,      // 保留中文名称
           colorCode: item.colorCode,      // 保留颜色代码
           tagKey: item.tagKey,            // 保留标签键: "wuxing"
@@ -541,16 +539,16 @@ export default {
     // 巨型导航品类标签导航下钻功能
     const navigateToCategory = (intentId, category) => {
       const tagId = category.id
-      console.log('🔍 品类标签数据下钻...')
-      console.log('📦 情感意图标识:', intentId)
-      console.log('📦 品类标签:', tagId)
+      // console.log('🔍 品类标签数据下钻...')
+      // console.log('📦 情感意图标识:', intentId)
+      // console.log('📦 品类标签:', tagId)
       const url = `/product-spu/getProductsByIntentAndTag/${intentId}/${tagId}`
-      console.log('🔗 目标URL:', url)
-      // 添加导航前后的详细日志
-      console.log('📍 当前路由:', router.currentRoute.value.fullPath)
+      // console.log('🔗 目标URL:', url)
+      // // 添加导航前后的详细日志
+      // console.log('📍 当前路由:', router.currentRoute.value.fullPath)
       router.push(url).then(() => {
-        console.log('✅ 导航成功完成')
-        console.log('📍 新路由:', router.currentRoute.value.fullPath)
+        // console.log('✅ 导航成功完成')
+        // console.log('📍 新路由:', router.currentRoute.value.fullPath)
       }).catch(error => {
         console.error('❌ 导航失败:', error)
       })
@@ -558,16 +556,16 @@ export default {
     // 巨型菜单能量标签数据下钻
     const navigateToEnergy = (intentId, energy) => {
       const elementTagId = energy.id
-      console.log('🔍 能量标签数据下钻...')
-      console.log('📦 情感意图标识:', intentId)
-      console.log('📦 能量标签:', elementTagId)
+      // console.log('🔍 能量标签数据下钻...')
+      // console.log('📦 情感意图标识:', intentId)
+      // console.log('📦 能量标签:', elementTagId)
       const url = `/product-spu/getProductsByIntentAndElementTag/${intentId}/${elementTagId}`
-      console.log('🔗 目标URL:', url)
+     // console.log('🔗 目标URL:', url)
       // 添加导航前后的详细日志
-      console.log('📍 当前路由:', router.currentRoute.value.fullPath)
+    //  console.log('📍 当前路由:', router.currentRoute.value.fullPath)
       router.push(url).then(() => {
-        console.log('✅ 导航成功完成')
-        console.log('📍 新路由:', router.currentRoute.value.fullPath)
+        // console.log('✅ 导航成功完成')
+        // console.log('📍 新路由:', router.currentRoute.value.fullPath)
       }).catch(error => {
         console.error('❌ 导航失败:', error)
       })
@@ -575,18 +573,15 @@ export default {
 
     //根据商品spu主键打开详情页
     const navigateToProductDetail = (product) => {
-      console.log('🔍 开始导航到商品详情...')
-      console.log('📦 商品对象:', product)
-
+      // console.log('🔍 开始导航到商品详情...')
+      // console.log('📦 商品对象:', product)
       const url = `/product-spu/getByid/${product.id}`
-      console.log('🔗 目标URL:', url)
-
+     // console.log('🔗 目标URL:', url)
       // 添加导航前后的详细日志
-      console.log('📍 当前路由:', router.currentRoute.value.fullPath)
-
+    //  console.log('📍 当前路由:', router.currentRoute.value.fullPath)
       router.push(url).then(() => {
-        console.log('✅ 导航成功完成')
-        console.log('📍 新路由:', router.currentRoute.value.fullPath)
+        // console.log('✅ 导航成功完成')
+        // console.log('📍 新路由:', router.currentRoute.value.fullPath)
       }).catch(error => {
         console.error('❌ 导航失败:', error)
       })
@@ -594,25 +589,25 @@ export default {
     // 根据情感意图id 查询商品信息
     const viewAllProducts = (intentId) => {
       const url = `/product-spu/selectSpuByIntentId/spu/${intentId}`;
-      console.info("根据情感意图id 查询商品信息url is :", url);
+    //  console.info("根据情感意图id 查询商品信息url is :", url);
       router.push(url)// 通过路由路径导航
     }
     // 情感意愿详情
     const navigateToNav = (navItem) => {
       const url = `/emotional-intent/getByid/${navItem.id}`;
-      console.info("根据情感意图ID查看详情 :", url);
+   //   console.info("根据情感意图ID查看详情 :", url);
       router.push(url)// 通过路由路径导航
     }
     // 购物车
     const goToCart = () => {
-      const url = `/shopingcart/page`
-      console.info("购物车url is :", url);
+      const url = `/shopingcart/pageLst`
+   //   console.info("购物车url is :", url);
       router.push(url)// 通过路由路径导航
     }
     // 订单
     const goToOrders = () => {
       const url = `/order/page`
-      console.info("订单url is :", url);
+   //   console.info("订单url is :", url);
       router.push(url)// 通过路由路径导航
     }
     const goToHome = () => router.push('/')
@@ -626,12 +621,12 @@ export default {
       // console.log('是否已登录:', authStore.isLoggedIn)
 
       const url = `/users/login`
-      console.info("用户登錄url is :", url);
+  //    console.info("用户登錄url is :", url);
       router.push(url)// 通过路由路径导航
     }
     //导航用户中心
     const goToUserInfor = () => {
-      console.log('🔐 用户中心信息:')
+  //    console.log('🔐 用户中心信息:')
       router.push(`/users/${authStore.userInfo.userId}`)// 通过路由路径导航
     }
     // 退出登录
@@ -689,7 +684,6 @@ export default {
      */
     const performFrontendCleanup = async () => {
       console.log('🧹 开始清理前端状态...');
-
       try {
         // 1. 清除 Pinia Store 状态
         authStore.logout();
@@ -825,7 +819,9 @@ export default {
       search,
       goToOrders,
       retryLoadMenuData,
-      goToCart
+      goToCart,
+      //Vue 3 的 Composition API 规定：只有通过 setup() 的 return { ... } 返回的变量，才能在模板（<template>）中直接使用。
+      authStore
     }
   }
 }
@@ -1668,6 +1664,11 @@ export default {
   .mega-menu {
     display: none;
   }
+}
+.logged-in-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 按钮间距，可调整 */
 }
 
 </style>
