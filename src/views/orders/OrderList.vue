@@ -104,206 +104,193 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from 'axios'
 import router from "@/router/index.js";
+import { useAuthStore } from '@/store/auth'
+const authStore = useAuthStore()
+const userId = authStore.userInfo?.userId
+const token = authStore.token // 假设你的 authStore 有 token 字段，如没有请补充
+// 筛选条件
+const filters = reactive({
+  status: '',
+  orderSn: ''
+})
 
-export default {
-  name: 'OrderList',
-  setup() {
-    // 筛选条件
-    const filters = reactive({
-      status: '',
-      orderSn: ''
+// 加载状态
+const loading = ref(false)
+
+// 订单数据
+const orders = ref([])
+
+// 分页参数（虽然你当前只取第一页，但保留结构以备扩展）
+const pagination = reactive({
+  currentPage: 1,
+  pageSize: 50,
+  total: 0
+})
+const fetchOrders  = async (page = pagination.currentPage, size = pagination.pageSize) => {
+  loading.value = true
+  try {
+    const queryDTO = {
+      userId:userId
+    }
+    const response = await fetch(`/api/order/page?page=${page}&size=${size}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // 如果后端需要身份验证，请加上这一行 👇
+        'Authorization': token ? `Bearer ${token}` : '',
+      },
+      body: JSON.stringify(queryDTO)
     })
-
-    // 加载状态
-    const loading = ref(false)
-
-    // 订单数据
-    const orders = ref([])
-
-    // 获取订单列表
-    const fetchOrders = async () => {
-      loading.value = true
-      try {
-        // 构建查询参数
-        const queryDTO = {
-          status: filters.status ? parseInt(filters.status) : null,
-          orderSn: filters.orderSn || null
-        }
-        console.info("订单API queryDTO is：", queryDTO)
-        // 正确调用POST接口，传递分页参数
-        const response = await axios.post('/api/order/page', queryDTO, {
-          params: {
-            page: 1,  // 当前页码
-            size: 10  // 每页大小
-          }
-        })
-        // console.info("订单API response is：", response)
-        // console.info("订单API完整响应结构：", response.data)
-        // console.info("分页数据：", response.data.data) // 这里才是真正的数据
-        // console.info("订单列表数据：", response.data.data.list) // 关键：这里是list
-        // 正确获取响应数据
-        if (response.data && response.data.code === 200) {
-          // 正确路径：response.data.data.records
-          orders.value = response.data.data.list || []
-          console.info("订单列表：", orders.value)
-        } else {
-          ElMessage.error('获取订单数据失败：' + (response.data.message || '未知错误'))
-        }
-      } catch (error) {
-        console.error('获取订单数据失败:', error)
-        ElMessage.error('获取订单数据失败，请稍后重试')
-      } finally {
-        loading.value = false
-      }
+    const result = await response.json()
+    if (result && result.code === 200) {
+      const pageData = result.data
+      // 赋值
+      orders.value = pageData.list || []
+      pagination.total = pageData.total || 0
+      pagination.currentPage = pageData.pageNum || page
+      console.log("🎯 fetchOrders执行完成")
+    } else {
+      ElMessage.error('获取订单数据失败：' + (result.message || '未知错误'))
     }
-
-    // 处理筛选条件变化
-    const handleFilterChange = () => {
-      fetchOrders()
-    }
-
-    // 处理搜索
-    const handleSearch = () => {
-      fetchOrders()
-    }
-
-    // 格式化日期时间
-    const formatDateTime = (dateTime) => {
-      if (!dateTime) return '-'
-      return new Date(dateTime).toLocaleString('zh-CN')
-    }
-
-    // 获取订单状态文本
-    const getStatusText = (status) => {
-      const statusMap = {
-        1: '待付款',
-        2: '待发货',
-        3: '待收货',
-        4: '已完成',
-        5: '已关闭'
-      }
-      return statusMap[status] || '未知状态'
-    }
-
-    // 获取订单状态类名
-    const getStatusClass = (status) => {
-      const statusClassMap = {
-        1: 'status-pending_payment',
-        2: 'status-pending_shipment',
-        3: 'status-shipped',
-        4: 'status-completed',
-        5: 'status-closed'
-      }
-      return statusClassMap[status] || ''
-    }
-
-    // 查看订单详情
-    const viewOrderDetail = (orderId) => {
-      // 这里应该使用路由跳转
-      console.log('查看订单详情:', orderId)
-      const url = `/order-item/order/${orderId}`
-      console.info("订单详情url is :",url);
-      router.push(url)// 通过路由路径导航
-    }
-
-    // 处理付款
-    const handlePay = async (orderId) => {
-      try {
-        loading.value = true
-        const response = await axios.post(`/api/order/pay/${orderId}`)
-
-        if (response.data && response.data.success) {
-          ElMessage.success('付款成功')
-          fetchOrders() // 刷新订单列表
-        } else {
-          ElMessage.error('付款失败')
-        }
-      } catch (error) {
-        console.error('付款失败:', error)
-        ElMessage.error('付款失败，请稍后重试')
-      } finally {
-        loading.value = false
-      }
-    }
-
-    // 处理取消订单
-    const handleCancel = async (orderId) => {
-      try {
-        await ElMessageBox.confirm('确定要取消此订单吗？', '提示', {
-          type: 'warning'
-        })
-
-        loading.value = true
-        const response = await axios.post(`/api/order/cancel/${orderId}`)
-
-        if (response.data && response.data.success) {
-          ElMessage.success('订单已取消')
-          fetchOrders() // 刷新订单列表
-        } else {
-          ElMessage.error('取消订单失败')
-        }
-      } catch (error) {
-        if (error !== 'cancel') {
-          console.error('取消订单失败:', error)
-          ElMessage.error('取消订单失败，请稍后重试')
-        }
-      } finally {
-        loading.value = false
-      }
-    }
-
-    // 处理确认收货
-    const handleConfirm = async (orderId) => {
-      try {
-        await ElMessageBox.confirm('确认收到商品后，货款将支付给卖家。请确保商品无误后再确认收货。', '确认收货', {
-          type: 'warning'
-        })
-
-        loading.value = true
-        const response = await axios.post(`/api/order/confirm/${orderId}`)
-
-        if (response.data && response.data.success) {
-          ElMessage.success('确认收货成功')
-          fetchOrders() // 刷新订单列表
-        } else {
-          ElMessage.error('确认收货失败')
-        }
-      } catch (error) {
-        if (error !== 'cancel') {
-          console.error('确认收货失败:', error)
-          ElMessage.error('确认收货失败，请稍后重试')
-        }
-      } finally {
-        loading.value = false
-      }
-    }
-
-    // 初始化
-    onMounted(() => {
-      fetchOrders()
-    })
-
-    return {
-      filters,
-      loading,
-      orders,
-      handleFilterChange,
-      handleSearch,
-      formatDateTime,
-      getStatusText,
-      getStatusClass,
-      viewOrderDetail,
-      handlePay,
-      handleCancel,
-      handleConfirm
-    }
+  } catch (error) {
+    console.error('获取订单数据失败:', error)
+    ElMessage.error('获取订单数据失败，请稍后重试')
+  }finally {
+    loading.value = false
+    console.log("🏁 loading设置为false")
   }
 }
+
+// 处理筛选条件变化
+const handleFilterChange = () => {
+  fetchOrders()
+}
+
+// 处理搜索
+const handleSearch = () => {
+  fetchOrders()
+}
+
+// 格式化日期时间
+const formatDateTime = (dateTime) => {
+  if (!dateTime) return '-'
+  return new Date(dateTime).toLocaleString('zh-CN')
+}
+
+// 获取订单状态文本
+const getStatusText = (status) => {
+  const statusMap = {
+    1: '待付款',
+    2: '待发货',
+    3: '待收货',
+    4: '已完成',
+    5: '已关闭'
+  }
+  return statusMap[status] || '未知状态'
+}
+
+// 获取订单状态类名
+const getStatusClass = (status) => {
+  const statusClassMap = {
+    1: 'status-pending_payment',
+    2: 'status-pending_shipment',
+    3: 'status-shipped',
+    4: 'status-completed',
+    5: 'status-closed'
+  }
+  return statusClassMap[status] || ''
+}
+
+// 查看订单详情
+const viewOrderDetail = (orderId) => {
+  // 这里应该使用路由跳转
+  console.log('查看订单详情:', orderId)
+  const url = `/order-item/order/${orderId}`
+  console.info("订单详情url is :",url);
+  router.push(url)// 通过路由路径导航
+}
+
+// 处理付款
+const handlePay = async (orderId) => {
+  try {
+    loading.value = true
+    const response = await axios.post(`/api/order/pay/${orderId}`)
+
+    if (response.data && response.data.success) {
+      ElMessage.success('付款成功')
+      fetchOrders() // 刷新订单列表
+    } else {
+      ElMessage.error('付款失败')
+    }
+  } catch (error) {
+    console.error('付款失败:', error)
+    ElMessage.error('付款失败，请稍后重试')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 处理取消订单
+const handleCancel = async (orderId) => {
+  try {
+    await ElMessageBox.confirm('确定要取消此订单吗？', '提示', {
+      type: 'warning'
+    })
+
+    loading.value = true
+    const response = await axios.post(`/api/order/cancel/${orderId}`)
+
+    if (response.data && response.data.success) {
+      ElMessage.success('订单已取消')
+      fetchOrders() // 刷新订单列表
+    } else {
+      ElMessage.error('取消订单失败')
+    }
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('取消订单失败:', error)
+      ElMessage.error('取消订单失败，请稍后重试')
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+// 处理确认收货
+const handleConfirm = async (orderId) => {
+  try {
+    await ElMessageBox.confirm('确认收到商品后，货款将支付给卖家。请确保商品无误后再确认收货。', '确认收货', {
+      type: 'warning'
+    })
+
+    loading.value = true
+    const response = await axios.post(`/api/order/confirm/${orderId}`)
+
+    if (response.data && response.data.success) {
+      ElMessage.success('确认收货成功')
+      fetchOrders() // 刷新订单列表
+    } else {
+      ElMessage.error('确认收货失败')
+    }
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('确认收货失败:', error)
+      ElMessage.error('确认收货失败，请稍后重试')
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+// 初始化
+onMounted(() => {
+  fetchOrders()
+})
 </script>
 
 <style scoped>

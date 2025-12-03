@@ -18,6 +18,12 @@
       <section class="hero-section">
         <div class="hero-container">
           <div class="hero-image">
+            <img
+                v-if="wuXingData.symbolIconUrl"
+                :src="wuXingData.symbolIconUrl"
+                :alt="wuXingData.elementNameEn"
+                class="hero-img"
+            >
             <div class="image-placeholder">
               <span class="symbol-char">{{ wuXingData.symbolCharacter }}</span>
             </div>
@@ -257,23 +263,19 @@
             <h3 class="card-title">Image Resources</h3>
             <div class="image-grid">
               <div class="image-item" v-if="wuXingData.symbolIconUrl">
-
-                <span class="image-label">Symbol Icon</span>
+                <img :src="wuXingData.symbolIconUrl" alt="象征" class="resource-img">
               </div>
               <div class="image-item" v-if="wuXingData.philosophyImageUrl">
-
-                <span class="image-label">Philosophy Diagram</span>
+                <img :src="wuXingData.philosophyImageUrl" alt="哲学" class="resource-img">
               </div>
               <div class="image-item" v-if="wuXingData.energyFlowImageUrl">
-
-                <span class="image-label">Energy Flow</span>
+                <img :src="wuXingData.energyFlowImageUrl" alt="能量" class="resource-img">
               </div>
               <div class="image-item no-image" v-if="!wuXingData.symbolIconUrl && !wuXingData.philosophyImageUrl && !wuXingData.energyFlowImageUrl">
                 <span>No image resources available</span>
               </div>
             </div>
           </div>
-
         </div>
       </section>
     </div>
@@ -785,7 +787,6 @@ export default {
   padding: 1rem;
   background: rgba(255, 255, 255, 0.02);
   border-radius: 4px;
-  border-left: 3px solid #4ecdc4;
 }
 
 .meaning-item strong {

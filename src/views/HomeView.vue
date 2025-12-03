@@ -1,10 +1,8 @@
 <template>
   <div class="homepage">
-    <!-- 情感意图循环单元 -->
+    <!-- 循环单元 -->
     <div v-for="(intent, index) in emotionalIntents" :key="intent.id" class="intent-unit">
-      <!-- 根据索引决定单元类型 -->
       <template v-if="index % 3 === 0">
-        <!-- 单元类型1: 模块1 + 模块2 -->
         <section class="module-1">
           <div class="module-container">
             <div class="module-content">
@@ -42,7 +40,7 @@
             </div>
           </div>
         </section>
-        <!-- 模块间分隔文字 -->
+
         <div class="module-spacer" v-if="intent.modernInterpretationEn">
           <div class="spacer-text">{{ intent.modernInterpretationEn }}</div>
         </div>
@@ -58,7 +56,7 @@
               >
                 <div class="image-container">
                   <img
-                    :src="product.mainImageUrl || defaultProductImage"
+                    :src="product.mainImageUrl"
                     :alt="product.productNameEn"
                     class="product-image fill-image"
                   />
@@ -74,7 +72,6 @@
       </template>
 
       <template v-else-if="index % 3 === 1">
-        <!-- 单元类型2: 模块3 + 模块4 -->
         <section class="module-3">
           <div class="module-container">
             <div class="module-content reversed">
@@ -112,10 +109,11 @@
             </div>
           </div>
         </section>
-        <!-- 模块间分隔文字 -->
+
         <div class="module-spacer" v-if="intent.modernInterpretationEn">
           <div class="spacer-text">{{ intent.modernInterpretationEn }}</div>
         </div>
+
         <section class="module-4">
           <div class="module-container">
             <div class="products-grid strict-grid">
@@ -143,7 +141,6 @@
       </template>
 
       <template v-else>
-        <!-- 单元类型3: 模块5 + 模块6 -->
         <section class="module-5">
           <div class="module-container">
             <div class="vertical-split">
@@ -181,10 +178,11 @@
             </div>
           </div>
         </section>
-        <!-- 模块间分隔文字 -->
+
         <div class="module-spacer" v-if="intent.modernInterpretationEn">
           <div class="spacer-text">{{ intent.modernInterpretationEn }}</div>
         </div>
+
         <section class="module-6">
           <div class="module-container">
             <div class="products-grid strict-grid">
@@ -224,7 +222,7 @@
           >
             <div class="image-container">
               <img
-                :src="element.symbolIconUrl || defaultIntentImage"
+                :src="element.symbolIconUrl"
                 :alt="element.elementNameEn"
                 class="element-image fill-image"
               />
@@ -466,7 +464,7 @@ const preprocessProductData = (product) => {
     // 确保必要字段存在
     productNameEn: processText(product.productNameEn || '', 130),
     shortDescriptionEn: processText(product.shortDescriptionEn || '', 25),
-    mainImageUrl: product.mainImageUrl || DEFAULT_PRODUCT_IMAGE
+    mainImageUrl: product.mainImageUrl
   }
   //console.log(`商品数据映射: spuId=${product.id} -> id=${processedProduct.id}`)
   return processedProduct

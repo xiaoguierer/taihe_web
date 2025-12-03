@@ -106,8 +106,6 @@ const authStore = useAuthStore()
 const userId = authStore.userInfo?.userId
 const token = authStore.token // 假设你的 authStore 有 token 字段，如没有请补充
 
-console.info("-----userId  -----:",userId)
-
 // 🔹 2. 响应式数据定义
 const loading = ref(false)
 const cartItems = ref([])
@@ -115,7 +113,7 @@ const cartItems = ref([])
 // 分页参数（虽然你当前只取第一页，但保留结构以备扩展）
 const pagination = reactive({
   currentPage: 1,
-  pageSize: 10,
+  pageSize: 50,
   total: 0
 })
 

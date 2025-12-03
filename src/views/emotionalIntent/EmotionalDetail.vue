@@ -700,7 +700,6 @@ export default {
   padding: 1rem;
   background: rgba(255, 255, 255, 0.02);
   border-radius: 4px;
-  border-left: 3px solid #4ecdc4;
 }
 
 .meaning-item strong {

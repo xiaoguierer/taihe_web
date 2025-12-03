@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // ✅ 保持：isLoggedIn 计算属性
   const isLoggedIn = computed(() => {
-    console.log('🔐 检查登录状态, token存在:', !!token.value);
+   // console.log('🔐 检查登录状态, token存在:', !!token.value);
     return !!token.value;
   });
 
@@ -118,7 +118,7 @@ export const useAuthStore = defineStore('auth', () => {
   // ✅ 新增：调用后端退出接口
   const callBackendLogout = async (token) => {
     try {
-      const response = await fetch('/api/auth/logout', {
+      const response = await fetch('/api/users/logout', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
