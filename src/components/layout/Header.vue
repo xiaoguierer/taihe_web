@@ -126,9 +126,9 @@
                           <div class="product-info">
                             <h5 class="product-name">{{ product.productName }}</h5>
                             <div class="product-price">
-                              <span class="retail-price">¥{{ formatPrice(product.price) }}</span>
-                              <span v-if="product.salePrice" class="sale-price">¥{{
-                                  formatPrice(product.salePrice)
+                              <span class="retail-price">${{ formatPrice(product.salePrice) }}</span>
+                              <span v-if="product.price" class="sale-price">${{
+                                  formatPrice(product.price)
                                 }}</span>
                             </div>
                             <div class="product-tags">
@@ -170,11 +170,10 @@
       </div>
     </div>
 
-    <!-- 修复：将 user-actions 移到 header-actions 外部 -->
     <div class="header-actions">
-      <div class="action-item" @click="search" title="搜索">
+<!--   <div class="action-item" @click="search" title="搜索">
         <span class="action-icon">🔍</span>
-      </div>
+      </div>-->
 
       <!-- 购物车 -->
       <div class="action-item cart-item" @click.stop="goToCart()" title="购物车">
@@ -614,11 +613,11 @@ export default {
 
     // 用户信息
     const goToUser = () => {
-      // console.log('🔐 认证信息:')
       // console.log('Token:', authStore.token)
       // console.log('User信息:', authStore.userInfo)
       // console.log('User的userId信息:', authStore.userInfo.userId)
       // console.log('是否已登录:', authStore.isLoggedIn)
+      // console.log('🔐 认证信息:')
 
       const url = `/users/login`
   //    console.info("用户登錄url is :", url);
@@ -750,6 +749,7 @@ export default {
         const response = await fetch('/api/emotional-intent/list')
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const result = await response.json()
+        //过滤showInNavigation为1 且按照sortOrder升序排序
         if (result?.data) {
           emotionalIntents.value = result.data
             .filter(item => item.showInNavigation === 1)
@@ -759,7 +759,6 @@ export default {
             id: item.id,
             label: item.intentNameEn,
             intentId: item.id,
-            //path: '/emotionalProductList',
             megaMenu: true
           }))
 
@@ -820,7 +819,6 @@ export default {
       goToOrders,
       retryLoadMenuData,
       goToCart,
-      //Vue 3 的 Composition API 规定：只有通过 setup() 的 return { ... } 返回的变量，才能在模板（<template>）中直接使用。
       authStore
     }
   }

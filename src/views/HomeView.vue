@@ -2,36 +2,34 @@
   <div class="homepage">
     <!-- 循环单元 -->
     <div v-for="(intent, index) in emotionalIntents" :key="intent.id" class="intent-unit">
+      <!-- 第一单元 -->
       <template v-if="index % 3 === 0">
         <section class="module-1">
           <div class="module-container">
             <div class="module-content">
               <div class="text-section">
-                <h1 class="module-title">{{ intent.symbolCharacter }} {{ intent.intentNameEn }}</h1>
+                <h1 class="module-title">{{ intent.id }}-{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
                 <div class="content-grid">
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.id }}</p>
+                    <p class="content-text strict-text">{{ intent.primaryEmotionEn }}/{{ intent.secondaryEmotionsEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.primaryEmotionEn }}</p>
+                    <p class="content-text strict-text">{{ intent.philosophyMeaningEn }}-{{ intent.culturalSignificanceEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.secondaryEmotionsEn }}</p>
+                    <p class="content-text strict-text">{{ intent.spiritualMeaningEn }}/{{ intent.careerAlignmentEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.philosophyMeaningEn }}</p>
+                    <p class="content-text strict-text">{{ intent.personalityArchetypeEn }}/{{ intent.healingPropertyEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.spiritualMeaningEn }}</p>
-                  </div>
-                  <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.modernInterpretationEn }}</p>
+                    <p class="content-text strict-text">{{ intent.relationshipImpactEn }}</p>
                   </div>
                 </div>
               </div>
               <div class="image-section">
                 <img
-                  :src="intent.iconUrl || defaultIntentImage"
+                  :src="intent.iconUrl"
                   :alt="intent.intentNameEn"
                   @click="navigateToIntentProducts(intent.id)"
                   class="adaptive-image fill-image"
@@ -64,13 +62,15 @@
                 <div class="product-info strict-text-container">
                   <h3 class="product-name strict-text">{{ product.productNameEn }}</h3>
                   <p class="product-desc strict-text">{{ product.shortDescriptionEn }}</p>
+                  <h3 class="product-name strict-text">{{ product.emotionalPurposeEn }}</h3>
+                  <p class="product-desc strict-text">{{ product.fullDescriptionEn }}</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
       </template>
-
+      <!-- 第二单元 -->
       <template v-else-if="index % 3 === 1">
         <section class="module-3">
           <div class="module-container">
@@ -84,25 +84,23 @@
                 />
               </div>
               <div class="text-section">
-                <h1 class="module-title">{{ intent.symbolCharacter }} {{ intent.intentNameEn }}</h1>
+                <h1 class="module-title">{{ intent.id }}-{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
                 <div class="content-grid">
+
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.id }}</p>
+                    <p class="content-text strict-text">{{ intent.primaryEmotionEn }}/{{ intent.secondaryEmotionsEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.primaryEmotionEn }}</p>
+                    <p class="content-text strict-text">{{ intent.philosophyMeaningEn }}-{{ intent.culturalSignificanceEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.secondaryEmotionsEn }}</p>
+                    <p class="content-text strict-text">{{ intent.spiritualMeaningEn }}/{{ intent.careerAlignmentEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.philosophyMeaningEn }}</p>
+                    <p class="content-text strict-text">{{ intent.personalityArchetypeEn }}/{{ intent.healingPropertyEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.spiritualMeaningEn }}</p>
-                  </div>
-                  <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.modernInterpretationEn }}</p>
+                    <p class="content-text strict-text">{{ intent.relationshipImpactEn }}</p>
                   </div>
                 </div>
               </div>
@@ -125,7 +123,7 @@
               >
                 <div class="image-container">
                   <img
-                    :src="product.mainImageUrl || defaultProductImage"
+                    :src="product.mainImageUrl"
                     :alt="product.productNameEn"
                     class="product-image fill-image"
                   />
@@ -133,45 +131,44 @@
                 <div class="product-info strict-text-container">
                   <h3 class="product-name strict-text">{{ product.productNameEn }}</h3>
                   <p class="product-desc strict-text">{{ product.shortDescriptionEn }}</p>
+                  <h3 class="product-name strict-text">{{ product.emotionalPurposeEn }}</h3>
+                  <p class="product-desc strict-text">{{ product.fullDescriptionEn }}</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
       </template>
-
+      <!-- 第三单元 -->
       <template v-else>
         <section class="module-5">
           <div class="module-container">
             <div class="vertical-split">
               <div class="image-top">
                 <img
-                  :src="intent.iconUrl || defaultIntentImage"
+                  :src="intent.iconUrl"
                   :alt="intent.intentNameEn"
                   @click="navigateToIntentProducts(intent.id)"
                   class="adaptive-image fill-image"
                 />
               </div>
               <div class="text-bottom">
-                <h1 class="module-title">{{ intent.symbolCharacter }} {{ intent.intentNameEn }}</h1>
+                <h1 class="module-title">{{ intent.id }}-{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
                 <div class="content-list">
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.id }}</p>
+                    <p class="content-text strict-text">{{ intent.primaryEmotionEn }}/{{ intent.secondaryEmotionsEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.primaryEmotionEn }}</p>
+                    <p class="content-text strict-text">{{ intent.philosophyMeaningEn }}-{{ intent.culturalSignificanceEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.secondaryEmotionsEn }}</p>
+                    <p class="content-text strict-text">{{ intent.spiritualMeaningEn }}/{{ intent.careerAlignmentEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.philosophyMeaningEn }}</p>
+                    <p class="content-text strict-text">{{ intent.personalityArchetypeEn }}/{{ intent.healingPropertyEn }}</p>
                   </div>
                   <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.spiritualMeaningEn }}</p>
-                  </div>
-                  <div class="content-item">
-                    <p class="content-text strict-text">{{ intent.modernInterpretationEn }}</p>
+                    <p class="content-text strict-text">{{ intent.relationshipImpactEn }}</p>
                   </div>
                 </div>
               </div>
@@ -194,7 +191,7 @@
               >
                 <div class="image-container">
                   <img
-                    :src="product.mainImageUrl || defaultProductImage"
+                    :src="product.mainImageUrl"
                     :alt="product.productNameEn"
                     class="product-image fill-image"
                   />
@@ -202,6 +199,8 @@
                 <div class="product-info strict-text-container">
                   <h3 class="product-name strict-text">{{ product.productNameEn }}</h3>
                   <p class="product-desc strict-text">{{ product.shortDescriptionEn }}</p>
+                  <h3 class="product-name strict-text">{{ product.emotionalPurposeEn }}</h3>
+                  <p class="product-desc strict-text">{{ product.fullDescriptionEn }}</p>
                 </div>
               </div>
             </div>
@@ -210,8 +209,11 @@
       </template>
     </div>
 
-    <!-- 五行模块 -->
+    <!-- 最后一个独立单元 五行模块 -->
     <section class="wu-xing-module" v-if="wuXingAttributes.length > 0">
+      <div class="module-spacer" v-if="wuXingAttributes.mythologicalAssociationEn">
+        <div class="spacer-text">{{ wuXingAttributes.mythologicalAssociationEn }}</div>
+      </div>
       <div class="module-container">
         <div class="wu-xing-grid">
           <div
@@ -223,13 +225,15 @@
             <div class="image-container">
               <img
                 :src="element.symbolIconUrl"
-                :alt="element.elementNameEn"
+                :alt="element.elementCode"
                 class="element-image fill-image"
               />
             </div>
             <div class="element-info strict-text-container">
-              <div class="element-name strict-text">{{ element.elementNameEn }}</div>
+              <div class="element-name strict-text">{{ element.cosmologyMeaningEn }}</div>
               <div class="element-philosophy strict-text">{{ element.philosophyMeaningEn }}</div>
+              <div class="element-name strict-text">{{ element.lifePhilosophyEn }}</div>
+              <div class="element-philosophy strict-text">{{ element.culturalSymbolismEn }}</div>
             </div>
           </div>
         </div>
@@ -244,17 +248,12 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
 // 常量定义
-const DEFAULT_INTENT_IMAGE = '/api/files/PRODUCTEMO/2025/11/21/94688275ff404a3e9de0c48d1a6f47d9.jpeg'
-const DEFAULT_PRODUCT_IMAGE = '/api/files/PRODUCDETAIL/2025/11/21/86a8c9b27b1049319afd74f5dadc19f7.jpeg'
 const PRODUCT_LIMIT = 10
-
 // 响应式数据
 const emotionalIntents = ref([])
 const wuXingAttributes = ref([])
 const productMap = ref(new Map())
-
 // 统一的API响应数据处理
 const extractDataFromResponse = (result) => {
   if (!result) return null
@@ -262,18 +261,15 @@ const extractDataFromResponse = (result) => {
   if (Array.isArray(result)) {
     return result
   }
-
   const dataFields = ['data', 'result', 'list', 'items', 'records', 'content']
   for (const field of dataFields) {
     if (Array.isArray(result[field])) {
       return result[field]
     }
   }
-
   if (result.records && Array.isArray(result.records)) {
     return result.records
   }
-
   console.warn('无法从API响应中提取数组数据:', result)
   return null
 }
@@ -300,20 +296,16 @@ const navigateToWuXing = (elementId) => {
 // 获取商品数据
 const getIntentProducts = (intentId) => {
   if (!intentId) return []
-
   const products = productMap.value.get(intentId) || []
-
   if (products.length < PRODUCT_LIMIT) {
     const placeholders = Array(PRODUCT_LIMIT - products.length).fill().map((_, index) => ({
       id: `placeholder-${intentId}-${index}`,
       productNameEn: 'Coming Soon',
       shortDescriptionEn: 'Product in development',
-      mainImageUrl: DEFAULT_PRODUCT_IMAGE,
       isPlaceholder: true
     }))
     return [...products, ...placeholders]
   }
-
   return products.slice(0, PRODUCT_LIMIT)
 }
 
@@ -357,7 +349,7 @@ const fetchEmotionalIntents = async () => {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const result = await response.json()
-   // console.info('情感意图API原始响应:', result)
+    console.info('情感意图---------------API原始响应:', result)
     const intentsData = extractDataFromResponse(result)
     if (!Array.isArray(intentsData)) {
       throw new Error('情感意图数据格式不正确')
@@ -540,9 +532,9 @@ onMounted(() => {
 /* 严格的文本约束 */
 .strict-text {
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap; /* 单行显示，确保不换行 */
+  //overflow: hidden;
+  //text-overflow: ellipsis;
+  //white-space: nowrap; /* 单行显示，确保不换行 */
   line-height: 1.2;
   margin: 0;
   padding: 0;
@@ -994,9 +986,9 @@ onMounted(() => {
   padding: 0;
   color: #f0f0f0;
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  //overflow: hidden;
+  //text-overflow: ellipsis;
+  //white-space: nowrap;
   box-sizing: border-box;
 }
 
