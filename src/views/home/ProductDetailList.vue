@@ -1526,7 +1526,6 @@ const nextImage = () => {
   background: rgba(255, 255, 255, 0.05);
   padding: 12px;
   border-radius: 8px;
-  border-left: 3px solid #ffd700;
   transition: transform 0.2s;
 }
 
@@ -1583,54 +1582,6 @@ const nextImage = () => {
   padding: 10px;
 }
 
-.sku-options {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.sku-option {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 15px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.sku-option:hover {
-  border-color: #ffd700;
-  transform: translateX(5px);
-}
-
-.sku-option.active {
-  border-color: #ffd700;
-  background: rgba(255, 215, 0, 0.05);
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.1);
-}
-
-.sku-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sku-name {
-  font-weight: 500;
-  color: #fff;
-}
-
-.sku-code {
-  font-size: 12px;
-  color: #b0b0b0;
-}
-
-.sku-price {
-  font-weight: 600;
-  color: #ffd700;
-}
 
 /* 价格信息 */
 .price-section {
@@ -1716,9 +1667,6 @@ const nextImage = () => {
   transform: translateY(-2px);
 }
 
-.badge-icon {
-  font-size: 18px;
-}
 
 /* 操作按钮 */
 .action-buttons {
