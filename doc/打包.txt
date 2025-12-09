@@ -1,0 +1,224 @@
+1 安装依赖
+npm install terser -D
+npm install
+
+2  package.json 中
+{
+  "scripts": {
+    "build": "vite build"  // Vue 3 + Vite
+    // 或
+    "build": "vue-cli-service build"  // Vue 2 + Vue CLI
+  }
+}
+
+3 打包
+npm run build
+
+4 打包结果
+dist/
+├── assets/
+│   ├── index-xxx.js
+│   └── index-xxx.css
+└── index.html
+
+5 上传服务器
+scp -r dist/* root@47.84.2.177:/opt/app/front_web/dist
+
+6 ng配置
+
+文件路径  /etc/nginx/conf.d/taihe-web.conf
+
+
+# 配置1 /etc/nginx/conf.d/taihe-web.conf
+server {
+    listen       80;
+    server_name  www.zeniul.cn 47.84.2.177;
+
+    charset utf-8;
+    root /opt/app/front_web/dist;
+    index index.html index.htm;
+
+    # Gzip压缩配置
+    gzip on;
+    gzip_min_length 1k;
+    gzip_comp_level 6;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+    gzip_vary on;
+    gzip_disable "MSIE [1-6]\.";
+
+    # 1. 优先处理favicon.ico - 避免循环
+    location = /favicon.ico {
+        try_files /taihe.ico /favicon.ico =204;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        access_log off;
+        log_not_found off;
+    }
+
+    # 2. 静态资源处理
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options nosniff;
+    }
+
+    # 3. API代理
+    location /api/ {
+        proxy_pass http://localhost:8080/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+    }
+
+    # 4. 隐藏文件保护
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # 5. 错误页面配置
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+
+
+    # 6. 主路由 - SPA支持（放在最后）
+    location / {
+        try_files $uri $uri/ @spa_fallback;
+    }
+
+    # 使用命名location避免循环
+    location @spa_fallback {
+        rewrite ^(.*)$ /index.html break;
+    }
+}
+-----
+ # 配置2  taihe-guanli.conf
+server {
+    listen       8081;  # 使用不同端口
+    server_name  localhost 47.84.2.177;
+
+    charset utf-8;
+    root /opt/app/back_web/dist;
+    index index.html index.htm;
+
+    # Gzip压缩配置
+    gzip on;
+    gzip_min_length 1k;
+    gzip_comp_level 6;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+    gzip_vary on;
+    gzip_disable "MSIE [1-6]\.";
+
+    # 1. 优先处理favicon.ico
+    location = /favicon.ico {
+    try_files /favicon.ico =204;
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    access_log off;
+    log_not_found off;
+    }
+    # 2. 静态资源处理
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options nosniff;
+    }
+
+    # 3. API代理
+    location /api/ {
+        proxy_pass http://localhost:8080/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+    }
+
+    # 4. 隐藏文件保护
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # 5. 错误页面配置
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+
+
+    # 6. 主路由 - SPA支持（放在最后）
+    location / {
+        try_files $uri $uri/ @spa_fallback;
+    }
+
+    # 使用命名location避免循环
+    location @spa_fallback {
+        rewrite ^(.*)$ /index.html break;
+    }
+}
+
+7 重启
+sudo nginx -t
+sudo systemctl restart nginx
+
+8 验证
+ http://47.84.2.177
+
+ # 1. 检查配置文件语法
+ sudo nginx -t
+
+ # 2. 确保favicon文件存在
+ sudo touch /opt/app/front_web/dist/favicon.ico
+
+ # 3. 重新加载Nginx配置
+ sudo systemctl reload nginx
+
+ # 4. 检查Nginx状态
+ sudo systemctl status nginx
+
+ # 5. 测试网站访问
+ curl -I http://47.84.2.177/
+
+ # 6. 检查错误日志
+ tail -f /var/log/nginx/error.log
+
+
+ -------
+ 安装缺失依赖
+npm install @vitejs/plugin-vue vite-plugin-vue-devtools --save-dev
+
+# 1. 检查依赖树冲突
+npm list --depth=3
+
+# 2. 检查过时的包
+npm outdated
+
+# 3. 检查包的大小和依赖关系
+npx vite-bundle-analyzer
+
+查看日志
+tail -f /var/log/nginx/error.log
+
+# 检查端口监听
+sudo netstat -tlnp | grep nginx
+
+# 检查配置文件
+ls -la /etc/nginx/conf.d/
+
+# 测试访问
+curl http://47.84.2.177:8081
