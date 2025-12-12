@@ -171,10 +171,6 @@
     </div>
 
     <div class="header-actions">
-<!--   <div class="action-item" @click="search" title="搜索">
-        <span class="action-icon">🔍</span>
-      </div>-->
-
       <!-- 购物车 -->
       <div class="action-item cart-item" @click.stop="goToCart()" title="购物车">
         <span class="action-icon">🛒</span>

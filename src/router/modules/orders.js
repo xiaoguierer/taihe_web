@@ -17,6 +17,42 @@ const orderRoutes = [
       title: '服务订单',
       requiresAuth: true
     }
+  },
+  {
+    path: '/orders/OrderConfirmation',
+    name: 'OrderConfirmation',
+    component: () => import('@/views/orders/OrderConfirmation.vue'),
+    meta: {
+      title: '订单确认',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/orders/PaymentChannel',
+    name: 'PaymentChannel',
+    component: () => import('@/views/orders/PaymentChannel.vue'),
+    meta: {
+      title: '支付渠道',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/orders/PaySuccess',
+    name: 'PaySuccess',
+    component: () => import('@/views/orders/PaySuccess.vue'),
+    meta: {
+      title: '支付成功',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/orders/PayError',
+    name: 'PaySuccess',
+    component: () => import('@/views/orders/PayError.vue'),
+    meta: {
+      title: '支付失败',
+      requiresAuth: true
+    }
   }
 ]
 

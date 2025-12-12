@@ -2,12 +2,12 @@
   <div class="cart-page">
     <!-- 页面头部 -->
     <div class="page-header">
-      <h1 class="page-title">购物车</h1>
+      <h1 class="page-title">Cart</h1>
     </div>
 
     <!-- 加载状态 -->
     <div v-if="loading" class="loading-container">
-      <div class="loading-spinner">正在加载购物车数据...</div>
+      <div class="loading-spinner">Loading shopping cart data...</div>
     </div>
 
     <!-- 购物车内容 -->
@@ -18,18 +18,18 @@
           :model-value="isAllSelected"
           @change="handleSelectAll"
         >
-          全选
+          Select All
         </el-checkbox>
-        <span class="selected-count">已选 {{ selectedCount }} 件商品</span>
+        <span class="selected-count">You have chosen {{ selectedCount }} item(s)</span>
       </div>
 
       <!-- 商品列表 -->
       <div class="product-list">
         <div v-if="cartItems.length === 0" class="empty-cart">
           <div class="empty-icon">🛒</div>
-          <div class="empty-text">购物车是空的</div>
-          <div class="empty-subtext">快去挑选心仪的商品吧</div>
-          <el-button type="primary" @click="$router.push('/')">去逛逛</el-button>
+          <div class="empty-text">Your cart is empty.</div>
+          <div class="empty-subtext">Shop your favorites now!</div>
+          <el-button type="primary" @click="$router.push('/')">Start browsing now!</el-button>
         </div>
 
         <!-- 商品卡片 -->
@@ -47,26 +47,27 @@
 
           <div class="item-info">
             <div class="product-name">{{ item.productName || `商品 ${item.skuId}` }}</div>
+            <div class="product-spec">SPU: {{ item.spuId }}</div>
             <div class="product-spec">SKU: {{ item.skuId }}</div>
-            <div class="product-price">单价: ¥{{ (item.unitPrice || 0).toFixed(2) }}</div>
+            <div class="product-price">Unit price: ${{ (item.unitPrice || 0).toFixed(2) }}</div>
           </div>
 
           <div class="item-quantity">
             <el-input-number
-              v-model="item.quantity"
-              :min="1"
-              :max="10"
-              @change="(val) => handleQuantityChange(item.id, val)"
+                v-model="item.quantity"
+                :min="1"
+                :max="10"
+                @change="(val) => handleQuantityChange(item.id, val)"
             />
           </div>
 
           <div class="item-subtotal">
-            <div class="subtotal">¥{{ ((item.unitPrice || 0) * item.quantity).toFixed(2) }}</div>
+            <div class="subtotal">${{ ((item.unitPrice || 0) * item.quantity).toFixed(2) }}</div>
           </div>
 
           <div class="item-actions">
             <el-button type="danger" text @click="handleRemoveItem(item.id)">
-              删除
+              Remove
             </el-button>
           </div>
         </div>
@@ -76,8 +77,8 @@
       <div class="summary-section" v-if="cartItems.length > 0">
         <div class="summary-content">
           <div class="summary-info">
-            <span class="selected-count">已选 {{ selectedCount }} 件商品</span>
-            <span class="total-amount">总计: ¥{{ totalAmount.toFixed(2) }}</span>
+            <span class="selected-count">Selected: {{ selectedCount }} item(s)</span>
+            <span class="total-amount">Subtotal: ${{ totalAmount.toFixed(2) }}</span>
           </div>
           <el-button
             type="primary"
@@ -86,7 +87,7 @@
             @click="handleCheckout"
             :disabled="selectedCount === 0"
           >
-            去结算
+            Go to checkout
           </el-button>
         </div>
       </div>
@@ -99,6 +100,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useAuthStore } from '@/store/auth'
+import axios from "axios";
 
 // 🔹 1. 获取路由实例 & Pinia store
 const router = useRouter()
@@ -180,7 +182,6 @@ const loadCartData = async () => {
   loading.value = true
   try {
     const queryDTO = { userId }  // 传入当前用户 ID
-
     const response = await getCartList(queryDTO, pagination.currentPage, pagination.pageSize)
 
     if (response.code === 200) {
@@ -304,14 +305,34 @@ const handleSelectAll = async (selected) => {
 }
 
 // 去结算
-const handleCheckout = () => {
+const handleCheckout = async () => {
+  if (!authStore.isLoggedIn) {
+    alert('⚠️ 用户未登录，请先登录！')
+    const url = `/users/login`
+    router.push(url)// 通过路由路径导航
+  }
   if (selectedItems.value.length === 0) {
     ElMessage.warning('请选择要结算的商品')
     return
   }
-  ElMessage.success('跳转到结算页面')
-  // TODO: 实际项目中替换为真实跳转，如：router.push('/checkout')
-  // router.push('/checkout')
+  const checkoutData = {
+    userId: userId,
+    totalAmount: totalAmount.value.toFixed(2),//总金额
+    SkuCount: selectedCount.value,//商品数量
+    SpuCount: selectedItems.value.length,//商品种类
+    items: selectedItems.value.map(item => ({
+      cartItemId: item.id,//购物车id
+      spuId: item.spuId,//spuid
+      skuId: item.skuId,// skuid
+      unitPrice: (item.unitPrice || 0).toFixed(2),//单价
+      quantity: item.quantity,  //sku数量
+      subtotal: ((item.unitPrice || 0) * item.quantity).toFixed(2) //小计
+    }))
+  }
+  console.log('结构化结算数据:', checkoutData)
+  sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData))
+  console.log('数据已存储到sessionStorage')
+  router.push('/orders/OrderConfirmation')
 }
 
 // 🔹 7. 页面初始化加载
@@ -458,7 +479,7 @@ onMounted(() => {
 .image-placeholder {
   font-size: 40px;
   opacity: 0.7;
-  color: #e2e8f0;
+  color: #ffff00;
 }
 
 .item-info {
@@ -490,6 +511,8 @@ onMounted(() => {
 .item-quantity {
   display: flex;
   justify-content: center;
+  background-color: #facc15; /* 黄色 */
+  color: #000000; /* 黑色文字 */
 }
 
 .item-subtotal {

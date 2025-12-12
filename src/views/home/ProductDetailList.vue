@@ -203,8 +203,8 @@
               </div>
               <!-- 操作按钮 -->
               <div class="action-buttons">
-                <button class="btn-primary" @click="buyNow">🛒 立即购买</button>
-                <button class="btn-secondary" @click="addToCart">❤️ 加入购物车</button>
+<!--                <button class="btn-secondary" @click="buyNow">🛒 Buy Now</button>-->
+                <button class="btn-primary" @click="addToCart">❤️ Add to Cart 🛒 </button>
               </div>
               <!-- 快速信息 -->
               <div class="quick-info-grid">
@@ -507,9 +507,13 @@
 <script setup>
 import {ref, onMounted, computed, watch} from 'vue'
 import {useRoute} from 'vue-router'
+import {useAuthStore} from "@/store/auth.js";
+import router from "@/router/index.js";
 
 const route = useRoute()
-
+const authStore = useAuthStore()
+/*console.log('🔍 [GlobalHeader] ------------------当前 authStore 对象:', authStore);
+console.log('🔍 [GlobalHeader] ------------------当前登录状态:', authStore.isLoggedIn);*/
 // 响应式数据
 const loading = ref(true)
 const error = ref(null)
@@ -553,7 +557,7 @@ const imageList = computed(() => {
   const sku = currentSku.value
   const images = []
 
-  console.log('🖼️ 不去重图片处理开始:')
+  /*console.log('🖼️ 不去重图片处理开始:')*/
 
   // 强制添加所有图片，完全不去重
   const addImage = (url, type, fieldName) => {
@@ -565,9 +569,9 @@ const imageList = computed(() => {
         uniqueKey: `${fieldName}-${images.length}`, // 基于字段和顺序的唯一key
         alt: `${sku.skuNameZh} - ${type}`
       })
-      console.log(`✅ 添加图片 [${fieldName}]:`, url)
+     // console.log(`✅ 添加图片 [${fieldName}]:`, url)
     } else {
-      console.log(`❌ 空图片字段: ${fieldName}`, url)
+     // console.log(`❌ 空图片字段: ${fieldName}`, url)
     }
   }
 
@@ -577,9 +581,7 @@ const imageList = computed(() => {
   addImage(sku.image2Url, '细节图2', 'image2Url')
   addImage(sku.image3Url, '细节图3', 'image3Url')
   addImage(sku.image4Url, '细节图4', 'image4Url')
-  addImage(sku.image5Url, '细节图5', 'image5Url')
-
-  console.log('📊 不去重最终结果:', {
+ /* console.log('📊 不去重最终结果:', {
     总图片数: images.length,
     图片列表: images.map(img => ({
       字段: img.fieldName,
@@ -587,7 +589,9 @@ const imageList = computed(() => {
       URL: img.src,
       唯一键: img.uniqueKey
     }))
-  })
+  })*/
+
+  addImage(sku.image5Url, '细节图5', 'image5Url')
 
   return images
 })
@@ -701,9 +705,9 @@ const fetchProductData = async () => {
     const spuData = spuResult.data || spuResult
     const skuData = skuResult.data || skuResult
     const wuxingData = wuxingResult.data || wuxingResult
-    console.info('=11111== spuData ===', spuData)
+  /*  console.info('=11111== spuData ===', spuData)
     console.info('=22222== skuData ===', skuData)
-    console.info('=33333== wuxingData ===', wuxingData)
+    console.info('=33333== wuxingData ===', wuxingData)*/
 
     if (!spuData) {
       throw new Error('SPU数据为空')
@@ -715,11 +719,11 @@ const fetchProductData = async () => {
       wuxing: Array.isArray(wuxingData) ? {data: wuxingData} : wuxingData
     }
     //输出集合数据
-    console.info('=== productData ===')
+   /* console.info('=== productData ===')
     console.log('SKU列表数量:', skuList.value.length)
-    console.log('wuxing列表数量:', wuxingList.value.length)
+    console.log('wuxing列表数量:', wuxingList.value.length)*/
     //输出spu输出
-    console.log('productData is', productData.value)
+    /*console.log('productData is', productData.value)
     console.log('SPU ID:', productData.value.spu.id)
     console.log('SPU spuCode:', productData.value.spu.spuCode)
     console.log('SPU productNameEn:', productData.value.spu.productNameEn)
@@ -782,14 +786,14 @@ const fetchProductData = async () => {
     console.log('SPU createdBy:', productData.value.spu.createdBy)
     console.log('SPU updatedBy:', productData.value.spu.updatedBy)
     console.log('SPU createdTime:', productData.value.spu.createdTime)
-    console.log('SPU updatedTime:', productData.value.spu.updatedTime)
+    console.log('SPU updatedTime:', productData.value.spu.updatedTime)*/
 
     //循环输出skuID  只输出2个数据值
     console.log('wuxing is', productData.value.wuxing)
     wuxingList.value.forEach((wuxing, index) => {
       console.log(`WUXING ${index + 1}:`, {
         elementKey: wuxing.elementKey,
-        elementCode: wuxing.elementCode,
+       /* elementCode: wuxing.elementCode,
         elementCategory: wuxing.elementCategory,
         elementNameEn: wuxing.elementNameEn,
         elementNameZh: wuxing.elementNameZh,
@@ -855,7 +859,7 @@ const fetchProductData = async () => {
         sortOrder: wuxing.sortOrder,
         elementTier: wuxing.elementTier,
         isActive: wuxing.isActive,
-        createdTime: wuxing.createdTime,
+        createdTime: wuxing.createdTime,*/
         updatedTime: wuxing.updatedTime
       })
     })
@@ -864,7 +868,7 @@ const fetchProductData = async () => {
     skuList.value.forEach((sku, index) => {
       console.log(`SKU ${index + 1}:`, {
         id: sku.id,
-        spuId: sku.spuId,
+        /*spuId: sku.spuId,
         skuCode: sku.skuCode,
         skuNameEn: sku.skuNameEn,
         skuNameZh: sku.skuNameZh,
@@ -941,7 +945,7 @@ const fetchProductData = async () => {
         updatedBy: sku.updatedBy,
         createdTime: sku.createdTime,
         updatedTime: sku.updatedTime,
-        availableQuantity: sku.availableQuantity,
+        availableQuantity: sku.availableQuantity,*/
         finalPrice: sku.finalPrice
       })
     })
@@ -984,12 +988,12 @@ const selectSku = (sku) => {
     // 切换SKU时重置图片索引到第一张
     currentImageIndex.value = 0
 
-    console.log('🔄 SKU切换:', {
+    /*console.log('🔄 SKU切换:', {
       新SKU: sku.id,
       SKU名称: sku.skuNameZh,
       图片数量: imageList.value.length,
       主图mainImageUrl: sku.mainImageUrl
-    })
+    })*/
   }
 }
 // 下拉框变更处理方法
@@ -1000,12 +1004,12 @@ const onSkuDropdownChange = (event) => {
     // 切换SKU时重置图片索引到第一张
     currentImageIndex.value = 0
 
-    console.log('🔄 SKU下拉选择切换:', {
+   /* console.log('🔄 SKU下拉选择切换:', {
       新SKU索引: selectedIndex,
       新SKU: currentSku.value.id,
       SKU名称: currentSku.value.skuNameZh,
       图片数量: imageList.value.length
-    })
+    })*/
   }
 }
 
@@ -1059,15 +1063,22 @@ const cartLoading = ref(false)
 
 // 添加购物车方法
 const addToCart = async () => {
+  if (!authStore.isLoggedIn) {
+    alert('⚠️ 用户未登录，请先登录！')
+    const url = `/users/login`
+    await router.push(url)// 通过路由路径导航
+    };
   if (!currentSku.value.id) {
     alert('请选择商品规格')
-    return
   }
   cartLoading.value = true
+  const userId = authStore.userInfo?.userId;
+  console.log('✅ 当前登录用户ID:', userId);
   try {
     const cartData = {
-      userId: '0010010',
+      userId: userId,
       skuId: currentSku.value.id, // 商品SKU ID（必填）
+      spuId: productData.value.spu.id,
       quantity: 1, // 购买数量（默认1）
       selected: 1, // 是否选中: 0-否, 1-是（默认1）
       unitPrice: currentPrice.value, // 加入时单价（必填）
@@ -1079,6 +1090,7 @@ const addToCart = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authStore.token}`
       },
       body: JSON.stringify(cartData)
     })
@@ -1093,7 +1105,7 @@ const addToCart = async () => {
       throw new Error(result.message || '添加购物车失败')
     }
   } catch (error) {
-    console.error('❌ 添加购物车异常:', error)
+    console.error('❌ 添加购物车异常:')
     alert('❌ ' + (error.message || '添加购物车失败，请重试'))
   } finally {
     cartLoading.value = false
@@ -1125,7 +1137,7 @@ watch(
 
 // 在watch中添加更多调试信息
 watch([currentSku, imageList], ([newSku, newImages]) => {
-  console.group('🖼️ SKU图片变化详情')
+ /* console.group('🖼️ SKU图片变化详情')
   console.log('当前SKU:', newSku?.id, newSku?.skuNameZh)
   console.log('主图URL:', newSku?.mainImageUrl)
   console.log('其他图片:')
@@ -1134,9 +1146,9 @@ watch([currentSku, imageList], ([newSku, newImages]) => {
   console.log('  image3Url:', newSku?.image3Url)
   console.log('  image4Url:', newSku?.image4Url)
   console.log('  image5Url:', newSku?.image5Url)
-  console.log('可用图片列表:')
+  console.log('可用图片列表:')*/
   newImages.forEach((img, i) => {
-    console.log(`  ${i}. ${img.src} (${img.type})`)
+    //console.log(`  ${i}. ${img.src} (${img.type})`)
   })
   console.groupEnd()
 }, {immediate: true})
@@ -1154,11 +1166,11 @@ onMounted(() => {
 
 // 调试方法（开发环境使用）
 const debugProductData = () => {
-  console.log('当前商品数据:', productData.value)
+  /*console.log('当前商品数据:', productData.value)
   console.log('当前SKU:', currentSku.value)
   console.log('图片列表:', imageList.value)
   console.log('SKU列表:', skuList.value)
-  console.log('质量数据:', qualityData.value)
+  console.log('质量数据:', qualityData.value)*/
 }
 
 // 错误处理
@@ -1779,7 +1791,6 @@ const nextImage = () => {
   display: block;
   width: 60px;
   height: 3px;
-  background: #ffd700;
   margin: 10px auto 0;
 }
 
