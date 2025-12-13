@@ -29,6 +29,7 @@
     "prettier": "^3.2.5",
     "terser": "^5.44.1",
     "vite": "^5.4.21",
-    "vite-plugin-vue-devtools": "^7.7.9"
+    "vite-plugin-vue-devtools": "^7.7.9",
+    "webpack-bundle-analyzer": "^5.1.0"
   }
 }

@@ -227,7 +227,6 @@ const executePayPalPayment = async () => {
     const response = await axios.post('/api/payment/execute', null, {
       params: {  // 使用params而不是data
         paymentId: paypalParams.paymentId,
-        token: paypalParams.token,
         PayerID: paypalParams.payerId
       },
       headers: {
