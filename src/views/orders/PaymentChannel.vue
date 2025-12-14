@@ -157,8 +157,11 @@ const handlePayment = async () => {
     console.log('开始支付，方式:', selectedMethod.value, '订单:', orderInfo.value.orderId)
     // 构建完整的回调URL（确保是绝对路径）
     const baseUrl = window.location.origin
-    const successUrl = `https://www.zeniul.cn/orders/PaySuccess`
-    const cancelUrl = `https://www.zeniul.cn/orders/PayError`
+    const successUrl = `http://localhost:3000/orders/PaySuccess`
+    const cancelUrl = `http://localhost:3000/orders/PayError`
+
+    // const successUrl = `https://www.zeniul.cn/orders/PaySuccess`
+    // const cancelUrl = `https://www.zeniul.cn/orders/PayError`
 
     // 根据DTO文档构建正确的请求参数
     const paymentRequestDTO = {
