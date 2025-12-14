@@ -8,8 +8,7 @@ npm install
     "build": "vite build"  // Vue 3 + Vite
     // 或
     "build": "vue-cli-service build"  // Vue 2 + Vue CLI
-  }
-}
+    }
 
 3 打包
 npm run build

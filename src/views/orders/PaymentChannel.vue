@@ -156,9 +156,9 @@ const handlePayment = async () => {
     loading.value = true
     console.log('开始支付，方式:', selectedMethod.value, '订单:', orderInfo.value.orderId)
     // 构建完整的回调URL（确保是绝对路径）
-    const baseUrl = window.location.origin
+   /* const baseUrl = window.location.origin
     const successUrl = `https://www.zeniul.cn/orders/PaySuccess`
-    const cancelUrl = `https://www.zeniul.cn/orders/PayError`
+    const cancelUrl = `https://www.zeniul.cn/orders/PayError`*/
 
     // 根据DTO文档构建正确的请求参数
     const paymentRequestDTO = {
@@ -168,9 +168,9 @@ const handlePayment = async () => {
       currency: orderInfo.value.currency || 'USD', // 货币类型
       method: selectedMethod.value, // 支付方式
       intent: 'sale', // 支付意图
-      description: `订单支付 - ${orderInfo.value.orderSn}`, // 订单描述
-      successUrl: successUrl, // 使用构建的完整URL
-      cancelUrl: cancelUrl    // 使用构建的完整URL
+      description: `订单支付 - ${orderInfo.value.orderSn}` // 订单描述
+     /* successUrl: successUrl, // 使用构建的完整URL
+      cancelUrl: cancelUrl    // 使用构建的完整URL*/
     }
     console.log('支付请求数据:', paymentRequestDTO)
     // 模拟支付API调用
