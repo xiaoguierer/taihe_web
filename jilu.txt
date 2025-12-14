@@ -336,3 +336,5 @@ sequenceDiagram
 https://www.zeniul.cn/?paymentId=PAYID-NE5XFLY3FW76170ED306203J&token=EC-7RP867962C371600H&PayerID=8AKYFMR8HYWKN
 支付失败
 https://yourshop.com/payment/cancel?token=EC-0AB12345CD67890EF
+
+https://www.zeniul.cn/orders/PaySuccess?paymentId=PAYID-NE6R36A8KR82876LH598280D&token=EC-49687473G3892763R&PayerID=8AKYFMR8HYWKN

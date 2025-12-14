@@ -1,5 +1,14 @@
 <template>
-  <div class="payment-success-container">
+  <!-- 强制显示测试 -->
+  <div style="background: red; color: white; padding: 20px; font-size: 24px;">
+    🚨 组件已加载 - 测试文字可见吗？
+  </div>
+
+  <div class="payment-success-container"  v-if="false">
+    <!-- 调试信息 -->
+    <div style="background: red; color: white; padding: 10px; position: fixed; top: 0; left: 0; z-index: 9999;">
+      调试: loading={{ loading }}, error={{ error }}, paymentStatus={{ paymentStatus }}
+    </div>
     <!-- 加载状态 -->
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner">
@@ -57,11 +66,11 @@
             </div>
             <div class="result-item">
               <span class="label">订单号：</span>
-              <span class="value">{{ paymentData.orderSn }}</span>
+              <span class="value">{{ paymentData.orderId }}</span>
             </div>
             <div class="result-item">
               <span class="label">支付金额：</span>
-              <span class="value amount">${{ formatAmount(paymentData.amount) }}</span>
+              <span class="value amount">${{ formatAmount(paymentData.paymentAmount) }}</span>
             </div>
             <div class="result-item">
               <span class="label">货币类型：</span>
@@ -69,11 +78,7 @@
             </div>
             <div class="result-item">
               <span class="label">支付时间：</span>
-              <span class="value">{{ formatTime(paymentData.createTime) }}</span>
-            </div>
-            <div v-if="paymentData.payerEmail" class="result-item">
-              <span class="label">PayPal账号：</span>
-              <span class="value">{{ paymentData.payerEmail }}</span>
+              <span class="value">{{ formatTime(paymentData.paymentTime) }}</span>
             </div>
             <div v-if="paymentData.transactionId" class="result-item">
               <span class="label">交易号：</span>
@@ -94,16 +99,16 @@
                 <span class="info-value status-completed">已完成支付</span>
               </div>
               <div class="info-item">
+                <span class="info-label">商品种类：</span>
+                <span class="info-value">{{ paymentData.spuCount || 0 }}类</span>
+              </div>
+              <div class="info-item">
                 <span class="info-label">商品数量：</span>
-                <span class="info-value">{{ orderInfo.itemCount || 0 }} 件</span>
+                <span class="info-value">{{ paymentData.skuCount || 0 }} 件</span>
               </div>
               <div class="info-item">
                 <span class="info-label">订单总额：</span>
-                <span class="info-value amount">${{ formatAmount(orderInfo.totalAmount) }}</span>
-              </div>
-              <div class="info-item full-width">
-                <span class="info-label">订单描述：</span>
-                <span class="info-value">{{ orderInfo.description || '商品购买' }}</span>
+                <span class="info-value amount">${{ formatAmount(paymentData.totalAmount) }}</span>
               </div>
             </div>
           </div>
@@ -165,6 +170,7 @@
         </button>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -189,12 +195,16 @@ const orderInfo = ref({})
 
 // 从URL参数获取PayPal支付信息
 const getPayPalPaymentParams = () => {
-  // PayPal支付成功后会重定向到successUrl，并携带以下参数：
-  // paymentId: PayPal支付ID
-  // PayerID: 付款人ID
-  // token: 支付令牌
+  // PayPal支付成功后会重定向到successUrl，并携带以下参数：paymentId: PayPal支付ID
+  // PayerID: 付款人ID  ; token: 支付令牌
   const params = route.query
   console.log('PayPal回调参数:', params)
+  console.log('🔍 路由参数详情:', {
+    hasPaymentId: !!params.paymentId,
+    hasPayerID: !!params.PayerID,
+    hasToken: !!params.token,
+    allParams: params
+  })
   return {
     paymentId: params.paymentId,
     payerId: params.PayerID,
@@ -205,7 +215,17 @@ const getPayPalPaymentParams = () => {
 // 检查是否是支付取消
 const checkIfCancelled = () => {
   const params = route.query
+  console.log('🔍 取消判断详情:', {
+    token: params.token,
+    paymentId: params.paymentId,
+    PayerID: params.PayerID,
+    result: params.token && !params.paymentId && !params.PayerID
+  })
+  console.info("方法checkIfCancelled中的 params 参数：" ,params);
   // 如果只有token参数，通常是用户取消了支付
+  //如果 URL 中存在 token，但是不存在 paymentId 也不存在 PayerID，那么条件成立。
+  //paymentId 支付凭证id   PayerID 支付人id
+  console.info("方法checkIfCancelled中的 params.token && !params.paymentId && !params.PayerID 判断：：" ,params.token && !params.paymentId && !params.PayerID);
   if (params.token && !params.paymentId && !params.PayerID) {
     return true
   }
@@ -214,10 +234,10 @@ const checkIfCancelled = () => {
 
 // 执行PayPal支付
 const executePayPalPayment = async () => {
+  console.log('🚀 开始执行支付验证')
   try {
     loading.value = true
     error.value = ''
-
     const paypalParams = getPayPalPaymentParams()
     console.log('支付网关PayPal回调参数:', paypalParams)
     if (!paypalParams.paymentId || !paypalParams.payerId || !paypalParams.token) {
@@ -235,10 +255,47 @@ const executePayPalPayment = async () => {
       }
     })
     console.log('支付执行响应:', response.data)
-    // 根据paymentId获取支付记录
-    // 根据支付记录中的
+    // 提取并输出 paymentResponse 的每个值
+    if (response.data.paymentResponse) {
+      console.log('=== paymentResponse 内容 ===')
+      Object.entries(response.data.paymentResponse).forEach(([key, value]) => {
+        console.log(`${key}:`, value)
+      })
+    }
+    // 输出 orderPayment 和 orderMain 的 ID
+    if (response.data.orderPayment) {
+      console.log('orderPayment ID:', response.data.orderPayment.id)
+      console.log('orderPayment gatewayTradeNo:', response.data.orderPayment.paymentAmount)
+      console.log('orderPayment 完整对象:', response.data.orderPayment)
+    }
 
+    if (response.data.orderMain) {
+      console.log('orderMain ID:', response.data.orderMain.id)
+      console.log('orderMain userId:', response.data.orderMain.userId)
+      console.log('orderMain 完整对象:', response.data.orderMain)
+    }
+    // 将数据赋值给前端响应式变量
+    paymentData.value = {
+      paymentId: response.data.paymentResponse?.paymentId,
+      status: response.data.paymentResponse?.status,
+      transactionId: response.data.paymentResponse?.transactionId,
+      executeTime: response.data.paymentResponse?.executeTime,
+      orderPaymentId: response.data.orderPayment?.id,
+      orderId: response.data.orderPayment?.orderId,
+      paymentAmount: response.data.orderPayment?.paymentAmount,
+      currency: response.data.orderPayment?.currency,
+      userId: response.data.orderMain?.userId,
+      spuCount: response.data.orderMain?.spuCount,
+      skuCount: response.data.orderMain?.skuCount,
+      totalAmount: response.data.orderMain?.totalAmount,
+      createdTime: response.data.orderMain?.createdTime,
+      paymentTime: response.data.orderMain?.paymentTime
+    }
+    console.info("paymentData.value 机构话数据：",paymentData.value )
+    paymentStatus.value = 'success'  // 添加这行
   } catch (err) {
+    console.error('💥 支付验证错误详情:', err)
+    console.error('💥 错误响应:', err.response)
     console.error('PayPal支付执行失败:', err)
     error.value = err.response?.data?.message || err.message || '支付处理失败，请稍后重试'
     paymentStatus.value = 'failed'
@@ -277,7 +334,7 @@ const backToOrder = () => {
 // 查看订单详情
 const viewOrderDetail = () => {
   if (paymentData.value.orderSn) {
-    router.push(`/order/detail/${paymentData.value.orderSn}`)
+    router.push(`/order/detail/${paymentData.value.orderId}`)
   } else {
     router.push('/order/list')
   }
@@ -311,13 +368,19 @@ const formatTime = (timeString) => {
 
 // 组件挂载时执行
 onMounted(() => {
+  console.log('🚨 测试 - 组件已挂载')
+  alert('组件已加载') // 临时弹窗测试
+  console.log('🔄 组件挂载开始')
+  console.log('📊 当前路由参数:', route.query)
+  console.log('🔍 checkIfCancelled 结果:', checkIfCancelled())
   // 检查是否是支付取消
   if (checkIfCancelled()) {
+    console.log('❌ 支付取消状态')
     paymentStatus.value = 'cancelled'
     loading.value = false
     return
   }
-
+  console.log('✅ 执行支付验证')
   // 执行PayPal支付
   executePayPalPayment()
 })

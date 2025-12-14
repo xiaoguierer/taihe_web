@@ -532,9 +532,9 @@ onMounted(() => {
 /* 严格的文本约束 */
 .strict-text {
   max-width: 100%;
-  //overflow: hidden;
-  //text-overflow: ellipsis;
-  //white-space: nowrap; /* 单行显示，确保不换行 */
+//overflow: hidden;
+//text-overflow: ellipsis;
+//white-space: nowrap; /* 单行显示，确保不换行 */
   line-height: 1.2;
   margin: 0;
   padding: 0;
@@ -607,7 +607,7 @@ onMounted(() => {
 
 /* ========== 模块2样式 ========== */
 .module-2 {
-  height: 50vh; /* 严格12厘米高度 */
+  /* height: 50vh; 严格12厘米高度 */
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -712,7 +712,26 @@ onMounted(() => {
   transition: all 0.3s;
 }
 
-.module-4 .image-container,
+.module-4 .image-container {
+  width: 100%;
+  height: 70%; /* 固定图片区域比例 */
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  flex-shrink: 0; /* 防止被压缩 */
+  min-height: 0; /* 允许收缩 */
+}
+
+.module-4 .product-image {
+  width: 100%;
+  height: 100%; /* 填充整个image-container */
+  margin: 0;
+  padding: 0;
+  border-radius: 0.15cm;
+  object-fit: fill; /* 完全填充 */
+  flex-shrink: 0;
+}
+
 .module-6 .image-container {
   width: 100%;
   height: 70%;
@@ -780,7 +799,7 @@ onMounted(() => {
 
 /* ========== 模块4样式 ========== */
 .module-4 {
-  height: 12cm; /* 严格12厘米高度 */
+  /* height: 12cm; 严格12厘米高度 */
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -858,7 +877,7 @@ onMounted(() => {
 
 /* ========== 模块6样式 ========== */
 .module-6 {
-  height: 12cm; /* 严格12厘米高度 */
+  /* height: 12cm; 严格12厘米高度 */
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -905,7 +924,7 @@ onMounted(() => {
 
 /* ========== 五行模块样式 ========== */
 .wu-xing-module {
-  height: 8cm; /* 严格8厘米高度 */
+  /* height: 8cm; 严格8厘米高度 */
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -914,30 +933,32 @@ onMounted(() => {
 
 .wu-xing-grid {
   display: flex;
+  flex-wrap: nowrap; /* 确保不换行 */
   justify-content: space-around;
-  align-items: center;
+  align-items: stretch; /* 确保所有卡片等高 */
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0.5cm;
   box-sizing: border-box;
+  gap: 0.3cm; /* 使用gap替代margin */
 }
 
 .element-card {
-  text-align: center;
   cursor: pointer;
-  flex: 1;
-  margin: 0 0.2cm;
-  max-width: 20%; /* 一行5个，每个20% */
-  height: 80%;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.2cm;
+  margin: 0;
+  padding: 0.2cm;
   box-sizing: border-box;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.2cm;
-  padding: 0.2cm;
+  /* height: 100%; 占满容器高度 */
+  min-height: 0; /* 关键：允许在网格中收缩 */
   transition: all 0.3s;
+  flex: 1; /* 平均分配空间 */
 }
 
 .element-card:hover {
@@ -946,21 +967,40 @@ onMounted(() => {
 }
 
 .element-card .image-container {
-  height: 60%; /* 图像占60%高度 */
-  margin-bottom: 0.2cm;
+  width: 100%;
+  height: 70%; /* 固定图片区域比例，与product-card一致 */
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  flex-shrink: 0; /* 防止被压缩 */
+  min-height: 0; /* 允许收缩 */
+}
+
+.element-card .element-image {
+  width: 100%;
+  height: 100%; /* 填充整个image-container */
+  margin: 0;
+  padding: 0;
+  border-radius: 0.15cm; /* 与product-image一致 */
+  object-fit: fill; /* 完全填充，与product-image一致 */
   flex-shrink: 0;
 }
 
 .element-card .element-info {
-  height: 40%; /* 文字占40%高度 */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  height: 30%; /* 文字占卡片30%高度，与product-info一致 */
   margin: 0;
-  padding: 0;
+  padding: 0.2cm 0.1cm; /* 与product-info一致 */
   box-sizing: border-box;
   overflow: hidden;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 与product-info一致 */
+  min-height: 0; /* 允许收缩 */
+}
+
+.element-card .element-info.strict-text-container {
+  overflow: hidden; /* 与product-info一致 */
 }
 
 /* ========== 文本样式 ========== */
@@ -986,9 +1026,9 @@ onMounted(() => {
   padding: 0;
   color: #f0f0f0;
   max-width: 100%;
-  //overflow: hidden;
-  //text-overflow: ellipsis;
-  //white-space: nowrap;
+//overflow: hidden;
+//text-overflow: ellipsis;
+//white-space: nowrap;
   box-sizing: border-box;
 }
 
@@ -1000,9 +1040,6 @@ onMounted(() => {
   line-height: 1.2;
   color: #ffffff;
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   box-sizing: border-box;
 }
 
@@ -1020,30 +1057,34 @@ onMounted(() => {
 }
 
 .element-name {
-  font-size: 0.25cm;
+  font-size: 0.28cm;
   font-weight: 600;
-  margin: 0 0 0.1cm 0;
-  padding: 0;
-  line-height: 1.2;
+  margin: 0;
+  padding: 0.02cm 0;
+  line-height: 1.4;
   color: #d4af37;
-  max-width: 100%;
+  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   box-sizing: border-box;
+  text-align: center;
+  display: block; /* 确保显示 */
 }
 
 .element-philosophy {
-  font-size: 0.2cm;
+  font-size: 0.22cm;
   color: #cccccc;
-  line-height: 1.2;
+  line-height: 1.4;
   margin: 0;
-  padding: 0;
-  max-width: 100%;
+  padding: 0.02cm 0;
+  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   box-sizing: border-box;
+  text-align: center;
+  display: block; /* 确保显示 */
 }
 
 /* ========== 响应式设计 ========== */

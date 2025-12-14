@@ -159,6 +159,9 @@ const handlePayment = async () => {
    /* const baseUrl = window.location.origin
     const successUrl = `https://www.zeniul.cn/orders/PaySuccess`
     const cancelUrl = `https://www.zeniul.cn/orders/PayError`*/
+    const baseUrl = window.location.origin
+    /*const successUrl = `http://localhost:3000/orders/PaySuccess`
+    const cancelUrl = `http://localhost:3000/orders/PayError`*/
 
     // 根据DTO文档构建正确的请求参数
     const paymentRequestDTO = {
