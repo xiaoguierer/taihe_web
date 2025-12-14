@@ -38,7 +38,7 @@ const orderRoutes = [
   },
   {
     path: '/orders/PaySuccess',
-    name: 'PaySuccess',
+    name: '/orders/PaySuccess',
     component: () => import('@/views/orders/PaySuccess.vue'),
     meta: {
       title: '支付成功',
@@ -47,7 +47,7 @@ const orderRoutes = [
   },
   {
     path: '/orders/PayError',
-    name: 'PaySuccess',
+    name: '/orders/PayError',
     component: () => import('@/views/orders/PayError.vue'),
     meta: {
       title: '支付失败',

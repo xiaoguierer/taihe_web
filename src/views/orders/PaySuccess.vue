@@ -1,14 +1,5 @@
 <template>
-  <!-- 强制显示测试 -->
-  <div style="background: red; color: white; padding: 20px; font-size: 24px;">
-    🚨 组件已加载 - 测试文字可见吗？
-  </div>
-
-  <div class="payment-success-container"  v-if="false">
-    <!-- 调试信息 -->
-    <div style="background: red; color: white; padding: 10px; position: fixed; top: 0; left: 0; z-index: 9999;">
-      调试: loading={{ loading }}, error={{ error }}, paymentStatus={{ paymentStatus }}
-    </div>
+  <div class="payment-success-container">
     <!-- 加载状态 -->
     <div v-if="loading" class="loading-container">
       <div class="loading-spinner">
@@ -368,11 +359,10 @@ const formatTime = (timeString) => {
 
 // 组件挂载时执行
 onMounted(() => {
-  console.log('🚨 测试 - 组件已挂载')
-  alert('组件已加载') // 临时弹窗测试
-  console.log('🔄 组件挂载开始')
+  // console.log('🚨 测试 - 组件已挂载')
+  // console.log('🔄 组件挂载开始')
   console.log('📊 当前路由参数:', route.query)
-  console.log('🔍 checkIfCancelled 结果:', checkIfCancelled())
+ // console.log('🔍 checkIfCancelled 结果:', checkIfCancelled())
   // 检查是否是支付取消
   if (checkIfCancelled()) {
     console.log('❌ 支付取消状态')
@@ -393,6 +383,7 @@ onMounted(() => {
   padding: 20px;
   min-height: 100vh;
   background-color: #f8f9fa;
+  padding-top: 50px; /* 为顶部元素留出空间 */
 }
 
 /* 加载状态 */

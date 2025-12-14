@@ -210,10 +210,10 @@
     </div>
 
     <!-- 最后一个独立单元 五行模块 -->
+    <div class="module-spacer" v-if="wuXingAttributes.length > 0 && wuXingAttributes[0]?.mythologicalAssociationEn">
+      <div class="spacer-text">{{ wuXingAttributes[0].mythologicalAssociationEn }}</div>
+    </div>
     <section class="wu-xing-module" v-if="wuXingAttributes.length > 0">
-      <div class="module-spacer" v-if="wuXingAttributes.mythologicalAssociationEn">
-        <div class="spacer-text">{{ wuXingAttributes.mythologicalAssociationEn }}</div>
-      </div>
       <div class="module-container">
         <div class="wu-xing-grid">
           <div
@@ -230,10 +230,10 @@
               />
             </div>
             <div class="element-info strict-text-container">
-              <div class="element-name strict-text">{{ element.cosmologyMeaningEn }}</div>
-              <div class="element-philosophy strict-text">{{ element.philosophyMeaningEn }}</div>
-              <div class="element-name strict-text">{{ element.lifePhilosophyEn }}</div>
-              <div class="element-philosophy strict-text">{{ element.culturalSymbolismEn }}</div>
+              <div class="element-name strict-text">{{ element.cosmologyMeaningZh || element.cosmologyMeaningEn }}</div>
+              <div class="element-philosophy strict-text">{{ element.philosophyMeaningZh || element.philosophyMeaningEn }}</div>
+              <div class="element-name strict-text">{{ element.lifePhilosophyZh || element.lifePhilosophyEn }}</div>
+              <div class="element-philosophy strict-text">{{ element.culturalSymbolismZh || element.culturalSymbolismEn }}</div>
             </div>
           </div>
         </div>
@@ -532,9 +532,9 @@ onMounted(() => {
 /* 严格的文本约束 */
 .strict-text {
   max-width: 100%;
-//overflow: hidden;
-//text-overflow: ellipsis;
-//white-space: nowrap; /* 单行显示，确保不换行 */
+  //overflow: hidden;
+  //text-overflow: ellipsis;
+  //white-space: nowrap; /* 单行显示，确保不换行 */
   line-height: 1.2;
   margin: 0;
   padding: 0;
@@ -924,7 +924,7 @@ onMounted(() => {
 
 /* ========== 五行模块样式 ========== */
 .wu-xing-module {
-  /* height: 8cm; 严格8厘米高度 */
+ /* height: 8cm; 严格8厘米高度 */
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -955,7 +955,7 @@ onMounted(() => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  /* height: 100%; 占满容器高度 */
+ /* height: 100%; 占满容器高度 */
   min-height: 0; /* 关键：允许在网格中收缩 */
   transition: all 0.3s;
   flex: 1; /* 平均分配空间 */
@@ -1026,9 +1026,9 @@ onMounted(() => {
   padding: 0;
   color: #f0f0f0;
   max-width: 100%;
-//overflow: hidden;
-//text-overflow: ellipsis;
-//white-space: nowrap;
+  //overflow: hidden;
+  //text-overflow: ellipsis;
+  //white-space: nowrap;
   box-sizing: border-box;
 }
 

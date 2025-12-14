@@ -181,6 +181,13 @@
       <div class="action-item" @click="goToOrders()" title="订单信息">
         <span class="action-icon">📋</span>
       </div>
+
+<!--      <div class="action-item" @click="goToPay()" title="支付回调">-->
+<!--        <span class="action-icon">❤️</span>-->
+<!--      </div>-->
+<!--      <div class="action-item" @click="goToError()" title="支付失败">-->
+<!--        <span class="action-icon">@</span>-->
+<!--      </div>-->
     </div>
 
 
@@ -605,6 +612,15 @@ export default {
    //   console.info("订单url is :", url);
       router.push(url)// 通过路由路径导航
     }
+    const goToPay = () =>{
+      const url = `/orders/PaySuccess`
+      router.push(url)// 通过路由路径导航
+    }
+    const goToError = () =>{
+      const url = `/orders/PayError`
+      router.push(url)// 通过路由路径导航
+    }
+
     const goToHome = () => router.push('/')
 
     // 用户信息
@@ -815,6 +831,8 @@ export default {
       goToOrders,
       retryLoadMenuData,
       goToCart,
+      goToPay,
+      goToError,
       authStore
     }
   }
