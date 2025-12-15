@@ -52,7 +52,7 @@
               </span>
             </div>
             <div class="result-item">
-              <span class="label">PayPal支付ID：</span>
+              <span class="label">PayPal支付流水：</span>
               <span class="value payment-id">{{ paymentData.paymentId }}</span>
             </div>
             <div class="result-item">
@@ -69,7 +69,7 @@
             </div>
             <div class="result-item">
               <span class="label">支付时间：</span>
-              <span class="value">{{ formatTime(paymentData.paymentTime) }}</span>
+              <span class="value">{{paymentData.paymentTime}}</span>
             </div>
             <div v-if="paymentData.transactionId" class="result-item">
               <span class="label">交易号：</span>
@@ -108,34 +108,12 @@
 
       <!-- 操作按钮 -->
       <div class="action-buttons">
-        <button @click="viewOrderDetail" class="btn btn-primary">
-          <i class="fas fa-eye"></i> 查看订单详情
-        </button>
+<!--        <button @click="viewOrderDetail" class="btn btn-primary">-->
+<!--          <i class="fas fa-eye"></i> 查看订单详情-->
+<!--        </button>-->
         <button @click="continueShopping" class="btn btn-secondary">
           <i class="fas fa-shopping-cart"></i> 继续购物
         </button>
-        <button @click="printReceipt" class="btn btn-outline">
-          <i class="fas fa-print"></i> 打印收据
-        </button>
-      </div>
-
-      <!-- PayPal安全保障 -->
-      <div class="security-info">
-        <h3><i class="fas fa-shield-alt"></i> PayPal安全保障</h3>
-        <div class="security-features">
-          <div class="feature-item">
-            <i class="fas fa-lock"></i>
-            <span>加密交易</span>
-          </div>
-          <div class="feature-item">
-            <i class="fas fa-user-shield"></i>
-            <span>买家保护</span>
-          </div>
-          <div class="feature-item">
-            <i class="fas fa-undo"></i>
-            <span>退款保障</span>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -271,10 +249,12 @@ const executePayPalPayment = async () => {
       status: response.data.paymentResponse?.status,
       transactionId: response.data.paymentResponse?.transactionId,
       executeTime: response.data.paymentResponse?.executeTime,
+
       orderPaymentId: response.data.orderPayment?.id,
       orderId: response.data.orderPayment?.orderId,
       paymentAmount: response.data.orderPayment?.paymentAmount,
       currency: response.data.orderPayment?.currency,
+      id: response.data.orderMain?.id,
       userId: response.data.orderMain?.userId,
       spuCount: response.data.orderMain?.spuCount,
       skuCount: response.data.orderMain?.skuCount,
@@ -324,10 +304,8 @@ const backToOrder = () => {
 
 // 查看订单详情
 const viewOrderDetail = () => {
-  if (paymentData.value.orderSn) {
-    router.push(`/order/detail/${paymentData.value.orderId}`)
-  } else {
-    router.push('/order/list')
+  if (paymentData.value.id) {
+    router.push(`/order/getById/${paymentData.value.id}`)
   }
 }
 

@@ -15,18 +15,18 @@
     <div v-else class="payment-content">
       <!-- 订单信息 -->
       <div class="summary-card">
-        <h3 class="section-title">订单信息</h3>
+        <h3 class="section-title">Order infor</h3>
         <div class="summary-grid">
           <div class="summary-item">
-            <span class="label">订单号：</span>
+            <span class="label">Order No：</span>
             <span class="value">{{ orderInfo.orderSn }}</span>
           </div>
           <div class="summary-item">
-            <span class="label">应付金额：</span>
+            <span class="label">Total Amount：</span>
             <span class="value amount-highlight">${{ orderInfo.totalAmount }}</span>
           </div>
           <div class="summary-item">
-            <span class="label">商品数量：</span>
+            <span class="label">Number of items：</span>
             <span class="value">{{ orderInfo.skuCount }} 件</span>
           </div>
         </div>
@@ -34,7 +34,7 @@
 
       <!-- 支付渠道选择 -->
       <div class="summary-card">
-        <h3 class="section-title">选择支付方式</h3>
+        <h3 class="section-title">Choose Payment Method</h3>
         <div class="payment-methods">
           <div
               v-for="method in paymentMethods"
@@ -64,12 +64,13 @@
             type="primary"
             size="large"
             class="pay-button"
-            :disabled="!selectedMethod"
+            :disabled="!selectedMethod || isPaying"
             @click="handlePayment"
         >
-          确认支付 ${{ orderInfo.totalAmount }}
+<!--          确认支付 ${{ orderInfo.totalAmount }}-->
+          {{ isPaying ? 'Processing payment....' : `Confirm pay $${orderInfo.totalAmount}` }}
         </el-button>
-        <el-button @click="$router.back()">取消</el-button>
+<!--        <el-button @click="$router.back()">Cancel</el-button>-->
       </div>
     </div>
   </div>
@@ -87,6 +88,7 @@ const route = useRoute()
 const authStore = useAuthStore()
 const loading = ref(false)
 const selectedMethod = ref('')
+const isPaying = ref(false) // 支付状态锁
 
 // 订单信息
 const orderInfo = ref({
@@ -100,74 +102,69 @@ const orderInfo = ref({
 const paymentMethods = ref([
   {
     id: 'alipay',
-    name: '支付宝',
+    name: 'alipay',
     icon: '💰',
-    description: '推荐支付宝用户使用',
-    discount: '随机立减，最高88元'
+    description: 'Recommended for Alipay users',
+    discount: 'Not available yet'
   },
   {
     id: 'wechat',
-    name: '微信支付',
+    name: 'wechat',
     icon: '💳',
-    description: '推荐微信用户使用',
-    discount: '新用户首单立减5元'
+    description: 'Recommended for WeChat users',
+    discount: 'Not available yet'
   },
   {
     id: 'unionpay',
-    name: '银联支付',
+    name: 'unionpay',
     icon: '🏦',
-    description: '支持各大银行储蓄卡/信用卡',
-    discount: ''
+    description: 'Supports major bank debit/credit cards',
+    discount: 'Not available yet'
   },
   {
     id: 'creditcard',
-    name: '信用卡支付',
+    name: 'creditcard',
     icon: '💎',
     description: 'Visa/MasterCard/JCB',
-    discount: '分期付款0手续费'
+    discount: 'Not available yet'
   },
   {
     id: 'paypal',
     name: 'PayPal',
     icon: '🌍',
-    description: '国际支付',
-    discount: ''
+    description: 'Cross-border payment',
+    discount: 'Currently using'
   }
 ])
 
 // 选择支付方式
 const selectPaymentMethod = (methodId) => {
   selectedMethod.value = methodId
-  console.log('选择的支付方式:', methodId)
+  console.log('Selected payment method:', methodId)
 }
 
 // 处理支付
 const handlePayment = async () => {
+  // 防止重复提交
+  if (isPaying.value) return
+
   if (!authStore.isLoggedIn) {
-    alert('⚠️ 用户未登录，请先登录！')
+    alert('⚠️ Log in required ！')
     const url = `/users/login`
     router.push(url)// 通过路由路径导航
   }
   if (!selectedMethod.value) {
-    ElMessage.warning('请选择支付方式')
+    ElMessage.warning('Selected payment method')
     return
   }
   try {
+    isPaying.value = true // 加锁
     loading.value = true
     console.log('开始支付，方式:', selectedMethod.value, '订单:', orderInfo.value.orderId)
-    // 构建完整的回调URL（确保是绝对路径）
-   /* const baseUrl = window.location.origin
-    const successUrl = `https://www.zeniul.cn/orders/PaySuccess`
-    const cancelUrl = `https://www.zeniul.cn/orders/PayError`*/
-    const baseUrl = window.location.origin
-    /*const successUrl = `http://localhost:3000/orders/PaySuccess`
-    const cancelUrl = `http://localhost:3000/orders/PayError`*/
-
     // 根据DTO文档构建正确的请求参数
     const paymentRequestDTO = {
       orderId: orderInfo.value.orderId, // 订单id
-      //total: orderInfo.value.totalAmount, // 订单总金额
-      total: 0.01, // 订单总金额
+      total: orderInfo.value.totalAmount, // 订单总金额
       currency: orderInfo.value.currency || 'USD', // 货币类型
       method: selectedMethod.value, // 支付方式
       intent: 'sale', // 支付意图
@@ -206,6 +203,7 @@ const handlePayment = async () => {
     console.error('支付失败:', error)
     ElMessage.error('网络错误，请重试')
   } finally {
+    isPaying.value = false // 解锁
     loading.value = false
   }
 }
