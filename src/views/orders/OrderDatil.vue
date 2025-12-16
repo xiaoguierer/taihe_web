@@ -11,7 +11,7 @@
           </span>
         </div>
       </div>
-      <el-button type="primary" @click="$router.back()">返回订单列表</el-button>
+      <el-button type="primary" @click="$router.back()">Return to order list</el-button>
     </div>
 
     <!-- 加载状态 -->
@@ -27,13 +27,24 @@
           <h3 class="info-title">订单信息</h3>
           <div class="info-grid">
             <div class="info-item">
-              <span class="info-label">订单ID：</span>
+              <span class="info-label">订单编号：</span>
               <span class="info-value">{{ orderDetail.id || '-' }}</span>
-              <el-button v-if="orderDetail.id" link @click="copyOrderId">复制</el-button>
             </div>
             <div class="info-item">
-              <span class="info-label">下单时间：</span>
+              <span class="info-label">商品种类：</span>
+              <span class="info-value">{{ orderDetail.spuCount || 0 }} 种</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">商品数量：</span>
+              <span class="info-value">{{ orderDetail.skuCount || 0 }} 件</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">订单时间：</span>
               <span class="info-value">{{ formatDateTime(orderDetail.createdTime) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">订单金额：</span>
+              <span class="info-value">${{ (orderDetail.totalAmount || 0).toFixed(2) }}</span>
             </div>
           </div>
         </div>
@@ -44,21 +55,55 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="info-label">收货人：</span>
-              <span class="info-value">{{ orderDetail.receiverName || '-' }}</span>
+              <span class="info-value">{{ addressInfo.length > 0 ? addressInfo[0].receiverName : orderDetail.receiverName }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">联系电话：</span>
-              <span class="info-value">{{ orderDetail.receiverPhone || '-' }}</span>
+              <span class="info-value">{{ addressInfo.length > 0 ? addressInfo[0].phoneCountryCode : orderDetail.receiverPhone}}-
+                                       {{ addressInfo.length > 0 ? addressInfo[0].phoneNumber : orderDetail.phoneNumber}}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">邮编：</span>
+              <span class="info-value">{{ addressInfo.length > 0 ? addressInfo[0].postalCode : orderDetail.receiverAddress}}</span>
             </div>
             <div class="info-item">
               <span class="info-label">收货地址：</span>
-              <span class="info-value">{{ orderDetail.receiverAddress || '-' }}</span>
+              <span class="info-value">{{ addressInfo.length > 0 ? addressInfo[0].addressName : orderDetail.receiverAddress }}-
+                 | {{ addressInfo.length > 0 ? addressInfo[0].district : orderDetail.district }}
+                 | {{ addressInfo.length > 0 ? addressInfo[0].streetAddress : orderDetail.streetAddress }}
+                 | {{ addressInfo.length > 0 ? addressInfo[0].city : orderDetail.city }}
+                 | {{ addressInfo.length > 0 ? addressInfo[0].stateProvince : orderDetail.stateProvince }}
+                 | {{ addressInfo.length > 0 ? addressInfo[0].country : orderDetail.country }}  </span>
             </div>
+
           </div>
         </div>
       </div>
 
-      <!-- 商品信息 -->
+      <!-- 支付信息 -->
+      <div  v-if="paymentInfo.length > 0"  class="info-card">
+        <h3 class="info-title">支付信息</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">支付方式：</span>
+            <span class="info-value">{{ paymentInfo[0].paymentMethod}}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">支付金额：</span>
+            <span class="info-value">${{ (paymentInfo[0].paymentAmount || 0).toFixed(2) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">支付时间：</span>
+            <span class="info-value">{{ formatDateTime(paymentInfo[0].paidTime) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">支付状态：</span>
+            <span class="info-value">{{ paymentInfo[0].paymentStatus }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 商品明细信息 -->
       <div class="products-section">
         <div class="section-header">
           <h3 class="section-title">商品信息</h3>
@@ -66,19 +111,20 @@
         <div v-if="orderItems.length > 0" class="products-list">
           <div v-for="item in orderItems" :key="item.id" class="product-item">
             <div class="product-image">
-
+              <!-- 商品图片占位 -->
+              <div style="width:80px;height:80px;background:#374151;display:flex;align-items:center;justify-content:center;color:#9CA3AF">图片</div>
             </div>
             <div class="product-info">
-              <div class="product-name">{{ item.productName }}</div>
-              <div class="product-spec">SKU ID: {{ item.skuId }}</div>
-              <div class="product-price">单价: ¥{{ item.unitPrice?.toFixed(2) || '0.00' }}</div>
+              <div class="product-name">{{ item.id }}</div>
+              <div class="product-spec">SKU: {{ item.skuId || '-' }}</div>
+              <div class="product-price">单价: ¥{{ (item.unitPrice || 0).toFixed(2) }}</div>
             </div>
-            <div class="product-quantity">数量: x{{ item.quantity }}</div>
-            <div class="product-subtotal">小计: ¥{{ item.totalPrice?.toFixed(2) || '0.00' }}</div>
+            <div class="product-quantity">数量: x{{ item.quantity || 0 }}</div>
+            <div class="product-subtotal">小计: ¥{{ (item.totalPrice || 0).toFixed(2) }}</div>
             <!-- 退款信息 -->
             <div v-if="item.refundQuantity > 0" class="refund-info">
               <span class="refund-label">已退款：</span>
-              <span class="refund-value">{{ item.refundQuantity }}件 / ¥{{ item.refundAmount?.toFixed(2) || '0.00' }}</span>
+              <span class="refund-value">{{ item.refundQuantity }}件 / ¥{{ (item.refundAmount || 0).toFixed(2) }}</span>
               <span class="refund-status" :class="getRefundStatusClass(item.refundStatus)">
                 {{ getRefundStatusText(item.refundStatus) }}
               </span>
@@ -86,36 +132,23 @@
           </div>
         </div>
         <div v-else class="empty-products">
-          <div class="empty-icon">📦</div>
-          <div class="empty-text">暂无商品信息</div>
+          <div class="empty-icon">📦📦</div>
+          <div class="empty-text">暂无商品明细信息</div>
         </div>
-      </div>
 
-      <!-- 价格信息 -->
-      <div class="price-section">
-        <div class="price-card">
-          <h3 class="section-title">价格明细</h3>
-          <div class="price-list">
-            <div class="price-item">
-              <span class="label">商品总价：</span>
-              <span class="value">¥ {{ calculateTotalAmount().toFixed(2) }}</span>
-            </div>
-            <div class="price-item total">
-              <span class="label">实付金额：</span>
-              <span class="value">¥ {{ calculateTotalAmount().toFixed(2) }}</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
+import { useAuthStore } from '@/store/auth'
+const authStore = useAuthStore()
+const userId = authStore.userInfo?.userId
+const token = authStore.token //
 
 const route = useRoute()
 const router = useRouter()
@@ -125,87 +158,127 @@ const orderId = route.params.orderId
 const loading = ref(false)
 const orderDetail = ref({})
 const orderItems = ref([])
+const paymentInfo = ref({})
+const addressInfo = ref({})
 
-// 初始化订单详情
-const initOrderDetail = () => {
-  orderDetail.value = {
-    id: orderId,
-    createdTime: '',
-    receiverName: '',
-    receiverPhone: '',
-    receiverAddress: '',
-    totalAmount: 0,
-    status: 1
+    // 获取订基本信息
+const fetchOrderDetail = async () => {
+  try {
+    const response = await fetch(`/api/order/getById/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // 如果后端需要身份验证，请加上这一行 👇
+        'Authorization': token ? `Bearer ${token}` : '',
+      }
+    })
+    const data = await response.json()
+    if (data && data.code === 200) {
+      orderDetail.value = data.data
+      console.log('订单基本信息:', orderDetail.value)
+    } else {
+      throw new Error(response.data.message || '获取订单信息失败')
+    }
+  } catch (error) {
+    console.error('获取订单信息失败:', error)
+    ElMessage.error('获取订单信息失败')
+  }
+}
+// 获取订单明细（商品信息）
+const fetchOrderItems = async () => {
+  try {
+    const response = await fetch(`/api/order-item/order/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // 如果后端需要身份验证，请加上这一行 👇
+        'Authorization': token ? `Bearer ${token}` : '',
+      }
+    })
+    const data = await response.json()
+    if (data && data.code === 200) {
+      orderItems.value = data.data || []
+      console.log('订单明细:', orderItems.value)
+    } else {
+      throw new Error(response.data.message || '获取订单明细失败')
+    }
+  } catch (error) {
+    console.error('获取订单明细失败:', error)
+    ElMessage.error('获取订单明细失败')
+  }
+}
+// 获取支付信息
+const fetchPaymentInfo = async () => {
+  try {
+    const response = await fetch(`/api/order-payment/order/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // 如果后端需要身份验证，请加上这一行 👇
+        'Authorization': token ? `Bearer ${token}` : '',
+      }
+    })
+    const data = await response.json()
+    if (data && data.code === 200) {
+      paymentInfo.value = data.data || {}
+      console.log('支付信息:', paymentInfo.value)
+    } else {
+      throw new Error(response.data.message || '获取支付信息失败')
+    }
+  } catch (error) {
+    console.error('获取支付信息失败:', error)
+    ElMessage.error('获取支付信息失败')
+  }
+}
+// 获取用户地址信息（需要先获取当前用户ID）
+const fetchAddressInfo = async () => {
+  try {
+    if (userId) {
+      const response = await fetch(`/api/user-address/getByUserId/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // 如果后端需要身份验证，请加上这一行 👇
+          'Authorization': token ? `Bearer ${token}` : '',
+        }
+      })
+      const data = await response.json()
+      if (data && data.code === 200)  {
+        addressInfo.value = data.data || {}
+        console.log('地址信息:', addressInfo.value)
+      } else {
+        throw new Error(response.data.message || '获取地址信息失败')
+      }
+    } else {
+      throw new Error('无法获取当前用户信息')
+    }
+  } catch (error) {
+    console.error('获取地址信息失败:', error)
+    ElMessage.error('获取地址信息失败')
   }
 }
 
-// 获取订单详情数据 - 只调用一个接口
-const fetchOrderDetail = async () => {
+
+// 获取数据 - 只调用4个接口
+const fetchAllData  = async () => {
   loading.value = true
-  console.log('开始获取订单详情，订单ID:', orderId)
-
   try {
-    // 调用后端提供的唯一接口 - 获取订单商品列表
-    const response = await axios.get(`/api/order-item/order/${orderId}`)
-    console.log('订单商品列表响应:', response.data)
-
-    if (response.data && response.data.code === 200) {
-      // 直接使用后端返回的商品列表数据
-      orderItems.value = response.data.data || []
-      console.log('订单商品列表数据:', orderItems.value)
-
-      // 从商品列表中提取显示所需的信息
-      if (orderItems.value.length > 0) {
-        const firstItem = orderItems.value[0]
-        orderDetail.value = {
-          id: orderId,
-          createdTime: firstItem.createdTime || '',
-          receiverName: '收货人',
-          receiverPhone: '联系电话',
-          receiverAddress: '收货地址',
-          totalAmount: calculateTotalAmount(),
-          status: 3
-        }
-      } else {
-        // 如果没有商品，使用默认信息
-        orderDetail.value = {
-          id: orderId,
-          createdTime: '',
-          receiverName: '无收货信息',
-          receiverPhone: '无联系电话',
-          receiverAddress: '无收货地址',
-          totalAmount: 0,
-          status: 1
-        }
-      }
-    } else {
-      console.error('获取订单商品失败:', response.data)
-      ElMessage.error('获取订单详情失败：' + (response.data.message || '未知错误'))
-    }
+    await Promise.all([
+      fetchOrderDetail(),
+      fetchOrderItems(),
+      fetchPaymentInfo(),
+      fetchAddressInfo()
+    ])
+    console.log('所有数据加载完成')
   } catch (error) {
-    console.error('获取订单详情失败:', error)
-    ElMessage.error('获取订单详情失败，请稍后重试')
+    console.error('数据加载失败:', error)
+    ElMessage.error('数据加载失败，请刷新页面重试')
   } finally {
     loading.value = false
   }
 }
 
-// 计算商品总金额
-const calculateTotalAmount = () => {
-  return orderItems.value.reduce((total, item) => {
-    return total + (item.totalPrice || 0)
-  }, 0)
-}
 
-// 获取商品图片
-const getProductImage = (item) => {
-  return `https://via.placeholder.com/100x100/4f46e5/ffffff?text=${encodeURIComponent(item.productName?.substring(0, 2) || 'PD')}`
-}
-
-// 处理图片加载错误
-const handleImageError = (event) => {
-  event.target.src = 'https://via.placeholder.com/100x100/64748b/ffffff?text=No+Image'
-}
 
 // 格式化日期时间
 const formatDateTime = (dateTime) => {
@@ -274,8 +347,7 @@ const copyOrderId = async () => {
 // 初始化
 onMounted(() => {
   console.log('订单详情页面初始化，订单ID:', orderId)
-  initOrderDetail()
-  fetchOrderDetail()
+  fetchAllData()
 })
 </script>
 
@@ -284,7 +356,7 @@ onMounted(() => {
   min-height: 100vh;
   background-color: #0f172a;
   color: #e2e8f0;
-  padding: 20px;
+  padding: 80px;
 }
 
 .page-header {

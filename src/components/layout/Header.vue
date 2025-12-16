@@ -638,7 +638,7 @@ export default {
     //导航用户中心
     const goToUserInfor = () => {
   //    console.log('🔐 用户中心信息:')
-      router.push(`/users/${authStore.userInfo.userId}`)// 通过路由路径导航
+      router.push(`/UserCenter`)// 通过路由路径导航
     }
     // 退出登录
     const handleLogout = async () => {

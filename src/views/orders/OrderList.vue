@@ -2,29 +2,30 @@
   <div class="order-list-page">
     <!-- 页面头部 -->
     <div class="page-header">
-      <h1 class="page-title">订单管理</h1>
-      <p class="page-subtitle">管理系统中的所有订单，轻松追踪订单状态</p>
+      <h1 class="page-title"> Order Management</h1>
+      <p class="page-subtitle">Manage all orders in the system and easily track order status</p>
     </div>
 
     <!-- 筛选栏 -->
+<!--
     <div class="filter-sidebar">
       <div class="filter-row">
         <div class="filter-group">
-          <span class="filter-label">订单状态:</span>
-          <el-select v-model="filters.status" placeholder="选择订单状态" @change="handleFilterChange">
-            <el-option label="全部" value=""></el-option>
-            <el-option label="待付款" value="1"></el-option>
-            <el-option label="待发货" value="2"></el-option>
-            <el-option label="待收货" value="3"></el-option>
-            <el-option label="已完成" value="4"></el-option>
-            <el-option label="已关闭" value="5"></el-option>
+          <span class="filter-label">Order Status:</span>
+          <el-select v-model="filters.status" placeholder=" Choose order status" @change="handleFilterChange">
+            <el-option label="All" value=""></el-option>
+            <el-option label="Pending Payment" value="1"></el-option>
+            <el-option label="Pending Shipment" value="2"></el-option>
+            <el-option label="Pending Receipt" value="3"></el-option>
+            <el-option label="Completed" value="4"></el-option>
+            <el-option label="Closed" value="5"></el-option>
           </el-select>
         </div>
 
         <div class="search-box">
           <el-input
             v-model="filters.orderSn"
-            placeholder="搜索订单号..."
+            placeholder="Search order number...."
             clearable
             @keyup.enter="handleSearch"
           >
@@ -35,6 +36,7 @@
         </div>
       </div>
     </div>
+-->
 
     <!-- 订单列表 -->
     <div class="order-list-container">
@@ -48,31 +50,18 @@
         <div v-for="order in orders" :key="order.id" class="order-card">
           <div class="order-header">
             <div class="order-info">
-              <span class="order-id">订单号: {{ order.orderSn }}</span>
-              <span class="order-time">下单时间: {{ formatDateTime(order.createdTime) }}</span>
+              <span class="order-id">订单号 : {{ order.orderSn }}</span>
+              <span class="info-value">货币及金额 : {{ order.currency }} - ${{ order.totalAmount }}</span>
+              <span class="info-value">商品种类 : {{ order.spuCount }}</span>
+              <span class="info-value">商品数量 : {{ order.skuCount }}</span>
+              <span class="info-value">下单时间 : {{ formatDateTime(order.createdTime) }}</span>
             </div>
             <span class="order-status" :class="getStatusClass(order.status)">
               {{ getStatusText(order.status) }}
             </span>
           </div>
-
-          <!-- 订单主要信息一行展示 -->
-          <div class="order-main-info">
-            <div class="info-item">
-              <span class="info-label">订单号:</span>
-              <span class="info-value">{{ order.orderSn }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">收货人:</span>
-              <span class="info-value">{{ order.receiverName }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">总金额:</span>
-              <span class="info-value">{{ order.currency }} {{ order.totalAmount }}</span>
-            </div>
-          </div>
-
-          <!-- 订单详细信息 -->
+<!--
+          &lt;!&ndash; 订单详细信息 &ndash;&gt;
           <div class="order-details">
             <div class="detail-item">
               <span class="detail-label">收货电话:</span>
@@ -83,13 +72,15 @@
               <span class="detail-value">{{ order.receiverAddress }}</span>
             </div>
           </div>
+-->
+
 
           <div class="order-footer">
             <div class="order-actions">
               <el-button type="primary" size="small" @click="viewOrderDetail(order.id)">查看详情</el-button>
-              <el-button type="warning" size="small" v-if="order.status === 1" @click="handlePay(order.id)">立即付款</el-button>
+<!--              <el-button type="warning" size="small" v-if="order.status === 1" @click="handlePay(order.id)">立即付款</el-button>
               <el-button type="danger" size="small" v-if="order.status === 1" @click="handleCancel(order.id)">取消订单</el-button>
-              <el-button type="success" size="small" v-if="order.status === 3" @click="handleConfirm(order.id)">确认收货</el-button>
+              <el-button type="success" size="small" v-if="order.status === 3" @click="handleConfirm(order.id)">确认收货</el-button>-->
             </div>
           </div>
         </div>
@@ -112,7 +103,7 @@ import router from "@/router/index.js";
 import { useAuthStore } from '@/store/auth'
 const authStore = useAuthStore()
 const userId = authStore.userInfo?.userId
-const token = authStore.token // 假设你的 authStore 有 token 字段，如没有请补充
+const token = authStore.token //
 // 筛选条件
 const filters = reactive({
   status: '',
@@ -298,7 +289,7 @@ onMounted(() => {
   min-height: 100vh;
   background-color: #0f172a;
   color: #e2e8f0;
-  padding: 20px;
+  padding: 30px;
 }
 
 .page-header {

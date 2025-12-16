@@ -85,7 +85,7 @@ const homeindexRoutes = [
     name: 'OrderList',
     component: () => import('@/views/orders/OrderList.vue'),
     meta: {
-      title: '购物车列表',
+      title: '订单列表',
       requiresAuth: true
     }
   },

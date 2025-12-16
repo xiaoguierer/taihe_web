@@ -3,8 +3,8 @@
   <div class="checkout-page">
     <!-- 页面头部 -->
     <div class="page-header">
-      <h1 class="page-title">订单确认</h1>
-      <el-button type="primary" @click="$router.back()">返回购物车</el-button>
+      <h1 class="page-title">Order Confirmation</h1>
+      <el-button type="primary" @click="$router.back()">Back to Cart</el-button>
     </div>
 
     <!-- 加载状态 -->
@@ -16,48 +16,48 @@
     <div v-else class="checkout-content">
       <!-- 订单摘要 -->
       <div class="summary-card">
-        <h3 class="section-title">地址信息</h3>
+        <h3 class="section-title">Address Information</h3>
         <div class="summary-grid">
           <div class="summary-item">
-            <span class="label">收货地址：</span>
+            <span class="label">Delivery Address：</span>
             <span class="value" v-if="userAddress">
-        收货人：{{ userAddress.receiverName }}
-        -- 电话：{{ userAddress.phoneCountryCode }}|{{ userAddress.phoneNumber }}
-        完整地址-- {{ userAddress.country }}/{{ userAddress.stateProvince }}/{{ userAddress.city }}/{{ userAddress.district }}/{{ userAddress.streetAddress }}
+        Recipient：{{ userAddress.receiverName }}
+        -- Phone：{{ userAddress.phoneCountryCode }}|{{ userAddress.phoneNumber }}
+        Full Address-- {{ userAddress.country }}/{{ userAddress.stateProvince }}/{{ userAddress.city }}/{{ userAddress.district }}/{{ userAddress.streetAddress }}
             </span>
-            <span class="value" v-else>暂无默认地址</span>
+            <span class="value" v-else>No default address available</span>
           </div>
         </div>
       </div>
       <!-- 订单摘要 -->
       <div class="summary-card">
-        <h3 class="section-title">订单摘要</h3>
+        <h3 class="section-title">Order Summary</h3>
         <div class="summary-grid">
           <div class="summary-item">
-            <span class="label">总金额：</span>
-            <span class="value">¥{{ checkoutData.totalAmount }}  -- 商品数量：{{ checkoutData.SkuCount }} 件  -- 商品种类 {{ checkoutData.SpuCount }} 种  </span>
+            <span class="label">Total：</span>
+            <span class="value">¥{{ checkoutData.totalAmount }}  || Quantity：{{ checkoutData.SkuCount }}   ||  Product Types {{ checkoutData.SpuCount }}   </span>
           </div>
         </div>
       </div>
 
       <!-- 商品列表 -->
       <div class="products-section">
-        <h3 class="section-title">商品清单</h3>
+        <h3 class="section-title">Product List</h3>
         <div class="products-list">
           <div v-for="(item, index) in checkoutData.items" :key="item.cartItemId" class="product-item">
             <div class="product-info">
-              <div class="product-id">购物车ID: {{ item.cartItemId }}</div>
-              <div class="product-spec">SPU: {{ item.spuId }} | SKU: {{ item.skuId }}</div>
+              <div class="product-id">Cart ID: {{ item.cartItemId }}</div>
+              <div class="product-spec">SPU: {{ item.spuId }} || SKU: {{ item.skuId }}</div>
             </div>
-            <div class="product-price">单价: ¥{{ item.unitPrice }} --数量: {{ item.quantity }} --小计: ¥{{ item.subtotal }}</div>
+            <div class="product-price">Unit Price: ¥{{ item.unitPrice }} || Quantity: {{ item.quantity }} || Line Total: ¥{{ item.subtotal }}</div>
           </div>
         </div>
       </div>
 
       <!-- 操作按钮 -->
       <div class="action-buttons">
-        <el-button type="primary" size="large" @click="handleConfirmOrder">确认下单</el-button>
-        <el-button @click="$router.back()">取消</el-button>
+        <el-button type="primary" size="large" @click="handleConfirmOrder">Confirm Order</el-button>
+<!--        <el-button @click="$router.back()">取消</el-button>-->
       </div>
     </div>
   </div>
@@ -205,7 +205,7 @@ onMounted(() => {
   min-height: 100vh;
   background-color: #0f172a;
   color: #e2e8f0;
-  padding: 20px;
+  padding-top: 80px;
   margin: 0 auto;
 }
 
