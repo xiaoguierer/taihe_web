@@ -8,7 +8,7 @@
           <div class="module-container">
             <div class="module-content">
               <div class="text-section">
-                <h1 class="module-title">{{ intent.id }}-{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
+                <h1 class="module-title">{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
                 <div class="content-grid">
                   <div class="content-item">
                     <p class="content-text strict-text">{{ intent.primaryEmotionEn }}/{{ intent.secondaryEmotionsEn }}</p>
@@ -84,7 +84,7 @@
                 />
               </div>
               <div class="text-section">
-                <h1 class="module-title">{{ intent.id }}-{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
+                <h1 class="module-title">{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
                 <div class="content-grid">
 
                   <div class="content-item">
@@ -153,7 +153,7 @@
                 />
               </div>
               <div class="text-bottom">
-                <h1 class="module-title">{{ intent.id }}-{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
+                <h1 class="module-title">{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
                 <div class="content-list">
                   <div class="content-item">
                     <p class="content-text strict-text">{{ intent.primaryEmotionEn }}/{{ intent.secondaryEmotionsEn }}</p>

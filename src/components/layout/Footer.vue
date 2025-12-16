@@ -4,7 +4,7 @@
     <div class="footer-container">
       <div class="footer-content">
         <div class="footer-section">
-          <h3>Taihe Jewelry</h3>
+          <h3>Zeniul Jewelry</h3>
           <a href="#">Contact Us</a>
           <a href="#">Brand Story</a>
           <a href="#">Eastern Philosophy</a>
@@ -29,8 +29,8 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>©2026 Taihe Jewelry. All Rights Reserved.</p>
-        <p>©TAIHE High Jewelry | Inheriting Eastern Aesthetics, Interpreting the Elegance of Jade</p>
+        <p>©2026 Zeniul Jewelry. All Rights Reserved.</p>
+        <p>©ZENIUL High Jewelry | Inheriting Eastern Aesthetics, Interpreting the Elegance of Jade</p>
       </div>
     </div>
   </footer>

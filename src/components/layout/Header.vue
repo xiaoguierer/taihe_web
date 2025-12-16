@@ -2,7 +2,7 @@
   <header class="header">
     <!-- 品牌LOGO -->
     <div class="brand" @click="goToHome">
-      <span class="brand-text">TAIHE</span>
+      <span class="brand-text">ZENIUL</span>
       <span class="brand-subtitle">High Jewelry</span>
     </div>
 
