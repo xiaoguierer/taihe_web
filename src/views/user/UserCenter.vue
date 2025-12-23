@@ -1,14 +1,19 @@
 <template>
   <div class="personal-center">
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <h1 class="page-title">Personal Center</h1>
+      <p class="page-subtitle">Manage your personal information and shipping addresses</p>
+    </div>
+
     <!-- 用户信息展示 -->
     <div class="info-card" @click="editProfile">
-      <!-- 建议修改为 -->
       <el-image
           v-if="user.avatarUrl"
           :src="user.avatarUrl"
           :preview-src-list="[user.avatarUrl]"
           fit="cover"
-          style="width: 50px; height: 50px"
+          class="avatar-image"
           :hide-on-click-modal="true"
       >
         <template #error>
@@ -24,14 +29,9 @@
     </div>
 
     <!-- 功能列表 -->
-    <div class="menu">
-<!--      <div class="menu-item" @click="editProfile">
-        <span>个人信息</span>
-        <div class="arrow">›</div>
-      </div>-->
-
+    <div class="menu-container">
       <div class="menu-item" @click="manageAddress">
-        <span>收货地址</span>
+        <span>Shipping Address</span>
         <div class="arrow">›</div>
       </div>
     </div>
@@ -43,22 +43,21 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {ElMessage} from "element-plus";
 import { useAuthStore } from '@/store/auth'
+
 const router = useRouter()
 const authStore = useAuthStore()
 const userId = authStore.userInfo?.userId
-const token = authStore.token //
+const token = authStore.token
 const user = ref({})
 const addressInfo = ref({})
 
-
-// 获取订基本信息
+// 获取用户基本信息
 const fetchUserDetail = async () => {
   try {
     const response = await fetch(`/api/users/getuserinfor/${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        // 如果后端需要身份验证，请加上这一行 👇
         'Authorization': token ? `Bearer ${token}` : '',
       }
     })
@@ -67,15 +66,15 @@ const fetchUserDetail = async () => {
       user.value = data.data
       console.log('用户基本信息:', user.value)
     } else {
-      throw new Error(response.data.message || '用户基本信息失败')
+      throw new Error(data.message || '获取用户信息失败')
     }
   } catch (error) {
-    console.error('用户基本信息:', error)
-    ElMessage.error('用户基本信息失败')
+    console.error('获取用户信息失败:', error)
+    ElMessage.error('获取用户信息失败')
   }
 }
 
-// 获取用户地址信息（需要先获取当前用户ID）
+// 获取用户地址信息
 const fetchAddressInfo = async () => {
   try {
     if (userId) {
@@ -83,16 +82,15 @@ const fetchAddressInfo = async () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          // 如果后端需要身份验证，请加上这一行 👇
           'Authorization': token ? `Bearer ${token}` : '',
         }
       })
       const data = await response.json()
-      if (data && data.code === 200)  {
+      if (data && data.code === 200) {
         addressInfo.value = data.data || {}
         console.log('地址信息:', addressInfo.value)
       } else {
-        throw new Error(response.data.message || '获取地址信息失败')
+        throw new Error(data.message || '获取地址信息失败')
       }
     } else {
       throw new Error('无法获取当前用户信息')
@@ -102,6 +100,7 @@ const fetchAddressInfo = async () => {
     ElMessage.error('获取地址信息失败')
   }
 }
+
 // 编辑个人信息
 const editProfile = () => {
   router.push('/UserEdit')
@@ -122,35 +121,63 @@ onMounted(async () => {
 <style scoped>
 .personal-center {
   min-height: 100vh;
-  background: #f5f5f5;
-  padding: 80px;
+  background-color: #0f172a;
+  color: #e2e8f0;
+  padding: 30px;
 }
 
-/* 用户信息卡片 */
+.page-header {
+  margin-bottom: 30px;
+  margin-top: 50px;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #f8fafc;
+  margin-bottom: 10px;
+}
+
+.page-subtitle {
+  color: #94a3b8;
+  font-size: 16px;
+}
+
 .info-card {
-  background: white;
+  background: rgba(30, 41, 59, 0.6);
   border-radius: 12px;
   padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-bottom: 20px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
 }
 
-.avatar {
+.info-card:hover {
+  background: rgba(30, 41, 59, 0.8);
+  transform: translateY(-2px);
+}
+
+.avatar-image {
   width: 60px;
   height: 60px;
   border-radius: 50%;
   overflow: hidden;
-  background: #f0f0f0;
 }
 
-.avatar img {
+.image-error {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.5);
+  color: #94a3b8;
+  font-size: 12px;
 }
 
 .info {
@@ -158,28 +185,28 @@ onMounted(async () => {
 }
 
 .info h3 {
-  margin: 0 0 5px 0;
   font-size: 18px;
-  color: #333;
+  color: #f8fafc;
+  margin-bottom: 5px;
 }
 
 .info p {
-  margin: 0;
   font-size: 14px;
-  color: #666;
+  color: #94a3b8;
+  margin-bottom: 3px;
 }
 
 .arrow {
-  color: #999;
-  font-size: 20px;
+  color: #94a3b8;
+  font-size: 24px;
+  font-weight: bold;
 }
 
-/* 功能菜单 */
-.menu {
-  background: white;
+.menu-container {
+  background: rgba(30, 41, 59, 0.6);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .menu-item {
@@ -188,12 +215,12 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  border-bottom: 1px solid #f0f0f0;
-  transition: background 0.2s;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  transition: background 0.3s ease;
 }
 
 .menu-item:hover {
-  background: #f9f9f9;
+  background: rgba(30, 41, 59, 0.8);
 }
 
 .menu-item:last-child {
@@ -202,6 +229,26 @@ onMounted(async () => {
 
 .menu-item span {
   font-size: 16px;
-  color: #333;
+  color: #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .personal-center {
+    padding: 15px;
+  }
+
+  .page-header {
+    margin-top: 30px;
+  }
+
+  .info-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .info {
+    width: 100%;
+  }
 }
 </style>

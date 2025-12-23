@@ -42,13 +42,18 @@
           </div>
 
           <div class="item-image">
-            <div class="image-placeholder">📦</div>
+            <div class="image-placeholder">📦
+              <img
+                  :src="item.skumainImageUrl"
+                  :alt="item.skumainImageUrl"
+                  @click="navigateToIntentProducts(item.spuId)"
+                  class="adaptive-image fill-image"
+              />
+            </div>
           </div>
 
-          <div class="item-info">
-            <div class="product-name">{{ item.productName || `商品 ${item.skuId}` }}</div>
-            <div class="product-spec">SPU: {{ item.spuId }}</div>
-            <div class="product-spec">SKU: {{ item.skuId }}</div>
+          <div class="item-info" @click="navigateToIntentProducts(item.spuId)">
+            <div class="product-name">{{ item.productNameEn}} {{ item.skuNameEn}}</div>
             <div class="product-price">Unit price: ${{ (item.unitPrice || 0).toFixed(2) }}</div>
           </div>
 
@@ -124,11 +129,10 @@ const pagination = reactive({
 // 获取购物车列表
 const getCartList = async (queryDTO, page = 1, size = 50) => {
   try {
-    const response = await fetch(`/api/shopingcart/pageLst?page=${page}&size=${size}`, {
+    const response = await fetch(`/api/shopingcart/pageLstDetail?page=${page}&size=${size}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 如果后端需要身份验证，请加上这一行 👇
         'Authorization': token ? `Bearer ${token}` : '',
       },
       body: JSON.stringify(queryDTO)
@@ -142,17 +146,40 @@ const getCartList = async (queryDTO, page = 1, size = 50) => {
 
 // 更新购物车项（比如数量、选中状态）
 const updateCartItem = async (id, data) => {
+  console.log("🔄 更新购物车项:", { id, data });
+  // 找到对应的购物车项，获取spuId等必填字段
+  const cartItem = cartItems.value.find(item => item.id === id);
+  if (!cartItem) {
+    throw new Error(`未找到ID为 ${id} 的购物车项`);
+  }
+  const updateDTO = {
+    id: cartItem.id,                    // 必填：购物车项ID
+    userId: userId,            // 可选：用户ID
+    skuId: cartItem.skuId,     // 可选：商品SKU ID
+    spuId: cartItem.spuId,     // 必填：商品SPU ID
+    quantity: cartItem.quantity, // 可选：购买数量
+    selected:cartItem.selected, // 是否选中 0-否, 1-是"
+    unitPrice: cartItem.unitPrice, // 可选：单价
+    currency: cartItem.currency || 'USD', // 可选：货币
+    ...data                    // 更新的字段（selected, quantity等）
+  };
+  console.log("📤 发送的DTO:", updateDTO);
   try {
-    const response = await fetch(`/api/shopingcart/${id}`, {
+    const response = await fetch(`/api/shopingcart/update`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        // 如果后端需要身份验证，请加上这一行 👇
-        // 'Authorization': token ? `Bearer ${token}` : '',
+        'Authorization': token ? `Bearer ${token}` : '',
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(updateDTO)
     })
-    return await response.json()
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+    }
+    const result = await response.json();
+    console.log("✅ 更新成功:", result);
+    return result;
   } catch (error) {
     console.error('更新购物车项失败:', error)
     throw error
@@ -166,8 +193,7 @@ const deleteCartItem = async (id) => {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        // 如果后端需要身份验证，请加上这一行 👇
-        // 'Authorization': token ? `Bearer ${token}` : '',
+        'Authorization': token ? `Bearer ${token}` : '',
       }
     })
     return await response.json()
@@ -183,7 +209,7 @@ const loadCartData = async () => {
   try {
     const queryDTO = { userId }  // 传入当前用户 ID
     const response = await getCartList(queryDTO, pagination.currentPage, pagination.pageSize)
-
+    console.log("response 返回结果是：",response)
     if (response.code === 200) {
       cartItems.value = (response.data.list || []).map(item => ({
         ...item,
@@ -191,6 +217,7 @@ const loadCartData = async () => {
         isValid: item.isValid !== false,     // 默认有效
         quantity: item.quantity ?? 1         // 默认数量为 1
       }))
+      console.log("response.data 返回结果是：",response.data)
       pagination.total = response.data.total ?? 0
     } else {
       ElMessage.error(response.message || '获取购物车数据失败')
@@ -204,7 +231,10 @@ const loadCartData = async () => {
     loading.value = false
   }
 }
-
+const navigateToIntentProducts = (spuId) =>{
+  if (!spuId || spuId.includes('placeholder')) return
+  router.push(`/product-spu/getByid/${spuId}`)
+}
 // 🔹 5. 计算属性
 
 // 已勾选的有效商品
@@ -237,12 +267,15 @@ const handleQuantityChange = async (itemId, quantity) => {
   if (quantity < 1) return
   const item = cartItems.value.find(item => item.id === itemId)
   if (!item) return
-
+  // 保存旧值用于回滚
+  const oldQuantity = item.quantity;
   try {
+    item.quantity = quantity;
     await updateCartItem(itemId, { quantity })
-    item.quantity = quantity
     ElMessage.success('数量已更新')
   } catch (error) {
+    // API失败时回滚前端状态
+    item.quantity = oldQuantity;
     console.error('更新数量失败:', error)
     ElMessage.error('更新失败')
   }
@@ -276,11 +309,14 @@ const handleRemoveItem = async (itemId) => {
 const handleSelectItem = async (itemId, selected) => {
   const item = cartItems.value.find(item => item.id === itemId)
   if (!item) return
-
+  // 保存旧值用于回滚
+  const oldSelected = item.selected;
   try {
-    await updateCartItem(itemId, { selected: selected ? 1 : 0 })
     item.selected = selected ? 1 : 0
+    await updateCartItem(itemId, { selected: selected ? 1 : 0 })
   } catch (error) {
+    // API失败时回滚前端状态
+    item.selected = oldSelected;
     console.error('更新选中状态失败:', error)
     ElMessage.error('操作失败')
   }
@@ -288,19 +324,32 @@ const handleSelectItem = async (itemId, selected) => {
 
 // 全选 / 取消全选
 const handleSelectAll = async (selected) => {
+  const validItems = cartItems.value.filter(item => item.isValid !== false);
+  if (validItems.length === 0) return;
+  // 保存旧状态用于回滚
+  const oldStates = validItems.map(item => ({
+    id: item.id,
+    selected: item.selected
+  }));
   try {
-    const updatePromises = cartItems.value
-      .filter(item => item.isValid !== false)
-      .map(item => {
-        item.selected = selected ? 1 : 0
-        return updateCartItem(item.id, { selected: item.selected })
-      })
-
-    await Promise.all(updatePromises)
-    ElMessage.success(selected ? '已全选' : '已取消全选')
+    // 先更新所有前端状态
+    validItems.forEach(item => {
+      item.selected = selected ? 1 : 0;
+    });
+    // 批量调用API - 现在包含所有必填字段
+    const updatePromises = validItems.map(item =>
+        updateCartItem(item.id, { selected: item.selected })
+    );
+    await Promise.all(updatePromises);
+    ElMessage.success(selected ? '已全选' : '已取消全选');
   } catch (error) {
-    console.error('全选操作失败:', error)
-    ElMessage.error('操作失败')
+    // API失败时回滚所有前端状态
+    oldStates.forEach(oldState => {
+      const item = cartItems.value.find(item => item.id === oldState.id);
+      if (item) item.selected = oldState.selected;
+    });
+    console.error('全选操作失败:', error);
+    ElMessage.error('操作失败，请重试');
   }
 }
 
@@ -324,6 +373,9 @@ const handleCheckout = async () => {
       cartItemId: item.id,//购物车id
       spuId: item.spuId,//spuid
       skuId: item.skuId,// skuid
+      skumainImageUrl:item.skumainImageUrl,//sku图片
+      productNameEn:item.productNameEn,//spu名称
+      skuNameEn:item.skuNameEn,//sku名称
       unitPrice: (item.unitPrice || 0).toFixed(2),//单价
       quantity: item.quantity,  //sku数量
       subtotal: ((item.unitPrice || 0) * item.quantity).toFixed(2) //小计

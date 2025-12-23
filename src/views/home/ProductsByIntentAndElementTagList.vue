@@ -3,7 +3,7 @@
     <!-- 第一部分：左右分栏布局 -->
     <section class="hero-section">
       <div class="hero-container">
-        <div class="hero-image" @click="goToProductDetail(heroData.id)">
+        <div class="hero-image" @click="goToProductTagDetail(heroData.id)">
           <img
             v-if="heroData.iconPath"
             :src="heroData.iconPath"
@@ -303,7 +303,12 @@ export default {
       console.log('🔄 重新加载数据')
       this.loadAllData();
     },
-
+    goToProductTagDetail(id){
+      console.log('🔍 开始导航到标签详情...')
+      console.log('📦 -----------------标签对象:', id)
+      const url = `/product-category-tags/getById/${id}`;
+      router.push(url)// 通过路由路径导航
+    },
     // 跳转到商品详情页
     goToProductDetail(product) {
       console.log('🔍 开始导航到商品详情...')

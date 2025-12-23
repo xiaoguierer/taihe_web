@@ -1,6 +1,7 @@
 <template>
   <header class="header">
     <meta name="p:domain_verify" content="f66800ca05e0fd20933922f7f8352c3e"/>
+    <meta name="p:domain_verify" content=""/>
     <!-- 品牌LOGO -->
     <div class="brand" @click="goToHome">
       <span class="brand-text">ZENIUL</span>
@@ -839,6 +840,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
 * {
   box-sizing: border-box;
@@ -927,7 +929,7 @@ export default {
 
 /* 隐藏滚动条 */
 .main-nav::-webkit-scrollbar {
-  display: none;
+  /*display: none;*/
 }
 
 /* 导航项 */
@@ -938,6 +940,7 @@ export default {
   height: 100%;
   display: flex;
   align-items: center;
+  white-space: nowrap; /* 文字不换行 */
 }
 
 .nav-label {
@@ -1557,12 +1560,29 @@ export default {
   }
 
   .nav-container {
-    max-width: calc(100% - 200px);
-    margin: 0 10px;
+    //max-width: calc(100% - 200px);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    position: relative;
+    min-width: 0;
+    /* 删除 max-width 限制 */
+    margin: 0 15px;
+    height: 100%;
+    z-index: 100001;
+    overflow: visible; /* 确保内容可见 */
   }
 
   .main-nav {
-    gap: 12px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    overflow-x: visible;  /* 改为可见 */
+    overflow-y: hidden;
+    padding: 5px 0;
+    width: auto;          /* 改为自动宽度 */
+    flex-wrap: nowrap;    /* 保持不换行 */
+    flex-shrink: 0;       /* 禁止收缩 */
   }
 
   .nav-label {

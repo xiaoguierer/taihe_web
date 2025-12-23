@@ -1,17 +1,17 @@
 <template>
   <div class="create-container">
     <el-card class="create-card">
-      <!-- 页面标题 -->
+      <!-- Page Header -->
       <div class="page-header">
         <el-button type="info" @click="goBack">
           <el-icon>
             <ArrowLeft/>
           </el-icon>
-          返回
+          Back
         </el-button>
       </div>
 
-      <!-- 表单区域 -->
+      <!-- Form Area -->
       <el-form
           ref="dataForm"
           :model="formData"
@@ -21,76 +21,76 @@
           class="user-form"
       >
 
-        <!-- 地址名称 -->
-        <el-form-item label="地址名称" prop="addressName">
-          <el-input v-model="formData.addressName" placeholder="如：家、公司"/>
+        <!-- Address Name -->
+        <el-form-item label="Address Name" prop="addressName">
+          <el-input v-model="formData.addressName" placeholder="e.g. Home, Office"/>
         </el-form-item>
 
-        <!-- 是否默认地址 -->
-        <el-form-item label="默认地址" prop="isDefault">
+        <!-- Default Address -->
+        <el-form-item label="Default Address" prop="isDefault">
           <el-radio-group v-model="formData.isDefault">
-            <el-radio :value="0">是</el-radio>
-            <el-radio :value="1">否</el-radio>
+            <el-radio :value="0">Yes</el-radio>
+            <el-radio :value="1">No</el-radio>
           </el-radio-group>
         </el-form-item>
 
-        <!-- 收货人信息 -->
-        <el-form-item label="收货人姓名" prop="receiverName">
-          <el-input v-model="formData.receiverName" placeholder="请输入收货人姓名"/>
+        <!-- Receiver Information -->
+        <el-form-item label="Receiver Name" prop="receiverName">
+          <el-input v-model="formData.receiverName" placeholder="Please enter receiver name"/>
         </el-form-item>
 
-        <!-- 联系方式 -->
+        <!-- Contact Information -->
         <el-row>
           <el-col :span="8">
-            <el-form-item label="国际区号" prop="phoneCountryCode">
-              <el-input v-model="formData.phoneCountryCode" placeholder="如：+86"/>
+            <el-form-item label="Country Code" prop="phoneCountryCode">
+              <el-input v-model="formData.phoneCountryCode" placeholder="e.g. +86"/>
             </el-form-item>
           </el-col>
           <el-col :span="16">
-            <el-form-item label="手机号码" prop="phoneNumber" label-width="100px">
-              <el-input v-model="formData.phoneNumber" placeholder="请输入手机号码"/>
+            <el-form-item label="Phone Number" prop="phoneNumber" label-width="100px">
+              <el-input v-model="formData.phoneNumber" placeholder="Please enter phone number"/>
             </el-form-item>
           </el-col>
         </el-row>
 
-        <!-- 邮箱 -->
-        <el-form-item label="邮箱地址" prop="email">
-          <el-input v-model="formData.email" placeholder="请输入邮箱地址"/>
+        <!-- Email -->
+        <el-form-item label="Email Address" prop="email">
+          <el-input v-model="formData.email" placeholder="Please enter email address"/>
         </el-form-item>
 
-        <!-- 地址信息 -->
-        <el-form-item label="国家" prop="country">
-          <el-input v-model="formData.country" placeholder="请输入国家"/>
+        <!-- Address Information -->
+        <el-form-item label="Country" prop="country">
+          <el-input v-model="formData.country" placeholder="Please enter country"/>
         </el-form-item>
 
-        <el-form-item label="省/州" prop="stateProvince">
-          <el-input v-model="formData.stateProvince" placeholder="请输入省/州"/>
+        <el-form-item label="State/Province" prop="stateProvince">
+          <el-input v-model="formData.stateProvince" placeholder="Please enter state/province"/>
         </el-form-item>
 
-        <el-form-item label="城市" prop="city">
-          <el-input v-model="formData.city" placeholder="请输入城市"/>
+        <el-form-item label="City" prop="city">
+          <el-input v-model="formData.city" placeholder="Please enter city"/>
         </el-form-item>
 
-        <el-form-item label="区/县" prop="district">
-          <el-input v-model="formData.district" placeholder="请输入区/县"/>
+        <el-form-item label="District" prop="district">
+          <el-input v-model="formData.district" placeholder="Please enter district"/>
         </el-form-item>
 
-        <el-form-item label="详细地址" prop="streetAddress">
+        <el-form-item label="Street Address" prop="streetAddress">
           <el-input
               v-model="formData.streetAddress"
               type="textarea"
               :rows="3"
-              placeholder="请输入详细地址"
+              placeholder="Please enter detailed address"
           />
         </el-form-item>
 
-        <el-form-item label="邮编" prop="postalCode">
-          <el-input v-model="formData.postalCode" placeholder="请输入邮编"/>
+        <el-form-item label="Postal Code" prop="postalCode">
+          <el-input v-model="formData.postalCode" placeholder="Please enter postal code"/>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="submitForm" :loading="loading">提交</el-button>
-          <el-button @click="resetForm">重置</el-button>
+          <el-button type="primary" @click="submitForm" :loading="loading">Submit</el-button>
+          <el-button @click="resetForm">Reset</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -109,57 +109,57 @@ const token = authStore.token //
 const emit = defineEmits(['close', 'success'])
 const loading = ref(false)
 
-// 返回按钮
+// Back button
 const goBack = () => {
   emit('close')
 }
 
-// 表单数据 - 对应UserAddressCreateDTO
+// Form data - corresponds to UserAddressCreateDTO
 const formData = reactive({
-  addressName: '公司地址',
+  addressName: 'Office Address',
   isDefault: 0,
-  receiverName: '收件人',
+  receiverName: 'Receiver',
   phoneCountryCode: '+86',
   phoneNumber: '18698767898',
   email: '1223@email.com',
-  country: '中国',
-  stateProvince: '北京',
-  city: '北京',
-  district: '西城区',
-  streetAddress: '广阳路社区居委会',
+  country: 'China',
+  stateProvince: 'Beijing',
+  city: 'Beijing',
+  district: 'Xicheng District',
+  streetAddress: 'Guangyang Road Community Committee',
   postalCode: '082977'
 })
 
-// 表单验证规则
+// Form validation rules
 const rules = reactive({
   receiverName: [
-    { required: true, message: '请输入收货人姓名', trigger: 'blur' }
+    { required: true, message: 'Please enter receiver name', trigger: 'blur' }
   ],
   phoneCountryCode: [
-    { required: true, message: '请输入国际区号', trigger: 'blur' }
+    { required: true, message: 'Please enter country code', trigger: 'blur' }
   ],
   phoneNumber: [
-    { required: true, message: '请输入手机号码', trigger: 'blur' },
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
+    { required: true, message: 'Please enter phone number', trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: 'Please enter valid phone number', trigger: 'blur' }
   ],
   country: [
-    { required: true, message: '请输入国家', trigger: 'blur' }
+    { required: true, message: 'Please enter country', trigger: 'blur' }
   ],
   stateProvince: [
-    { required: true, message: '请输入省/州', trigger: 'blur' }
+    { required: true, message: 'Please enter state/province', trigger: 'blur' }
   ],
   city: [
-    { required: true, message: '请输入城市', trigger: 'blur' }
+    { required: true, message: 'Please enter city', trigger: 'blur' }
   ],
   streetAddress: [
-    { required: true, message: '请输入详细地址', trigger: 'blur' }
+    { required: true, message: 'Please enter detailed address', trigger: 'blur' }
   ]
 })
 
-// 表单引用
+// Form reference
 const dataForm = ref(null)
 
-// 提交表单
+// Submit form
 const submitForm = async () => {
   if (!dataForm.value) return
 
@@ -169,9 +169,9 @@ const submitForm = async () => {
 
     loading.value = true
 
-    // 构造请求数据 - 对应UserAddressCreateDTO
+    // Construct request data - corresponds to UserAddressCreateDTO
     const requestData = {
-      userId:userId,
+      userId: userId,
       addressName: formData.addressName,
       isDefault: formData.isDefault,
       receiverName: formData.receiverName,
@@ -186,9 +186,9 @@ const submitForm = async () => {
       postalCode: formData.postalCode
     }
 
-    console.log('提交的地址数据:', requestData)
+    console.log('Submitted address data:', requestData)
 
-    // 调用后端API - 使用/add端点
+    // Call backend API - using /add endpoint
     const response = await fetch('/api/user-address/add', {
       method: 'POST',
       headers: {
@@ -201,30 +201,30 @@ const submitForm = async () => {
     const result = await response.json()
 
     if (!response.ok) {
-      throw new Error(result.message || '新增地址失败')
+      throw new Error(result.message || 'Failed to add address')
     }
 
     if (result.code && result.code !== 200) {
-      throw new Error(result.message || '新增地址失败')
+      throw new Error(result.message || 'Failed to add address')
     }
 
-    ElMessage.success('地址新增成功')
-    emit('success') // 通知父组件关闭对话框并刷新列表
+    ElMessage.success('Address added successfully')
+    emit('success') // Notify parent component to close dialog and refresh list
   } catch (error) {
-    console.error('新增地址错误:', error)
-    ElMessage.error(`新增失败: ${error.message}`)
+    console.error('Add address error:', error)
+    ElMessage.error(`Add failed: ${error.message}`)
   } finally {
     loading.value = false
   }
 }
 
-// 重置表单
+// Reset form
 const resetForm = () => {
   if (dataForm.value) {
     dataForm.value.resetFields()
-    // 重置默认值
+    // Reset default values
     formData.phoneCountryCode = '+86'
-    formData.country = '中国'
+    formData.country = 'China'
     formData.isDefault = 0
   }
 }
@@ -232,29 +232,107 @@ const resetForm = () => {
 
 <style scoped>
 .create-container {
-  padding: 20px;
+  min-height: 100vh;
+  background-color: #0f172a;
+  padding: 30px;
 }
 
 .create-card {
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   max-width: 800px;
   margin: 0 auto;
-  border-radius: 8px;
 }
 
 .page-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   margin-bottom: 30px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
+  padding: 20px 24px 0;
 }
 
 .user-form {
-  padding: 0 20px;
+  padding: 0 24px 24px;
 }
 
 .el-form-item {
   margin-bottom: 22px;
+}
+
+/* Form label styling */
+:deep(.el-form-item__label) {
+  color: #e2e8f0 !important;
+  font-weight: 500;
+}
+
+/* Input field styling */
+:deep(.el-input__inner) {
+  background-color: rgba(15, 23, 42, 0.5) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  color: #e2e8f0 !important;
+}
+
+:deep(.el-input__inner:focus) {
+  border-color: #3b82f6 !important;
+}
+
+:deep(.el-textarea__inner) {
+  background-color: rgba(15, 23, 42, 0.5) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  color: #e2e8f0 !important;
+}
+
+:deep(.el-textarea__inner:focus) {
+  border-color: #3b82f6 !important;
+}
+
+/* Radio button styling */
+:deep(.el-radio__label) {
+  color: #e2e8f0 !important;
+}
+
+/* Button styling */
+:deep(.el-button) {
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+:deep(.el-button--primary) {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+:deep(.el-button--primary:hover) {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+:deep(.el-button--info) {
+  background-color: rgba(30, 41, 59, 0.8);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #e2e8f0;
+}
+
+:deep(.el-button--info:hover) {
+  background-color: rgba(30, 41, 59, 1);
+  border-color: #3b82f6;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .create-container {
+    padding: 15px;
+  }
+
+  .user-form {
+    padding: 0 16px 16px;
+  }
+
+  .page-header {
+    padding: 16px 16px 0;
+  }
 }
 </style>

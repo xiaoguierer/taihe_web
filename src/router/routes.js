@@ -34,7 +34,7 @@ export const routes = [
   ...orderRoutes,
   //首页导航
   ...homeindexRoutes,
-  // 404页面
+  //
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',

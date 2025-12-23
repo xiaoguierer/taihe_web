@@ -22,8 +22,8 @@
             <span class="label">Delivery Address：</span>
             <span class="value" v-if="userAddress">
         Recipient：{{ userAddress.receiverName }}
-        -- Phone：{{ userAddress.phoneCountryCode }}|{{ userAddress.phoneNumber }}
-        Full Address-- {{ userAddress.country }}/{{ userAddress.stateProvince }}/{{ userAddress.city }}/{{ userAddress.district }}/{{ userAddress.streetAddress }}
+          Phone：{{ userAddress.phoneCountryCode }}-{{ userAddress.phoneNumber }}
+        Full Address : {{ userAddress.country }}/{{ userAddress.stateProvince }}/{{ userAddress.city }}/{{ userAddress.district }}/{{ userAddress.streetAddress }}
             </span>
             <span class="value" v-else>No default address available</span>
           </div>
@@ -46,8 +46,17 @@
         <div class="products-list">
           <div v-for="(item, index) in checkoutData.items" :key="item.cartItemId" class="product-item">
             <div class="product-info">
-              <div class="product-id">Cart ID: {{ item.cartItemId }}</div>
-              <div class="product-spec">SPU: {{ item.spuId }} || SKU: {{ item.skuId }}</div>
+              <div class="product-pic">
+                <img
+                  :src="item.skumainImageUrl"
+                  :alt="item.skumainImageUrl"
+                  @click="navigateToIntentProducts(item.spuId)"
+                  class="product-img"
+              /></div>
+              <div class="product-spec" @click="navigateToIntentProducts(item.spuId)">{{ item.productNameEn }}</div>
+              <div class="product-spec" @click="navigateToIntentProducts(item.spuId)">{{ item.skuNameEn }}</div>
+<!--              <div class="product-id">Cart ID: {{ item.cartItemId }}</div>
+              <div class="product-spec">SPU: {{ item.spuId }} || SKU: {{ item.skuId }}</div>-->
             </div>
             <div class="product-price">Unit Price: ¥{{ item.unitPrice }} || Quantity: {{ item.quantity }} || Line Total: ¥{{ item.subtotal }}</div>
           </div>
@@ -141,6 +150,9 @@ const loadCheckoutData = async() => {
         cartItemId: item.cartItemId || '',
         spuId: item.spuId || '',
         skuId: item.skuId || '',
+        skumainImageUrl:item.skumainImageUrl,//sku图片
+        productNameEn:item.productNameEn,//spu名称
+        skuNameEn:item.skuNameEn,//sku名称
         unitPrice: parseFloat(item.unitPrice || 0).toFixed(2),
         quantity: parseInt(item.quantity || 0),
         subtotal: (parseFloat(item.unitPrice || 0) * parseInt(item.quantity || 0)).toFixed(2)
@@ -194,7 +206,10 @@ const handleConfirmOrder = async () => {
     loading.value = false
   }
 }
-
+const navigateToIntentProducts = (spuId) =>{
+  if (!spuId || spuId.includes('placeholder')) return
+  router.push(`/product-spu/getByid/${spuId}`)
+}
 onMounted(() => {
   loadCheckoutData()
 })
@@ -311,6 +326,30 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+/* 移除固定高度，让图片自适应 */
+.product-pic {
+  width: 80px; /* 或者你希望的宽度 */
+  height: auto; /* 移除固定高度 */
+  min-height: 80px; /* 设置最小高度避免折叠 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+}
+
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 保持图片比例 */
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.product-img:hover {
+  transform: scale(1.05);
 }
 
 .product-id {

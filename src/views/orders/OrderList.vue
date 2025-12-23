@@ -50,11 +50,11 @@
         <div v-for="order in orders" :key="order.id" class="order-card">
           <div class="order-header">
             <div class="order-info">
-              <span class="order-id">订单号 : {{ order.orderSn }}</span>
-              <span class="info-value">货币及金额 : {{ order.currency }} - ${{ order.totalAmount }}</span>
-              <span class="info-value">商品种类 : {{ order.spuCount }}</span>
-              <span class="info-value">商品数量 : {{ order.skuCount }}</span>
-              <span class="info-value">下单时间 : {{ formatDateTime(order.createdTime) }}</span>
+              <span class="order-id">Order Number : {{ order.orderSn }}</span>
+              <span class="info-value">Currency & Amount : {{ order.currency }} - ${{ order.totalAmount }}</span>
+              <span class="info-value">Product Types : {{ order.spuCount }}</span>
+              <span class="info-value">Product Quantity : {{ order.skuCount }}</span>
+              <span class="info-value">Order Time : {{ formatDateTime(order.createdTime) }}</span>
             </div>
             <span class="order-status" :class="getStatusClass(order.status)">
               {{ getStatusText(order.status) }}

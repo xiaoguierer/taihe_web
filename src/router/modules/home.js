@@ -59,6 +59,16 @@ const homeindexRoutes = [
       requiresAuth: false
     }
   },
+  //标签分类/categorytag
+  {
+    path: '/product-category-tags/getById/:id',
+    name: 'CategoryDetail',
+    component: () => import('/src/views/category/CategoryDetail.vue'),
+    meta: {
+      title: '商品标签',
+      requiresAuth: false
+    }
+  },
   //五行
   {
     path: '/wu-xing-attributes/getById/:id',

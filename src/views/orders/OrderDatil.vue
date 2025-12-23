@@ -3,9 +3,9 @@
     <!-- 页面头部 -->
     <div class="page-header">
       <div class="header-content">
-        <h1 class="page-title">订单详情</h1>
+        <h1 class="page-title">Order Details</h1>
         <div class="order-status-info">
-          <span class="status-label">订单状态：</span>
+          <span class="status-label">Order Status：</span>
           <span :class="['status-badge', getStatusClass(orderDetail.status)]">
             {{ getStatusText(orderDetail.status) }}
           </span>
@@ -24,26 +24,26 @@
       <!-- 订单基本信息 -->
       <div class="order-basic-info">
         <div class="info-card">
-          <h3 class="info-title">订单信息</h3>
+          <h3 class="info-title">Order Information</h3>
           <div class="info-grid">
             <div class="info-item">
-              <span class="info-label">订单编号：</span>
+              <span class="info-label">Order Number：</span>
               <span class="info-value">{{ orderDetail.id || '-' }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">商品种类：</span>
-              <span class="info-value">{{ orderDetail.spuCount || 0 }} 种</span>
+              <span class="info-label">Product Types：</span>
+              <span class="info-value">{{ orderDetail.spuCount || 0 }} </span>
             </div>
             <div class="info-item">
-              <span class="info-label">商品数量：</span>
-              <span class="info-value">{{ orderDetail.skuCount || 0 }} 件</span>
+              <span class="info-label">Product Quantity：</span>
+              <span class="info-value">{{ orderDetail.skuCount || 0 }} </span>
             </div>
             <div class="info-item">
-              <span class="info-label">订单时间：</span>
+              <span class="info-label">Order Time：</span>
               <span class="info-value">{{ formatDateTime(orderDetail.createdTime) }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">订单金额：</span>
+              <span class="info-label">Order Amount：</span>
               <span class="info-value">${{ (orderDetail.totalAmount || 0).toFixed(2) }}</span>
             </div>
           </div>
@@ -51,23 +51,23 @@
 
         <!-- 收货信息 -->
         <div class="info-card">
-          <h3 class="info-title">收货信息</h3>
+          <h3 class="info-title">Shipping Informatio</h3>
           <div class="info-grid">
             <div class="info-item">
-              <span class="info-label">收货人：</span>
+              <span class="info-label">Recipient：</span>
               <span class="info-value">{{ addressInfo.length > 0 ? addressInfo[0].receiverName : orderDetail.receiverName }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">联系电话：</span>
+              <span class="info-label">Contact Phone：</span>
               <span class="info-value">{{ addressInfo.length > 0 ? addressInfo[0].phoneCountryCode : orderDetail.receiverPhone}}-
                                        {{ addressInfo.length > 0 ? addressInfo[0].phoneNumber : orderDetail.phoneNumber}}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">邮编：</span>
+              <span class="info-label">Postal Code：</span>
               <span class="info-value">{{ addressInfo.length > 0 ? addressInfo[0].postalCode : orderDetail.receiverAddress}}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">收货地址：</span>
+              <span class="info-label">Shipping Address：</span>
               <span class="info-value">{{ addressInfo.length > 0 ? addressInfo[0].addressName : orderDetail.receiverAddress }}-
                  | {{ addressInfo.length > 0 ? addressInfo[0].district : orderDetail.district }}
                  | {{ addressInfo.length > 0 ? addressInfo[0].streetAddress : orderDetail.streetAddress }}
@@ -82,22 +82,22 @@
 
       <!-- 支付信息 -->
       <div  v-if="paymentInfo.length > 0"  class="info-card">
-        <h3 class="info-title">支付信息</h3>
+        <h3 class="info-title">Payment Information</h3>
         <div class="info-grid">
           <div class="info-item">
-            <span class="info-label">支付方式：</span>
+            <span class="info-label">Payment Method：</span>
             <span class="info-value">{{ paymentInfo[0].paymentMethod}}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">支付金额：</span>
+            <span class="info-label">Payment Amount：</span>
             <span class="info-value">${{ (paymentInfo[0].paymentAmount || 0).toFixed(2) }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">支付时间：</span>
+            <span class="info-label">Payment Time：</span>
             <span class="info-value">{{ formatDateTime(paymentInfo[0].paidTime) }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">支付状态：</span>
+            <span class="info-label">Payment Status：</span>
             <span class="info-value">{{ paymentInfo[0].paymentStatus }}</span>
           </div>
         </div>
@@ -106,25 +106,32 @@
       <!-- 商品明细信息 -->
       <div class="products-section">
         <div class="section-header">
-          <h3 class="section-title">商品信息</h3>
+          <h3 class="section-title">Product Information</h3>
         </div>
         <div v-if="orderItems.length > 0" class="products-list">
           <div v-for="item in orderItems" :key="item.id" class="product-item">
             <div class="product-image">
               <!-- 商品图片占位 -->
-              <div style="width:80px;height:80px;background:#374151;display:flex;align-items:center;justify-content:center;color:#9CA3AF">图片</div>
+              <div style="width:80px;height:80px;background:#374151;display:flex;align-items:center;justify-content:center;color:#9CA3AF">
+                <img
+                    :src="item.mainImageUrl"
+                    :alt="item.mainImageUrl"
+                    @click="navigateToIntentProducts(item.spuId)"
+                    class="product-img"
+                />
+              </div>
             </div>
-            <div class="product-info">
-              <div class="product-name">{{ item.id }}</div>
-              <div class="product-spec">SKU: {{ item.skuId || '-' }}</div>
-              <div class="product-price">单价: ¥{{ (item.unitPrice || 0).toFixed(2) }}</div>
+            <div class="product-info"  @click="navigateToIntentProducts(item.spuId)">
+<!--              <div class="product-name">{{ item.id }}</div>-->
+              <div class="product-spec">{{ item.productNameEn}}-{{ item.skuNameEn}}</div>
+              <div class="product-price">Unit Price $ {{ (item.unitPrice || 0).toFixed(2) }}</div>
             </div>
-            <div class="product-quantity">数量: x{{ item.quantity || 0 }}</div>
-            <div class="product-subtotal">小计: ¥{{ (item.totalPrice || 0).toFixed(2) }}</div>
+            <div class="product-quantity">Quantity x {{ item.quantity || 0 }} </div>
+            <div class="product-subtotal">Subtotal $ {{ (item.totalPrice || 0).toFixed(2) }}</div>
             <!-- 退款信息 -->
             <div v-if="item.refundQuantity > 0" class="refund-info">
               <span class="refund-label">已退款：</span>
-              <span class="refund-value">{{ item.refundQuantity }}件 / ¥{{ (item.refundAmount || 0).toFixed(2) }}</span>
+              <span class="refund-value">{{ item.refundQuantity }}件 / ${{ (item.refundAmount || 0).toFixed(2) }}</span>
               <span class="refund-status" :class="getRefundStatusClass(item.refundStatus)">
                 {{ getRefundStatusText(item.refundStatus) }}
               </span>
@@ -187,7 +194,7 @@ const fetchOrderDetail = async () => {
 // 获取订单明细（商品信息）
 const fetchOrderItems = async () => {
   try {
-    const response = await fetch(`/api/order-item/order/${orderId}`, {
+    const response = await fetch(`/api/order-item/orderDetail/${orderId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -343,7 +350,10 @@ const copyOrderId = async () => {
     ElMessage.error('复制失败')
   }
 }
-
+const navigateToIntentProducts = (spuId) =>{
+  if (!spuId || spuId.includes('placeholder')) return
+  router.push(`/product-spu/getByid/${spuId}`)
+}
 // 初始化
 onMounted(() => {
   console.log('订单详情页面初始化，订单ID:', orderId)

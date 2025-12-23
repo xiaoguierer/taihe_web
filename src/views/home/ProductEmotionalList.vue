@@ -3,7 +3,7 @@
     <!-- 第一部分：左右分栏布局 -->
     <section class="hero-section">
       <div class="hero-container">
-        <div class="hero-image" @click="goToProductDetail(heroData.id)">
+        <div class="hero-image" @click="goToEmontionDetail(heroData.id)">
           <img
             v-if="heroData.iconUrl"
             :src="heroData.iconUrl"
@@ -344,18 +344,19 @@ export default {
     retryLoading() {
       this.loadAllData();
     },
-
+    goToEmontionDetail(id){
+      const url = `/emotional-intent/getByid/${id}`;
+      router.push(url)// 通过路由路径导航
+    },
     // 跳转到商品详情页
     goToProductDetail(product) {
-      console.log('🔍 开始导航到商品详情...')
+      /*console.log('🔍 开始导航到商品详情...')
       console.log('📦 商品对象:', product)
-
+*/
       const url = `/product-spu/getByid/${product.id}`
-      console.log('🔗 目标URL:', url)
-
+      /*console.log('🔗 目标URL:', url)
       // 添加导航前后的详细日志
-      console.log('📍 当前路由:', router.currentRoute.value.fullPath)
-
+      console.log('📍 当前路由:', router.currentRoute.value.fullPath)*/
       router.push(url).then(() => {
         console.log('✅ 导航成功完成')
         console.log('📍 新路由:', router.currentRoute.value.fullPath)

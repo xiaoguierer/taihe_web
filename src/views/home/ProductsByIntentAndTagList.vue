@@ -321,6 +321,8 @@ export default {
     goToProductTagDetail(heroData){
       console.log('🔍 开始导航到标签详情...')
       console.log('📦 标签对象:', heroData)
+      const url = `/product-category-tags/getById/${heroData.id}`;
+      router.push(url)// 通过路由路径导航
     },
 
     // 获取第一部分数据 - 根据标签ID查询
