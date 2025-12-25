@@ -168,7 +168,7 @@
             <h3 class="opening-title">{{ opening.team }}</h3>
             <p class="opening-location">{{ opening.locations.join(' · ') }}</p>
             <p class="opening-description">{{ opening.description }}</p>
-            <button class="apply-btn">Learn More About This Team</button>
+<!--            <button class="apply-btn">Learn More About This Team</button>-->
           </div>
         </div>
       </div>
