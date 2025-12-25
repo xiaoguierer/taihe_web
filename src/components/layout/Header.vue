@@ -1,7 +1,6 @@
 <template>
   <header class="header">
     <meta name="p:domain_verify" content="f66800ca05e0fd20933922f7f8352c3e"/>
-    <meta name="p:domain_verify" content=""/>
     <!-- 品牌LOGO -->
     <div class="brand" @click="goToHome">
       <span class="brand-text">ZENIUL</span>
