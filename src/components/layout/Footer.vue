@@ -5,19 +5,16 @@
       <div class="footer-content">
         <div class="footer-section">
           <h3>Zeniul Jewelry</h3>
-          <a href="#">Contact Us</a>
-          <a href="#">Brand Story</a>
-          <a href="#">Eastern Philosophy</a>
+          <router-link to="/about/about-us">About Us</router-link>
+          <router-link to="/about/brand-story">Brand Story</router-link>
         </div>
         <div class="footer-section">
-          <h4>Customer Service</h4>
-          <a href="#">Shipping Information</a>
-          <a href="#">Return Policy</a>
-          <a href="#">Care Guide</a>
+          <h4>Service</h4>
+          <router-link to="/about/eastern-hilosophy">Eastern Philosophy </router-link>
+          <router-link to="/about/energy-philosophy">Energy Philosophy</router-link>
         </div>
         <div class="footer-section">
-          <h4>About Us</h4>
-          <a href="#">Energy Philosophy</a>
+          <h4>About</h4>
           <a href="#">Master Team</a>
           <a href="#">Social Responsibility</a>
         </div>
@@ -43,7 +40,20 @@ export default {
 </script>
 
 <style scoped>
+/* 保持原有样式不变，添加路由链接样式 */
+.footer-section a,
+.footer-section router-link {
+  display: block;
+  color: #f0f0f0;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  transition: color 0.3s;
+}
 
+.footer-section a:hover,
+.footer-section router-link:hover {
+  color: #d4af37;
+}
 /* 页脚 */
 .footer {
   background: rgba(5, 10, 25, 0.9);
