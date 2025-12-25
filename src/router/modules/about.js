@@ -35,6 +35,25 @@ const aboutRoutes = [
             title: 'energy-philosophy',
             requiresAuth: false
         }
+    },
+    {
+        path: '/about/master-team',
+        name: 'master-team',
+        component: () => import('@/views/about/master-team.vue'),
+        meta: {
+            title: 'master-team',
+            requiresAuth: false
+        }
+    }
+    ,
+    {
+        path: '/about/social-responsibility',
+        name: 'social-responsibility',
+        component: () => import('@/views/about/social-responsibility.vue'),
+        meta: {
+            title: 'social-responsibility',
+            requiresAuth: false
+        }
     }
 ]
 

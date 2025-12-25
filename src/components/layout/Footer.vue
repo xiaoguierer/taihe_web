@@ -15,15 +15,15 @@
         </div>
         <div class="footer-section">
           <h4>About</h4>
-          <a href="#">Master Team</a>
-          <a href="#">Social Responsibility</a>
+          <router-link to="/about/master-team">Master Team</router-link>
+          <router-link to="/about/social-responsibility">Social Responsibility</router-link>
         </div>
-        <div class="footer-section">
+<!--        <div class="footer-section">
           <h4>Follow Us</h4>
           <a href="#">WeChat</a>
           <a href="#">Weibo</a>
           <a href="#">Little Red Book</a>
-        </div>
+        </div>-->
       </div>
       <div class="footer-bottom">
         <p>©2026 Zeniul Jewelry. All Rights Reserved.</p>
