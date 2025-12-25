@@ -156,12 +156,19 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive,onMounted  } from 'vue'
+import { useRouter,useRoute  } from 'vue-router'
 import {ElMessage,} from "element-plus";
 import { useAuthStore } from '@/store/auth';
 
 const router = useRouter()
+const route = useRoute() // 添加这行
+// 检查URL参数
+onMounted(() => {
+  if (route.query.inviteeId) {
+    inviteeId.value = route.query.inviteeId
+  }
+})
 // 定义事件
 const switchtologin = () =>{
   router.push('/users/login')
@@ -176,7 +183,7 @@ const formData = reactive({
 
 const privacyAgreed = ref(false)
 const showPrivacyModal = ref(false)
-
+const inviteeId = ref(null)
 // 注册处理函数
 const handleRegister = async () => {
   if (!privacyAgreed.value) {
@@ -188,7 +195,8 @@ const handleRegister = async () => {
     const requestData = {
       email: formData.email,
       password: formData.password,
-      birthdaytime: formData.birthdaytime
+      birthdaytime: formData.birthdaytime,
+      ...(inviteeId.value && { inviteeId: inviteeId.value })
     }
     const requestBlob = new Blob([JSON.stringify(requestData)], {
       type: 'application/json'
@@ -201,12 +209,6 @@ const handleRegister = async () => {
       // 如果不传头像文件，后端可能要求必须有这个字段
       formDataToSend.append('avatarFile', new Blob([]), 'empty.txt')
     }
-
-   // console.log('FormData表单参数 内容:')
-   //  for (let [key, value] of formDataToSend.entries()) {
-   //    console.log(key, value)
-   //  }
-
     const response = await fetch('/api/users/register', {
       method: 'POST',
       body: formDataToSend
@@ -254,6 +256,7 @@ const handleRegister = async () => {
       // ✅ 直接使用authStore，移除错误的条件判断
       const authStore = useAuthStore()
       authStore.loginSuccess(token, userInfo)
+
       ElMessage.success('注册成功！即将自动登录...')
       // ✅ 统一跳转逻辑
       setTimeout(() => {

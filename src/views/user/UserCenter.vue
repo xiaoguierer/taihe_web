@@ -27,6 +27,18 @@
       </div>
       <div class="arrow">›</div>
     </div>
+    <!-- 分享链接 -->
+    <div class="share-container">
+      <div class="share-header">
+        <span>我的分享链接</span>
+      </div>
+      <div class="link-container">
+        <div class="link-text" id="shareLink">https://www.zeniul.cn/users/register?inviteeId={{user.id}}</div>
+        <button class="copy-btn" @click="copyShareLink()">
+          复制链接分享
+        </button>
+      </div>
+    </div>
 
     <!-- 功能列表 -->
     <div class="menu-container">
@@ -110,7 +122,21 @@ const editProfile = () => {
 const manageAddress = () => {
   router.push('/UserAddresslist')
 }
-
+const copyShareLink = () =>{
+  const linkText = `https://www.zeniul.cn/users/register?inviteeId=${user.value.id || ''}`
+  navigator.clipboard.writeText(linkText).then(() => {
+    ElMessage.success('链接已复制到剪贴板！')
+  }).catch(() => {
+    // 简单降级方案
+    const input = document.createElement('input')
+    input.value = linkText
+    document.body.appendChild(input)
+    input.select()
+    document.execCommand('copy')
+    document.body.removeChild(input)
+    ElMessage.success('链接已复制到剪贴板！')
+  })
+}
 // 加载用户数据
 onMounted(async () => {
   await fetchUserDetail()
@@ -231,7 +257,60 @@ onMounted(async () => {
   font-size: 16px;
   color: #e2e8f0;
 }
+.share-container {
+  margin-top: 20px;
+  padding: 15px;
+  background: #0f172a;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
 
+.share-header {
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.link-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.link-text {
+  flex: 1;
+  padding: 10px 12px;
+  background: #0f172a;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #e2e8f0;
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
+
+.copy-btn {
+  padding: 10px 20px;
+  background: #0f172a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  background: #2980b9;
+}
+
+.share-hint {
+  font-size: 12px;
+  color: #6c757d;
+  line-height: 1.4;
+}
 @media (max-width: 768px) {
   .personal-center {
     padding: 15px;
