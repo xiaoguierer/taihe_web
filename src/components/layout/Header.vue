@@ -237,6 +237,7 @@ export default {
     const hoverTimer = ref(null)
     const showScrollHint = ref(false)
     const navContainerRef = ref(null)
+    const refreshTokenTimer = ref(null)
     // console.log('🔍 当前 authStore 对象:', authStore);
     // console.log('🔍 当前登录状态:', authStore?.isLoggedIn);
     // 配置常量 - 修正图标重复问题

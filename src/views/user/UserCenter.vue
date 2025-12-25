@@ -3,7 +3,7 @@
     <!-- 页面头部 -->
     <div class="page-header">
       <h1 class="page-title">Personal Center</h1>
-      <p class="page-subtitle">Manage your personal information and shipping addresses</p>
+      <p class="page-subtitle">Manage your personal information</p>
     </div>
 
     <!-- 用户信息展示 -->
@@ -21,16 +21,16 @@
         </template>
       </el-image>
       <div class="info">
-        <h3>{{ user.email || '用户' }}</h3>
-        <p>{{ user.nickname || '' }}</p>
-        <p>{{ user.birthdaytime || '' }}</p>
+        <h3>{{ user.email || 'user' }}</h3>
+<!--        <p>{{ user.nickname || '' }}</p>-->
+        <p>{{ formatBirthday(user.birthdaytime)  }}</p>
       </div>
       <div class="arrow">›</div>
     </div>
     <!-- 分享链接 -->
     <div class="share-container">
       <div class="share-header">
-        <span>我的分享链接</span>
+        <span>Share link</span>
       </div>
       <div class="link-container">
         <div class="link-text" id="shareLink">https://www.zeniul.cn/users/register?inviteeId={{user.id}}</div>
@@ -47,6 +47,7 @@
         <div class="arrow">›</div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -85,7 +86,19 @@ const fetchUserDetail = async () => {
     ElMessage.error('获取用户信息失败')
   }
 }
-
+// 添加生日格式化方法
+const formatBirthday = (timeStr) => {
+  if (!timeStr) return '';
+  const date = new Date(timeStr);
+  const monthAbbr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = monthAbbr[date.getMonth()];
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${day} ${month} ${year} ${hours}:${minutes}`;
+}
 // 获取用户地址信息
 const fetchAddressInfo = async () => {
   try {
