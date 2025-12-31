@@ -5,7 +5,7 @@
       <div class="footer-content">
         <div class="footer-section">
           <h3>Zeniul Jewelry</h3>
-          <router-link to="/about/about-us">About Us</router-link>
+          <router-link to="/about/about-us" @click="handleSearch()">About Us</router-link>
           <router-link to="/about/brand-story">Brand Story</router-link>
         </div>
         <div class="footer-section">
@@ -33,10 +33,23 @@
   </footer>
 </template>
 
-<script>
-export default {
-  name: 'Footer'
+<script setup>
+import { defineOptions } from 'vue'
+import { pintrk } from '@/utils/pinterest.js';
+const handleSearch =() => {
+  // 1. 你的业务
+  console.log('Pinterest...')
+  // 2. 上报 Pinterest
+  pintrk('track', 'pagevisit', {
+    event_id: 'eventId0001',
+    property: 'Athleta',
+    lead_type: 'Newsletter',
+    search_query: 'boots'
+  });
 }
+defineOptions({
+  name: 'Footer'
+})
 </script>
 
 <style scoped>

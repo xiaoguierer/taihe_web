@@ -49,8 +49,9 @@
                   :key="currentImage.uniqueKey"
                 />
                 <div class="image-meta">
-                  {{ currentImage.alt }} ({{ currentImageIndex + 1 }}/{{ imageList.length }})
-                  <span style="font-size: 12px; color: #ccc;">{{ currentImage.fieldName }}</span>
+<!--                  {{ currentImage.alt }} -->
+                  ({{ currentImageIndex + 1 }}/{{ imageList.length }})
+<!--                  <span style="font-size: 12px; color: #ccc;">{{ currentImage.fieldName }}</span>-->
                 </div>
 
                 <!-- 图片导航 -->
@@ -85,24 +86,15 @@
               <h1 class="product-name">{{ productData.spu.productNameEn }}</h1>
               <p class="product-subtitle">{{ productData.spu.shortDescriptionEn }}</p>
 
-              <div class="basic-info">
-                  <span v-if="productData.spu.productCode" class="info-tag">编码: {{
-                      productData.spu.productCode
-                    }}</span>
-                <span v-if="productData.spu.brandNameZh" class="info-tag">品牌: {{
-                    productData.spu.brandNameZh
-                  }}</span>
-                <span v-if="productData.spu.categoryNameZh" class="info-tag">分类: {{
-                    productData.spu.categoryNameZh
-                  }}</span>
-                <span v-if="productData.spu.collectionNameZh"
-                      class="info-tag">系列: {{ productData.spu.collectionNameZh }}</span>
-                <span v-if="productData.spu.productType" class="info-tag">类型: {{
-                    productData.spu.productType
-                  }}</span>
+<!--              <div class="basic-info">
+                  <span v-if="productData.spu.spuCode" class="info-tag">Code: {{productData.spu.spuCode }}</span>
+&lt;!&ndash;                <span v-if="productData.spu.brandNameZh" class="info-tag">品牌: {{productData.spu.brandNameZh }}</span>
+                <span v-if="productData.spu.categoryNameZh" class="info-tag">分类: {{productData.spu.categoryNameZh }}</span>
+                <span v-if="productData.spu.collectionNameZh" class="info-tag">系列: {{ productData.spu.collectionNameZh }}</span>
+                <span v-if="productData.spu.productType" class="info-tag">类型: {{productData.spu.productType }}</span>
                 <span v-if="productData.spu.style" class="info-tag">风格: {{ productData.spu.style }}</span>
-                <span v-if="productData.spu.theme" class="info-tag">主题: {{ productData.spu.theme }}</span>
-              </div>
+                <span v-if="productData.spu.theme" class="info-tag">主题: {{ productData.spu.theme }}</span>&ndash;&gt;
+              </div>-->
 
               <!-- 玄学标签 -->
 
@@ -115,22 +107,18 @@
                   <span class="icon">☯️</span>
                   <span>Element: {{ getElementName(productData.spu.primaryElement) }}</span>
                 </div>
-                <div class="tag-item" v-if="productData.spu.secondaryElement">
-                  <span class="icon">🌟</span>
-                  <span>Secondary Element: {{ getElementName(productData.spu.secondaryElement) }}</span>
-                </div>
                 <div class="tag-item" v-if="currentSku.gemstoneType">
                   <span class="icon">💎</span>
                   <span>Gemstone: {{ currentSku.gemstoneType }}</span>
                 </div>
-                <div class="tag-item" v-if="productData.spu.targetZodiacSigns">
+<!--                <div class="tag-item" v-if="productData.spu.targetZodiacSigns">
                   <span class="icon">♏️</span>
                   <span>Zodiac: {{ productData.spu.targetZodiacSigns }}</span>
                 </div>
                 <div class="tag-item" v-if="productData.spu.targetChakra">
                   <span class="icon">🌀</span>
                   <span>Chakra: {{ productData.spu.targetChakra }}</span>
-                </div>
+                </div>-->
                 <div class="tag-item" v-if="currentSku.variantYuyiEn">
                   <span class="icon">✨</span>
                   <span>Symbolism: {{ currentSku.variantYuyiEn }}</span>
@@ -150,7 +138,7 @@
                       :key="sku.id"
                       :value="index"
                     >
-                      {{ sku.skuNameZh || sku.skuName }}
+                      {{ sku.skuNameEn || sku.skuNameEn }}
                       <span v-if="sku.skuCode">({{ sku.skuCode }})</span>
                       - ${{ formatPrice(sku.finalPrice || sku.retailPrice || sku.price) }}
                     </option>
@@ -187,7 +175,7 @@
               </div>
 
               <!-- 信任标识 -->
-              <div class="trust-badges">
+<!--              <div class="trust-badges">
                 <div class="badge-item">
                   <span class="icon">⛭</span>
                   <span>Free Global Shipping</span>
@@ -200,18 +188,18 @@
                   <span class="icon">↻</span>
                   <span>30-Day Return (No Questions Asked)</span>
                 </div>
-              </div>
+              </div>-->
               <!-- 操作按钮 -->
               <div class="action-buttons">
 <!--                <button class="btn-secondary" @click="buyNow">🛒 Buy Now</button>-->
                 <button class="btn-primary" @click="addToCart">❤️ Add to Cart 🛒 </button>
               </div>
               <!-- 快速信息 -->
-              <div class="quick-info-grid">
+<!--              <div class="quick-info-grid">
                 <div class="info-item" v-if="currentSku.skuCode">
                   <span class="value">{{ currentSku.skuCode }}</span>
                 </div>
-              </div>
+              </div>-->
             </div>
           </div>
         </div>
