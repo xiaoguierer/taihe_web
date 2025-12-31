@@ -17,8 +17,10 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
+       // target: 'http://47.84.2.177:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api') // 保留完整路径
+        // rewrite: (path) => path.replace(/^\/api/, '/api') // 保留完整路径
+        //rewrite: (path) => path.replace(/^\/api/, '') // 保留完整路径
       }
     },
     // 热更新配置

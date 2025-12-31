@@ -23,6 +23,11 @@ dist/
 5 上传服务器
 scp -r dist/* root@47.84.2.177:/opt/app/front_web/dist
 
+scp -r dist/* root@47.84.2.177:/opt/app/back_web/dist
+
+ scp backcentral-1.0-SNAPSHOT.jar root@47.84.2.177:/opt/app/backend
+
+
 6 ng配置
 
 文件路径  /etc/nginx/conf.d/taihe-web.conf
