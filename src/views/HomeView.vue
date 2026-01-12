@@ -1065,7 +1065,8 @@ onMounted(() => {
 }
 
 .product-name {
-  font-size: 0.22cm; /* 稍微减小字体 */
+  font-family: 'Montserrat', 'Arial', sans-serif;
+  font-size:15px; /* 稍微减小字体 */
   margin: 0;
   padding: 0;
   font-weight: 500;
@@ -1079,7 +1080,7 @@ onMounted(() => {
 }
 
 .product-desc {
-  font-size: 0.18cm; /* 稍微减小字体 */
+  font-size:10px; /* 稍微减小字体 */
   color: #cccccc;
   line-height: 1.1; /* 紧凑行高 */
   margin: 0;

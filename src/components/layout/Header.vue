@@ -938,6 +938,7 @@ export default {
   width: 100%;
   flex-wrap: nowrap;
   height: 100%;
+  gap: 25px;  /* 这个就是你要的间距 */
 }
 
 /* 隐藏滚动条 */
