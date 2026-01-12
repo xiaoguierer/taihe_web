@@ -1,5 +1,6 @@
 <template>
   <header class="header">
+    <meta name="p:domain_verify" content="f66800ca05e0fd20933922f7f8352c3e"/>
     <!-- 品牌LOGO -->
     <div class="brand" @click="goToHome">
       <span class="brand-text">ZENIUL</span>
@@ -775,6 +776,19 @@ export default {
             megaMenu: true
           }))
 
+          const lastFiveItems = emotionalIntents.value.slice(-5);
+
+// 将最后5个数据项转换为导航项格式
+          const lastFiveNavigationItems = lastFiveItems.map(item => ({
+            id: item.id,
+            label: item.intentNameEn,
+            intentId: item.id,
+            megaMenu: true
+          }));
+
+// 将最后5个导航项添加到 navigationItems 数组中
+          navigationItems.value.push(...lastFiveNavigationItems);
+          console.log(navigationItems,'navigationItems')
           // 数据加载后检查滚动
           nextTick(() => {
             checkScrollNeeded()
@@ -914,7 +928,7 @@ export default {
 /* 主导航 */
 .main-nav {
   display: flex;
-  gap: 20px;
+  justify-content:space-between;
   align-items: center;
   overflow-x: auto;
   overflow-y: hidden;
@@ -946,7 +960,7 @@ export default {
   color: #FF8C00;
   font-size: 14px;
   font-weight: 500;
-  padding: 8px 12px;
+  //padding: 8px 12px;
   border-radius: 6px;
   transition: all 0.3s ease;
   display: flex;
@@ -1022,8 +1036,8 @@ export default {
   top: 80px; /* 距离顶部80px，在header下方 */
   left: 50%;
   transform: translateX(-50%);
-  width: 800px;
-  max-width: 90vw;
+  width: 700px;
+  max-width: 80vw;
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(40px);
   border-radius: 16px;
@@ -1032,7 +1046,7 @@ export default {
   border: 1px solid rgba(255, 140, 0, 0.3);
   overflow: hidden;
   z-index: 1000000; /* 提升到最高层级，确保在所有内容之上 */
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 500px);
   overflow-y: auto;
 }
 
@@ -1218,7 +1232,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1285,7 +1298,7 @@ export default {
 .featured-products {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 5px;
   margin-bottom: 24px;
 }
 
