@@ -285,9 +285,9 @@ export default {
     const navLabel = (navItem) => {
       const label = navItem.label || ''
       // 如果标签过长，进行截断处理
-      if (label.length > 10) {
-        return label.substring(0, 8) + '...'
-      }
+      // if (label.length > 10) {
+      //   return label.substring(0, 8) + '...'
+      // }
       return label
     }
 

@@ -7,6 +7,7 @@
         <section class="module-1">
           <div class="module-container">
             <div class="module-content">
+
               <div class="text-section">
                 <h1 class="module-title">{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
                 <div class="content-grid">
@@ -61,9 +62,9 @@
                 </div>
                 <div class="product-info strict-text-container">
                   <h3 class="product-name strict-text">{{ product.productNameEn }}</h3>
-                  <p class="product-desc strict-text">{{ product.shortDescriptionEn }}</p>
-                  <h3 class="product-name strict-text">{{ product.emotionalPurposeEn }}</h3>
-                  <p class="product-desc strict-text">{{ product.fullDescriptionEn }}</p>
+                  <h3 class="product-name strict-text">{{ product.shortDescriptionEn }}</h3>
+<!--                  <h3 class="product-name strict-text">{{ product.emotionalPurposeEn }}</h3>-->
+<!--                  <p class="product-desc strict-text">{{ product.fullDescriptionEn }}</p>-->
                 </div>
               </div>
             </div>
@@ -74,15 +75,8 @@
       <template v-else-if="index % 3 === 1">
         <section class="module-3">
           <div class="module-container">
-            <div class="module-content reversed">
-              <div class="image-section">
-                <img
-                  :src="intent.iconUrl || defaultIntentImage"
-                  :alt="intent.intentNameEn"
-                  @click="navigateToIntentProducts(intent.id)"
-                  class="adaptive-image fill-image"
-                />
-              </div>
+            <div :class="['module-content', 'reversed']">
+
               <div class="text-section">
                 <h1 class="module-title">{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
                 <div class="content-grid">
@@ -103,6 +97,14 @@
                     <p class="content-text strict-text">{{ intent.relationshipImpactEn }}</p>
                   </div>
                 </div>
+              </div>
+              <div class="image-section">
+                <img
+                  :src="intent.iconUrl || defaultIntentImage"
+                  :alt="intent.intentNameEn"
+                  @click="navigateToIntentProducts(intent.id)"
+                  class="adaptive-image fill-image"
+                />
               </div>
             </div>
           </div>
@@ -130,9 +132,9 @@
                 </div>
                 <div class="product-info strict-text-container">
                   <h3 class="product-name strict-text">{{ product.productNameEn }}</h3>
-                  <p class="product-desc strict-text">{{ product.shortDescriptionEn }}</p>
-                  <h3 class="product-name strict-text">{{ product.emotionalPurposeEn }}</h3>
-                  <p class="product-desc strict-text">{{ product.fullDescriptionEn }}</p>
+                  <h3 class="product-name strict-text">{{ product.shortDescriptionEn }}</h3>
+<!--                  <h3 class="product-name strict-text">{{ product.emotionalPurposeEn }}</h3>-->
+<!--                  <p class="product-desc strict-text">{{ product.fullDescriptionEn }}</p>-->
                 </div>
               </div>
             </div>
@@ -198,9 +200,9 @@
                 </div>
                 <div class="product-info strict-text-container">
                   <h3 class="product-name strict-text">{{ product.productNameEn }}</h3>
-                  <p class="product-desc strict-text">{{ product.shortDescriptionEn }}</p>
-                  <h3 class="product-name strict-text">{{ product.emotionalPurposeEn }}</h3>
-                  <p class="product-desc strict-text">{{ product.fullDescriptionEn }}</p>
+                  <h3 class="product-name strict-text">{{ product.shortDescriptionEn }}</h3>
+<!--                  <h3 class="product-name strict-text">{{ product.emotionalPurposeEn }}</h3>-->
+<!--                  <p class="product-desc strict-text">{{ product.fullDescriptionEn }}</p>-->
                 </div>
               </div>
             </div>
@@ -439,23 +441,30 @@ const fetchWuXingAttributes = async () => {
 const preprocessIntentData = (intent) => {
   return {
     ...intent,
-    primaryEmotionEn: processText(intent.primaryEmotionEn, 130),
-    secondaryEmotionsEn: processText(intent.secondaryEmotionsEn, 130),
-    philosophyMeaningEn: processText(intent.philosophyMeaningEn, 130),
-    spiritualMeaningEn: processText(intent.spiritualMeaningEn, 130),
-    modernInterpretationEn: processText(intent.modernInterpretationEn, 130)
+    primaryEmotionEn: processText(intent.primaryEmotionEn, 5000),
+    secondaryEmotionsEn: processText(intent.secondaryEmotionsEn, 5000),
+    philosophyMeaningEn: processText(intent.philosophyMeaningEn, 5000),
+    spiritualMeaningEn: processText(intent.spiritualMeaningEn, 5000),
+    modernInterpretationEn: processText(intent.modernInterpretationEn, 5000)
   }
 }
 
 const preprocessProductData = (product) => {
+  // 明确ID优先级：spuId > id
+  const productId = product.spuId || product.id;
+
+  if (!productId) {
+    console.warn('商品数据缺少ID字段:', product);
+  }
+
   // 关键修复：统一ID字段映射
   const processedProduct = {
     ...product,
     // 统一ID字段：spuId -> id
-    id: product.spuId || product.id,
+    id: productId,
     // 确保必要字段存在
-    productNameEn: processText(product.productNameEn || '', 130),
-    shortDescriptionEn: processText(product.shortDescriptionEn || '', 25),
+    productNameEn: processText(product.productNameEn || '', 1300),
+    shortDescriptionEn: processText(product.shortDescriptionEn || '', 2500),
     mainImageUrl: product.mainImageUrl
   }
   //console.log(`商品数据映射: spuId=${product.id} -> id=${processedProduct.id}`)
@@ -465,13 +474,13 @@ const preprocessProductData = (product) => {
 const preprocessWuXingData = (element) => {
   return {
     ...element,
-    elementNameEn: processText(element.elementNameEn, 15),
-    philosophyMeaningEn: processText(element.philosophyMeaningEn, 30)
+    elementNameEn: processText(element.elementNameEn, 1500),
+    philosophyMeaningEn: processText(element.philosophyMeaningEn, 3000)
   }
 }
 
 // 文本处理
-const processText = (text, maxLength = 30) => {
+const processText = (text, maxLength = 3000) => {
   if (!text) return ''
   const cleanText = text.replace(/\s+/g, ' ').trim()
   return cleanText.length > maxLength ? cleanText.substring(0, maxLength) + '...' : cleanText
@@ -532,10 +541,7 @@ onMounted(() => {
 /* 严格的文本约束 */
 .strict-text {
   max-width: 100%;
-//overflow: hidden;
-//text-overflow: ellipsis;
-//white-space: nowrap; /* 单行显示，确保不换行 */
-  line-height: 1.2;
+  line-height: 1.3;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -548,10 +554,10 @@ onMounted(() => {
   margin: 0;
   padding: 0;
 }
-
 /* ========== 模块1样式 ========== */
 .module-1 {
-  /* height: 70vh; 严格10厘米高度 */
+  height: 70vh;
+  min-height: 500px;
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -567,7 +573,7 @@ onMounted(() => {
 }
 
 .module-1 .text-section {
-  flex: 50%; /* 严格50%宽度 */
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -579,35 +585,30 @@ onMounted(() => {
 }
 
 .module-1 .image-section {
-  flex: 50%; /* 严格50%宽度 */
+  flex: 1;
   height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
-}
-
-.module-1 .content-grid {
-  width: 100%;
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 0.3cm; /* 适度行距 */
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
 }
 
-.module-1 .content-item {
-  width: 100%;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+/* 图片自适应填充 - 简化版 */
+.module-1 .adaptive-image {
+  width: auto;
+  height: auto;
+  object-fit: cover; /* 自动缩放填充 */
+  object-position: center;
+  display: block;
 }
-
 /* ========== 模块2样式 ========== */
 .module-2 {
-  /* height: 50vh; 严格12厘米高度 */
+  height: auto; /* 改为自适应高度 */
+  min-height: 60vh; /* 最小高度保障2行显示 */
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -616,16 +617,17 @@ onMounted(() => {
 
 .module-2 .products-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 严格5列 */
-  grid-template-rows: repeat(2, minmax(0, 1fr)); /* 关键：最小高度为0，最大1fr */
-  grid-auto-rows: 1fr; /* 确保自动创建的行也等高 */
-  gap: 0.3cm; /* 图片间适度空隙 */
-  height: 100%;
+  grid-template-columns: repeat(5, 1fr);
+  /* 删除或注释掉下面这行 */
+  /* grid-template-rows: repeat(2, minmax(0, 1fr)); */
+  grid-auto-rows: auto; /* 自动行高 */
+  gap: 0.3cm;
+  height: auto; /* 自适应高度 */
   width: 100%;
   margin: 0;
-  padding: 0.5cm; /* 容器内边距 */
+  padding: 0.5cm;
   box-sizing: border-box;
-  align-items: stretch; /* 单元格内容拉伸 */
+  align-items: stretch;
 }
 
 .module-2 .product-card {
@@ -668,16 +670,17 @@ onMounted(() => {
 }
 
 .module-2 .product-info {
-  height: 30%; /* 文字占卡片30%高度 */
+  height: auto; /* 自适应高度 */
+  min-height: 10%; /* 最小高度保障 */
   margin: 0;
-  padding: 0.2cm 0.1cm;
+  padding: 0.1cm 0.05cm; /* 减小内边距 */
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible; /* 显示所有内容 */
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 0; /* 允许收缩 */
+  justify-content: flex-start; /* 顶部对齐 */
+  gap: 0.1cm; /* 行间距 */
 }
 /* 确保模块4和模块6也使用相同的样式 */
 .module-4 .products-grid,
@@ -714,7 +717,7 @@ onMounted(() => {
 
 .module-4 .image-container {
   width: 100%;
-  height: 70%; /* 固定图片区域比例 */
+  height: 90%; /* 固定图片区域比例 */
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -724,7 +727,7 @@ onMounted(() => {
 
 .module-4 .product-image {
   width: 100%;
-  height: 100%; /* 填充整个image-container */
+  height: 100%; /* 图片占卡片70%高度 */
   margin: 0;
   padding: 0;
   border-radius: 0.15cm;
@@ -734,7 +737,7 @@ onMounted(() => {
 
 .module-6 .image-container {
   width: 100%;
-  height: 61%;
+  height: 90%;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -744,21 +747,22 @@ onMounted(() => {
 
 .module-4 .product-info,
 .module-6 .product-info {
-  height: 30%;
+  height: auto; /* 自适应高度 */
+  min-height: 10%; /* 最小高度保障 */
   margin: 0;
-  padding: 0.2cm 0.1cm;
+  padding: 0.1cm 0.05cm; /* 减小内边距 */
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible; /* 显示所有内容 */
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 0;
+  justify-content: flex-start; /* 顶部对齐 */
+  gap: 0.1cm; /* 行间距 */
 }
 
 /* ========== 模块3样式 ========== */
 .module-3 {
-  /* height: 60vh; 严格10厘米高度 */
+  height: 60vh;
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -778,7 +782,7 @@ onMounted(() => {
 }
 
 .module-3 .text-section {
-  flex: 50%; /* 严格50%宽度 */
+  flex: 1; /* 严格50%宽度 */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -788,13 +792,29 @@ onMounted(() => {
   box-sizing: border-box;
   overflow: hidden;
 }
-
 .module-3 .image-section {
-  flex: 50%; /* 严格50%宽度 */
+  flex: 1; /* 严格50%宽度 */
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: visible; /* 改为visible，不隐藏溢出 */
+  position: relative;
+  display: flex; /* 使用flex布局 */
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+  background: rgba(0, 0, 0, 0.02); /* 可选的背景色 */
+}
+
+.module-3 .adaptive-image {
+  /* 核心自适应设置 */
+  max-width: 100%; /* 最大不超过容器宽度 */
+  max-height: 100%; /* 最大不超过容器高度 */
+  width: auto; /* 宽度自适应 */
+  height: auto; /* 高度自适应 */
+  object-fit: contain; /* 保持比例，完整显示 */
+  object-position: center; /* 居中显示 */
+  display: block;
+  margin: auto; /* 自动居中 */
 }
 
 /* ========== 模块4样式 ========== */
@@ -820,7 +840,7 @@ onMounted(() => {
 
 /* ========== 模块5样式 ========== */
 .module-5 {
-  /* height: 70vh; 严格13厘米高度 */
+  //height: 70vh;
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -830,28 +850,35 @@ onMounted(() => {
 .module-5 .vertical-split {
   display: flex;
   flex-direction: column; /* 上下布局 */
-  height: 100%;
+  height: 80vh; /* 全屏高度 */
+  min-height: 800px; /* 最小高度保障 */
   width: 100%;
   margin: 0;
   padding: 0;
 }
 
 .module-5 .image-top {
-  height: 60%; /* 严格60%高度 */
+  height: 40%; /* 严格60%高度 */
+  min-height: 40vh; /* 最小高度保障 */
+  display: flex; /* ✅ 改为flex布局 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  overflow: visible; /* ✅ 允许图片完整显示 */
+  position: relative;
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
   flex-shrink: 0;
 }
 .module-5 .image-top img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 关键：保持比例填充区域 */
+  object-fit: contain !important; /* ✅ 不裁剪，完整显示 */
   display: block;
 }
 .module-5 .text-bottom {
-  height: 40%; /* 严格40%高度 */
+  height: 60%; /* 严格40%高度 */
+  min-height: 60vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -900,26 +927,35 @@ onMounted(() => {
 .module-spacer {
   width: 100vw;
   margin: 0;
-  padding: 0.5cm 0; /* 3行间距 */
-  box-sizing: border-box;
+  padding: 0.5cm 0;
   background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .spacer-text {
-  text-align: center;
-  font-style: italic;
-  font-size: 0.4cm;
+  font-family: 'Brush Script MT', cursive, serif; /* 艺术字体 */
+  font-size: 0.6cm;
   color: #d4af37;
-  background: rgba(212, 175, 55, 0.1);
-  margin: 0;
-  padding: 0.2cm;
-  border-radius: 0.1cm;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-  box-sizing: border-box;
+  text-align: center;
+  line-height: 1.6;
+  margin: 0 auto;
+  padding: 0.3cm 0.5cm;
+  //background: rgba(212, 175, 55, 0.1);
+  border-radius: 0.2cm;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+  display: block !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  max-height: none !important;
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: unset !important;
 }
 
 /* ========== 五行模块样式 ========== */
@@ -987,7 +1023,7 @@ onMounted(() => {
 }
 
 .element-card .element-info {
-  height: 30%; /* 文字占卡片30%高度，与product-info一致 */
+  height: 10%; /* 文字占卡片30%高度，与product-info一致 */
   margin: 0;
   padding: 0.2cm 0.1cm; /* 与product-info一致 */
   box-sizing: border-box;
@@ -1020,39 +1056,40 @@ onMounted(() => {
 }
 
 .content-text {
-  font-size: 0.3cm;
-  line-height: 1.3;
+  font-size: 0.45cm;
+  line-height: 1.5;
   margin: 0;
   padding: 0;
   color: #f0f0f0;
   max-width: 100%;
-//overflow: hidden;
-//text-overflow: ellipsis;
-//white-space: nowrap;
   box-sizing: border-box;
 }
 
 .product-name {
-  font-size: 0.25cm;
-  margin: 0 0 0.1cm 0;
+  font-size: 0.22cm; /* 稍微减小字体 */
+  margin: 0;
   padding: 0;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.1; /* 紧凑行高 */
   color: #ffffff;
   max-width: 100%;
   box-sizing: border-box;
+  white-space: normal; /* 允许多行 */
+  overflow: visible; /* 显示所有内容 */
+  display: block;
 }
 
 .product-desc {
-  font-size: 0.2cm;
+  font-size: 0.18cm; /* 稍微减小字体 */
   color: #cccccc;
-  line-height: 1.2;
+  line-height: 1.1; /* 紧凑行高 */
   margin: 0;
   padding: 0;
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal; /* 允许多行 */
+  overflow: visible; /* 显示所有内容 */
+  text-overflow: unset; /* 移除省略号 */
+  display: block;
   box-sizing: border-box;
 }
 
@@ -1197,11 +1234,13 @@ onMounted(() => {
 .content-grid > *,
 .content-list > *,
 .product-info > *,
-.element-info > * {
+.element-info > *,
+.spacer-text {
   max-width: 100% !important;
-  overflow: hidden !important;
+  overflow: visible !important; /* ✅ 改为可见 */
   box-sizing: border-box !important;
   text-align: center;
+  white-space: normal !important; /* ✅ 添加允许换行 */
 }
 
 /* 确保所有元素都不会产生滚动条 */
