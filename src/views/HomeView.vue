@@ -76,7 +76,6 @@
         <section class="module-3">
           <div class="module-container">
             <div :class="['module-content', 'reversed']">
-
               <div class="text-section">
                 <h1 class="module-title">{{ intent.symbolCharacter }}-{{ intent.intentNameEn }}</h1>
                 <div class="content-grid">
