@@ -302,10 +302,12 @@
                 <div class="info-block" v-if="productData.spu.productionGuidelinesEn">
                   <p>{{ productData.spu.productionGuidelinesEn }}</p>
                 </div>
+                <div class="info-block">
                 <img
                   v-if="productData.spu.prototypeImageUrl"
                   :src="productData.spu.prototypeImageUrl"
                 >
+              </div>
                 <div class="info-block" v-if="productData.spu.productNameEn">
                   <p>{{ productData.spu.productNameEn }}</p>
                 </div>
@@ -1845,7 +1847,16 @@ const nextImage = () => {
   color: #e0e0e0;
   margin: 0;
 }
-
+.info-block img {
+  display: block;
+  margin: 0 auto;
+  max-width: 1000px;
+  max-height: 500px; /* 设置最大高度，避免图片过大 */
+  width: auto;
+  height: auto;
+  object-fit: contain; /* 保持比例，完整显示图片 */
+  border-radius: 8px;
+}
 /* 评分部分 */
 .score-section {
   margin-top: 30px;

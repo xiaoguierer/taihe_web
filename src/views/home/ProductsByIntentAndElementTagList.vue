@@ -14,7 +14,7 @@
           <div v-else class="image-placeholder">标签展示图</div>
         </div>
         <div class="hero-content">
-          <h2 class="hero-title">{{ heroData.tagKey }}-{{ heroData.tagNameEn }}-</h2>
+          <h2 class="hero-title">{{ heroData.tagNameEn }}</h2>
           <p class="hero-description">{{ heroData.descriptionEn }}</p>
         </div>
       </div>
@@ -45,9 +45,7 @@
             <div class="product-info">
               <h3 class="product-name">{{ product.productNameEn  }}</h3>
               <p class="product-meaning">{{ product.shortDescriptionEn }}</p>
-              <p class="product-design" v-if="product.designConceptEn">
-                {{ product.designConceptEn }}
-              </p>
+
               <!-- 其他图片链接（调试用） -->
               <div class="image-links" v-if="false"> <!-- 设置为 false 隐藏调试信息 -->
                 <small v-if="product.mainImageUrl">主图: {{ product.mainImageUrl }}</small>
