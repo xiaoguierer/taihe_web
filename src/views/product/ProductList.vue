@@ -172,7 +172,7 @@ export default {
 .image-placeholder {
   width: 100%;
   height: 100%;
-  background: rgba(255, 215, 0, 0.1); /* 金色半透明背景 */
+ /* background: rgba(255, 215, 0, 0.1); !* 金色半透明背景 *!*/
   display: flex;
   align-items: center;
   justify-content: center;

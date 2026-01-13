@@ -113,7 +113,7 @@
               <div class="meaning-item">
                 <p>{{ intentData.lifeGuidanceEn }}</p>
               </div>
-              <div class="meaning-item">
+<!--              <div class="meaning-item">
                 <p>{{ intentData.healingPropertyEn  }}</p>
               </div>
               <div class="meaning-item">
@@ -121,7 +121,7 @@
               </div>
               <div class="meaning-item">
                 <p>{{ intentData.careerAlignmentEn  }}</p>
-              </div>
+              </div>-->
               <div class="meaning-item">
                 <p>{{ intentData.philosophyMeaningEn }}</p>
               </div>
@@ -149,7 +149,7 @@
 
           <!-- 图片资源卡片 -->
           <div class="info-card full-width">
-            <h3 class="card-title">Picture</h3>
+            <h3 class="card-title"></h3>
             <div class="image-grid">
               <div class="image-item" v-if="intentData.iconUrl">
                 <img :src="intentData.iconUrl" alt="图标" class="resource-img">
@@ -426,7 +426,7 @@ export default {
 .retry-button {
   margin-top: 1rem;
   padding: 0.5rem 1.5rem;
-  background-color: #4ecdc4;
+ /* background-color: #4ecdc4;*/
   color: white;
   border: none;
   border-radius: 4px;
@@ -436,7 +436,7 @@ export default {
 }
 
 .retry-button:hover {
-  background-color: #45b7aa;
+ /* background-color: #45b7aa;*/
 }
 
 /* 无数据状态 */
@@ -458,7 +458,7 @@ export default {
   justify-content: center;
   padding: 0;
   margin: 0;
-  background: linear-gradient(135deg, rgba(10, 26, 53, 0.9) 0%, rgba(20, 40, 80, 0.8) 100%);
+  /*background: linear-gradient(135deg, rgba(10, 26, 53, 0.9) 0%, rgba(20, 40, 80, 0.8) 100%);*/
 }
 
 .hero-container {
@@ -579,7 +579,7 @@ export default {
 /* 详细信息区域 */
 .details-section {
   padding: 2rem 0;
-  background-color: #0a1a35;
+ /* background-color: #0a1a35;*/
 }
 
 .details-container {
@@ -592,7 +592,7 @@ export default {
 }
 
 .info-card {
-  background: rgba(255, 255, 255, 0.05);
+  /*background: rgba(255, 255, 255, 0.05);*/
   border-radius: 8px;
   padding: 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -730,7 +730,7 @@ export default {
 
 .image-item img {
   width: 100%;
-  height: 150px;
+  height: 250px;
   object-fit: cover;
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.1);
