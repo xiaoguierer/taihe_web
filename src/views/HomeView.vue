@@ -231,10 +231,10 @@
               />
             </div>
             <div class="element-info strict-text-container">
-              <div class="element-name strict-text">{{ element.cosmologyMeaningEn }}</div>
-              <div class="element-philosophy strict-text">{{ element.philosophyMeaningEn }}</div>
-              <div class="element-name strict-text">{{ element.lifePhilosophyEn }}</div>
-              <div class="element-philosophy strict-text">{{ element.culturalSymbolismEn }}</div>
+<!--              <div class="element-name strict-text">{{ element.cosmologyMeaningEn }}</div>-->
+              <div class="element-name strict-text">{{ element.philosophyMeaningEn }}</div>
+<!--              <div class="element-name strict-text">{{ element.lifePhilosophyEn }}</div>
+              <div class="element-philosophy strict-text">{{ element.culturalSymbolismEn }}</div>-->
             </div>
           </div>
         </div>
@@ -686,7 +686,7 @@ onMounted(() => {
 .module-6 .products-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(300px, 1fr)); /* 添加最小高度约束 */
   grid-auto-rows: 1fr;
   gap: 0.3cm;
   height: 100%;
@@ -921,6 +921,13 @@ onMounted(() => {
   padding: 0.5cm;
   box-sizing: border-box;
 }
+.module-6 .product-image {
+  width: 100%;
+  height: 100%;
+  object-fit:  fill !important; /* 改为fill填充 */
+  object-position: center; /* 居中显示 */
+  border-radius: 0.15cm;
+}
 
 /* ========== 模块间分隔文字 ========== */
 .module-spacer {
@@ -935,7 +942,8 @@ onMounted(() => {
 
 .spacer-text {
   font-family: 'Brush Script MT', cursive, serif; /* 艺术字体 */
-  font-size: 0.6cm;
+  font-size: 0.8cm;
+  font-weight: bold;  /* 添加这一行 */
   color: #d4af37;
   text-align: center;
   line-height: 1.6;
@@ -1003,7 +1011,7 @@ onMounted(() => {
 
 .element-card .image-container {
   width: 100%;
-  height: 70%; /* 固定图片区域比例，与product-card一致 */
+  height: 90%; /* 固定图片区域比例，与product-card一致 */
   margin: 0;
   padding: 0;
   overflow: hidden;
