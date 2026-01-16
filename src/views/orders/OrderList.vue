@@ -77,10 +77,10 @@
 
           <div class="order-footer">
             <div class="order-actions">
-              <el-button type="primary" size="small" @click="viewOrderDetail(order.id)">查看详情</el-button>
-<!--              <el-button type="warning" size="small" v-if="order.status === 1" @click="handlePay(order.id)">立即付款</el-button>
-              <el-button type="danger" size="small" v-if="order.status === 1" @click="handleCancel(order.id)">取消订单</el-button>
-              <el-button type="success" size="small" v-if="order.status === 3" @click="handleConfirm(order.id)">确认收货</el-button>-->
+              <el-button type="primary" size="small" @click="viewOrderDetail(order.id)">View Details</el-button>
+              <el-button type="warning" size="small" v-if="order.status === 1" @click="handlePay(order.id)">Pay Now</el-button>
+              <el-button type="danger" size="small" v-if="order.status === 1" @click="handleCancel(order.id)">Cancel Order</el-button>
+<!--              <el-button type="success" size="small" v-if="order.status === 3" @click="handleConfirm(order.id)">确认收货</el-button>-->
             </div>
           </div>
         </div>
@@ -89,7 +89,7 @@
       <!-- 空状态 -->
       <div v-else class="empty-state">
         <div class="empty-icon">📦📦</div>
-        <div class="empty-text">暂无订单数据</div>
+        <div class="empty-text">No order data available at the moment</div>
       </div>
     </div>
   </div>
@@ -176,13 +176,13 @@ const formatDateTime = (dateTime) => {
 // 获取订单状态文本
 const getStatusText = (status) => {
   const statusMap = {
-    1: '待付款',
-    2: '待发货',
-    3: '待收货',
-    4: '已完成',
-    5: '已关闭'
+    1: 'Pending Payment',
+    2: 'Pending Shipment',
+    3: 'Awaiting Delivery',
+    4: 'Completed',
+    5: 'Closed'
   }
-  return statusMap[status] || '未知状态'
+  return statusMap[status] || 'Unknown Status'
 }
 
 // 获取订单状态类名
@@ -200,9 +200,7 @@ const getStatusClass = (status) => {
 // 查看订单详情
 const viewOrderDetail = (orderId) => {
   // 这里应该使用路由跳转
-  console.log('查看订单详情:', orderId)
   const url = `/order-item/order/${orderId}`
-  console.info("订单详情url is :",url);
   router.push(url)// 通过路由路径导航
 }
 
@@ -210,17 +208,62 @@ const viewOrderDetail = (orderId) => {
 const handlePay = async (orderId) => {
   try {
     loading.value = true
-    const response = await axios.post(`/api/order/pay/${orderId}`)
 
-    if (response.data && response.data.success) {
-      ElMessage.success('付款成功')
-      fetchOrders() // 刷新订单列表
+    // 1. 获取订单详情
+    const response = await fetch(`/api/order-item/orderDetail/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // 如果后端需要身份验证，请加上这一行 👇
+        'Authorization': token ? `Bearer ${token}` : '',
+      }
+    })
+    const result = await response.json()
+    console.log("API返回数据:", result)
+    if (result.code === 200) {
+      const orderItems = result.data || []
+      if (orderItems.length === 0) {
+        ElMessage.error('订单中没有商品')
+        return
+      }
+      // 从第一个订单项中获取订单基本信息
+      const firstItem = orderItems[0]
+      // 计算总金额和商品数量
+      const totalAmount = orderItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0)
+      const skuCount = orderItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
+      const spuCount = new Set(orderItems.map(item => item.spuId)).size
+      console.log("计算后的数据:", { totalAmount, skuCount, spuCount })
+      // 2. 构建结算数据（与购物车结算数据结构保持一致）
+      const checkoutData = {
+        userId: userId,
+        totalAmount: totalAmount.toFixed(2),
+        SkuCount: skuCount,
+        SpuCount: spuCount,
+        orderId: orderId, // 添加订单ID标记来源
+        items: orderItems.map(item => ({
+          cartItemId: item.id, // 使用订单项ID
+          spuId: item.spuId,
+          skuId: item.skuId,
+          skumainImageUrl: item.mainImageUrl, // 注意字段名不同
+          productNameEn: item.productNameEn,
+          skuNameEn: item.skuNameEn,
+          unitPrice: (item.unitPrice || 0).toFixed(2),
+          quantity: item.quantity,
+          subtotal: ((item.unitPrice || 0) * item.quantity).toFixed(2)
+        }))
+      }
+      console.log("构建的结算数据:", checkoutData)
+      // 3. 存储到sessionStorage（与购物车流程一致）
+      sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData))
+      // 4. 跳转到确认页面
+      ElMessage.success('跳转到支付确认页面')
+      router.push('/orders/OrderConfirmation')
     } else {
-      ElMessage.error('付款失败')
+      ElMessage.error('获取订单详情失败: ' + (result.message || '未知错误'))
     }
   } catch (error) {
-    console.error('付款失败:', error)
-    ElMessage.error('付款失败，请稍后重试')
+    console.error('支付跳转失败:', error)
+    ElMessage.error('系统错误，请重试: ' + error.message)
   } finally {
     loading.value = false
   }
@@ -230,17 +273,26 @@ const handlePay = async (orderId) => {
 const handleCancel = async (orderId) => {
   try {
     await ElMessageBox.confirm('确定要取消此订单吗？', '提示', {
-      type: 'warning'
+      type: 'warning',
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
     })
 
     loading.value = true
-    const response = await axios.post(`/api/order/cancel/${orderId}`)
-
-    if (response.data && response.data.success) {
+    // 调用更新订单状态API，状态5表示"已关闭"（取消）
+    const response = await fetch(`/api/order/${orderId}/status/5`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : '',
+      }
+    })
+    const result = await response.json()
+    if (result.code === 200) {
       ElMessage.success('订单已取消')
-      fetchOrders() // 刷新订单列表
+      await fetchOrders() // 刷新订单列表
     } else {
-      ElMessage.error('取消订单失败')
+      ElMessage.error(result.message || '取消订单失败')
     }
   } catch (error) {
     if (error !== 'cancel') {

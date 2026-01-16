@@ -300,11 +300,11 @@ const formatDateTime = (dateTime) => {
 // 获取订单状态文本
 const getStatusText = (status) => {
   const statusMap = {
-    1: '待付款',
-    2: '待发货',
-    3: '待收货',
-    4: '已完成',
-    5: '已关闭'
+    1: 'Pending Payment',
+    2: 'Pending Shipment',
+    3: 'Awaiting Delivery',
+    4: 'Completed',
+    5: 'Closed'
   }
   return statusMap[status] || '未知状态'
 }
