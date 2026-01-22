@@ -30,3 +30,16 @@ app.use(router)   // 再注册路由
 app.use(ElementPlus) // 最后注册UI组件
 app.mount('#app')
 console.log('🚀 Vue应用已启动')
+
+// 初始化用户调试工具（开发环境）
+if (import.meta.env.DEV) {
+  import('@/utils/debugUser').then(({ initUserDebugTools }) => {
+    // 延迟初始化，确保所有插件已加载
+    setTimeout(() => {
+      initUserDebugTools()
+      console.log('🛠️  用户调试工具已初始化')
+    }, 500)
+  }).catch(err => {
+    console.warn('用户调试工具初始化失败:', err)
+  })
+}

@@ -36,3 +36,49 @@ npm run dev
 ```sh
 npm run build
 ```
+
+## Google OAuth 登录功能
+
+项目已集成Google OAuth登录功能。详细设置指南请参考 [GOOGLE_OAUTH_SETUP.md](GOOGLE_OAUTH_SETUP.md)。
+
+### 主要功能
+
+1. **Google登录按钮** - 在登录页面添加Google登录选项
+2. **双模式支持** - 支持后端验证和前端临时会话两种模式
+3. **现有系统集成** - 与项目的Pinia认证系统无缝集成
+
+### 快速开始
+
+1. 按照 [GOOGLE_OAUTH_SETUP.md](GOOGLE_OAUTH_SETUP.md) 配置Google OAuth客户端ID
+2. 启动开发服务器：`npm run dev`
+3. 访问登录页面：`/users/login`
+4. 点击Google按钮测试登录功能
+
+## 用户信息获取优化
+
+项目已实现统一的用户信息管理方案，特别优化了Google登录用户的体验。详细设计请参考 [USER_INFO_OPTIMIZATION.md](USER_INFO_OPTIMIZATION.md)。
+
+### 主要特性
+
+1. **即时信息显示** - 登录后立即显示用户基本信息
+2. **智能数据合并** - 自动结合本地存储和后端API数据
+3. **Google用户优化** - 特殊处理Google登录用户的临时会话
+4. **统一错误处理** - 优雅降级，确保基本功能可用
+
+### 使用方法
+
+```javascript
+// 在任何Vue组件中
+import { useUserInfo } from '@/composables/useUserInfo'
+
+const {
+  isLoggedIn,
+  isGoogleUser,
+  displayName,
+  fullUserInfo,
+  loadFullUserInfo
+} = useUserInfo()
+
+// 获取即时可用的用户信息
+const user = fullUserInfo.value // { id, email, name, avatar, loginType, ... }
+```

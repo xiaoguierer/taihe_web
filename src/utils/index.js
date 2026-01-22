@@ -35,3 +35,6 @@ export function formatDate(date, format = 'YYYY-MM-DD') {
     .replace('MM', month)
     .replace('DD', day)
 }
+
+// 重新导出Google认证工具
+export * from './googleAuth'

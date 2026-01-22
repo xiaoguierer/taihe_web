@@ -1,0 +1,34 @@
+/* Google认证按钮样式 */
+.google-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  min-height: 44px;
+}
+
+/* 确保Google按钮正确显示 */
+.g_id_signin {
+  width: 100%;
+}
+
+.g_id_signin > div {
+  margin: 0 auto;
+}
+
+/* 覆盖Google按钮iframe样式 */
+.g_id_signin iframe {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .google-button-container {
+    margin-top: 0.5rem;
+  }
+
+  .g_id_signin iframe {
+    width: 100% !important;
+  }
+}

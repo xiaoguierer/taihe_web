@@ -6,6 +6,21 @@
       <p class="page-subtitle">Manage your personal information</p>
     </div>
 
+    <!-- Google用户提示 -->
+    <div v-if="isGoogleUser && user.isTemporary" class="google-user-notice">
+      <div class="notice-content">
+        <span class="notice-icon">🔐</span>
+        <span>您正在使用Google临时会话登录</span>
+        <button class="notice-action" @click="router.push('/UserEdit')">绑定账户</button>
+      </div>
+    </div>
+
+    <!-- 加载状态 -->
+    <div v-if="isInitializing || isLoading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <span>加载用户信息中...</span>
+    </div>
+
     <!-- 用户信息展示 -->
     <div class="info-card" @click="editProfile">
       <el-image
@@ -52,38 +67,62 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import {ElMessage} from "element-plus";
-import { useAuthStore } from '@/store/auth'
+import { ElMessage } from "element-plus"
+import { useUserInfo } from '@/composables/useUserInfo'
 
 const router = useRouter()
-const authStore = useAuthStore()
-const userId = authStore.userInfo?.userId
-const token = authStore.token
+const {
+  isLoggedIn,
+  isGoogleUser,
+  displayName,
+  fullUserInfo,
+  baseUserInfo,
+  isLoading,
+  error,
+  loadFullUserInfo,
+  getAvatarUrl,
+  getMaskedEmail
+} = useUserInfo()
+
 const user = ref({})
 const addressInfo = ref({})
+const isInitializing = ref(true)
 
-// 获取用户基本信息
+// 计算属性：获取当前用户的token
+const currentToken = computed(() => baseUserInfo.value?.token)
+
+// 获取用户基本信息（使用统一composable）
 const fetchUserDetail = async () => {
   try {
-    const response = await fetch(`/api/users/getuserinfor/${userId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '',
+    const userData = await loadFullUserInfo()
+
+    if (userData) {
+      // 将composable返回的数据映射到原有user对象结构
+      user.value = {
+        // 原有字段
+        id: userData.id,
+        email: userData.email,
+        nickname: userData.nickname,
+        avatarUrl: userData.avatar || userData.picture,
+        birthdaytime: userData.birthday || userData.birthdaytime,
+
+        // 扩展字段
+        name: userData.name || userData.nickname,
+        loginType: userData.loginType,
+        isTemporary: userData.isTemporary,
+
+        // 保留其他可能存在的字段
+        ...userData
       }
-    })
-    const data = await response.json()
-    if (data && data.code === 200) {
-      user.value = data.data
+
       console.log('用户基本信息:', user.value)
-    } else {
-      throw new Error(data.message || '获取用户信息失败')
+      console.log('登录类型:', userData.loginType, '临时会话:', userData.isTemporary)
     }
-  } catch (error) {
-    console.error('获取用户信息失败:', error)
-    ElMessage.error('获取用户信息失败')
+  } catch (err) {
+    console.error('获取用户信息失败:', err)
+    // 错误消息已在composable中处理，这里仅记录
   }
 }
 // 添加生日格式化方法
@@ -102,12 +141,21 @@ const formatBirthday = (timeStr) => {
 // 获取用户地址信息
 const fetchAddressInfo = async () => {
   try {
-    if (userId) {
+    const userId = user.value?.id
+
+    // 检查是否为Google临时用户
+    if (isGoogleUser.value && user.value?.isTemporary) {
+      console.log('Google临时用户，跳过地址信息获取')
+      addressInfo.value = {}
+      return
+    }
+
+    if (userId && currentToken.value) {
       const response = await fetch(`/api/user-address/getByUserId/${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token ? `Bearer ${token}` : '',
+          'Authorization': `Bearer ${currentToken.value}`,
         }
       })
       const data = await response.json()
@@ -118,11 +166,14 @@ const fetchAddressInfo = async () => {
         throw new Error(data.message || '获取地址信息失败')
       }
     } else {
-      throw new Error('无法获取当前用户信息')
+      console.warn('无法获取用户ID或token，跳过地址信息获取')
     }
   } catch (error) {
     console.error('获取地址信息失败:', error)
-    ElMessage.error('获取地址信息失败')
+    // 对于非关键错误，仅记录不显示错误提示
+    if (!error.message.includes('网络')) {
+      ElMessage.warning('获取地址信息失败')
+    }
   }
 }
 
@@ -152,8 +203,26 @@ const copyShareLink = () =>{
 }
 // 加载用户数据
 onMounted(async () => {
-  await fetchUserDetail()
-  await fetchAddressInfo()
+  try {
+    isInitializing.value = true
+
+    // 先加载用户基本信息
+    await fetchUserDetail()
+
+    // 然后加载地址信息（如果不是Google临时用户）
+    if (!(isGoogleUser.value && user.value?.isTemporary)) {
+      await fetchAddressInfo()
+    }
+
+    console.log('用户中心初始化完成')
+    console.log('用户类型:', isGoogleUser.value ? 'Google用户' : '普通用户')
+    console.log('会话状态:', user.value?.isTemporary ? '临时会话' : '正式会话')
+
+  } catch (err) {
+    console.error('用户中心初始化失败:', err)
+  } finally {
+    isInitializing.value = false
+  }
 })
 </script>
 
@@ -324,6 +393,84 @@ onMounted(async () => {
   color: #6c757d;
   line-height: 1.4;
 }
+
+/* Google用户提示样式 */
+.google-user-notice {
+  background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+  animation: slideIn 0.5s ease-out;
+}
+
+.notice-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.notice-icon {
+  font-size: 18px;
+}
+
+.notice-action {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+}
+
+.notice-action:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* 加载状态样式 */
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  color: #94a3b8;
+}
+
+.loading-state .loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid #d4af37;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @media (max-width: 768px) {
   .personal-center {
     padding: 15px;
@@ -341,6 +488,30 @@ onMounted(async () => {
 
   .info {
     width: 100%;
+  }
+
+  /* 移动端适配 */
+  .google-user-notice {
+    padding: 10px 12px;
+    margin-bottom: 15px;
+  }
+
+  .notice-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .notice-action {
+    margin-left: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .loading-state {
+    padding: 15px;
+    flex-direction: column;
+    text-align: center;
   }
 }
 </style>

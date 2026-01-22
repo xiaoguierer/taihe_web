@@ -16,12 +16,14 @@
     "@element-plus/icons-vue": "^2.3.2",
     "axios": "^1.6.7",
     "element-plus": "^2.4.5",
+    "google-one-tap": "^1.0.6",
     "lodash-es": "^4.17.21",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
+    "@types/google-one-tap": "^1.2.7",
     "@vitejs/plugin-vue": "^5.2.4",
     "@vue/eslint-config-prettier": "^8.0.0",
     "eslint": "^8.57.0",

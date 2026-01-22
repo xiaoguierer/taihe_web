@@ -100,6 +100,16 @@
               {{ isLoading ? 'Logging in...' : ' Log in' }}
             </button>
 
+            <!-- 分隔线 -->
+            <div class="divider">
+<!--              <span>或使用其他方式登录</span>-->
+            </div>
+
+            <!-- Google登录按钮 -->
+<!--            <div class="social-login">
+              <div id="google-button-container" class="google-button-container"></div>
+            </div>-->
+
             <!-- 注册链接 -->
             <p class="register-link">
               Don’t have an account？<a href="#" @click="switchToRegister">Register Now – Claim Your Sanctuary</a>
@@ -123,7 +133,8 @@
 import { ref, reactive, onMounted, nextTick, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth';
-import {ElMessage} from "element-plus";
+import { ElMessage } from "element-plus";
+import { loadGoogleIdentityServices, renderGoogleButton, parseGoogleCredential, sendGoogleAuthToBackend } from '@/utils/googleAuth';
 
 const router = useRouter()
 // 定义事件
@@ -150,6 +161,9 @@ onMounted(() => {
 
   // 检查是否有保存的登录状态
   checkSavedLogin()
+
+  // 初始化Google登录
+  initGoogleLogin()
 })
 
 // 表单验证
@@ -179,6 +193,135 @@ const checkSavedLogin = () => {
     formData.rememberMe = true
   }
 }
+
+// 初始化Google登录
+const initGoogleLogin = async () => {
+  try {
+    // 加载Google Identity Services脚本
+    await loadGoogleIdentityServices();
+
+    // 渲染Google登录按钮
+    renderGoogleButton('google-button-container', handleGoogleCredentialResponse);
+
+    console.log('Google登录按钮初始化成功');
+  } catch (error) {
+    console.error('初始化Google登录失败:', error);
+    ElMessage.warning('Google登录功能暂时不可用');
+  }
+};
+
+// 处理Google登录响应
+const handleGoogleCredentialResponse = async (response) => {
+  try {
+    console.log('Google登录响应:', response);
+
+    if (!response.credential) {
+      throw new Error('Google登录失败: 未收到有效凭据');
+    }
+
+    // 解析Google凭据
+    const googleUser = parseGoogleCredential(response.credential);
+    console.log('Google用户信息:', googleUser);
+
+    // 显示加载状态
+    isLoading.value = true;
+
+    try {
+      // 尝试发送到后端验证
+      const authResult = await sendGoogleAuthToBackend(response.credential);
+
+      // 使用现有的认证系统
+      const authStore = useAuthStore();
+      authStore.loginSuccess(authResult.token, authResult.user);
+
+      // 🎯 增强：输出Google登录成功的详细信息（后端验证模式）
+      console.group('✅ Google登录成功 - 后端验证模式')
+      console.log('📅 登录时间:', new Date().toLocaleString())
+      console.log('👤 Google用户信息:', {
+        Google用户ID: googleUser.id,
+        邮箱: googleUser.email,
+        姓名: googleUser.name,
+        头像: googleUser.picture ? '已设置' : '未设置',
+        邮箱已验证: googleUser.emailVerified,
+        区域设置: googleUser.locale
+      })
+      console.log('🔑 系统令牌信息:', {
+        令牌类型: '后端验证JWT',
+        令牌长度: authResult.token?.length || 0,
+        用户数据: authResult.user
+      })
+      console.log('💾 存储状态:', {
+        auth_token已存储: !!localStorage.getItem('auth_token'),
+        user_info已存储: !!localStorage.getItem('user_info')
+      })
+      console.groupEnd()
+
+      ElMessage.success('Google登录成功！');
+
+      // 跳转到首页
+      setTimeout(() => {
+        router.push('/');
+      }, 1000);
+
+    } catch (backendError) {
+      console.warn('后端验证失败，使用前端验证:', backendError);
+
+      // 如果后端端点不存在，使用前端验证并创建临时用户
+      const authStore = useAuthStore();
+      const temporaryToken = `google_${Date.now()}_${Math.random().toString(36).substr(2)}`;
+      const temporaryUser = {
+        userId: googleUser.id,
+        email: googleUser.email,
+        name: googleUser.name,
+        picture: googleUser.picture,
+        loginType: 'google',
+        isTemporary: true
+      };
+
+      authStore.loginSuccess(temporaryToken, temporaryUser);
+
+      // 🎯 增强：输出Google登录成功的详细信息（前端临时模式）
+      console.group('✅ Google登录成功 - 前端临时会话模式')
+      console.log('📅 登录时间:', new Date().toLocaleString())
+      console.log('⚠️  注意: 使用前端临时会话，建议绑定账户')
+      console.log('👤 Google用户信息:', {
+        Google用户ID: googleUser.id,
+        邮箱: googleUser.email,
+        姓名: googleUser.name,
+        头像: googleUser.picture ? '已设置' : '未设置',
+        邮箱已验证: googleUser.emailVerified,
+        区域设置: googleUser.locale
+      })
+      console.log('🔑 系统令牌信息:', {
+        令牌类型: '前端临时令牌',
+        令牌长度: temporaryToken.length,
+        令牌示例: temporaryToken.substring(0, 30) + '...',
+        用户数据: temporaryUser
+      })
+      console.log('💾 存储状态:', {
+        auth_token已存储: !!localStorage.getItem('auth_token'),
+        user_info已存储: !!localStorage.getItem('user_info'),
+        临时会话标识: true
+      })
+
+      console.log('💡 建议: 访问用户中心绑定账户以获得完整功能')
+      console.groupEnd()
+
+      ElMessage.success('Google登录成功（临时会话）');
+
+      // 跳转到首页
+      setTimeout(() => {
+        router.push('/');
+      }, 1000);
+    }
+
+  } catch (error) {
+    console.error('Google登录处理失败:', error);
+    ElMessage.error(error.message || 'Google登录失败');
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 // 登录处理函数
 const handleLogin = async () => {
@@ -243,6 +386,27 @@ const handleLogin = async () => {
 // ✅ 直接使用authStore，移除错误的条件判断
       const authStore = useAuthStore()
       authStore.loginSuccess(token, userInfo)
+
+      // 🎯 增强：输出登录成功的详细信息
+      console.group('✅ 普通登录成功 - 用户账号信息')
+      console.log('📅 登录时间:', new Date().toLocaleString())
+      console.log('📧 登录邮箱:', formData.email)
+      console.log('🔑 JWT令牌长度:', token.length)
+      console.log('👤 用户详细信息:', {
+        用户ID: result.data.id,
+        邮箱: result.data.email,
+        昵称: result.data.nickname,
+        头像: result.data.avatar ? '已设置' : '未设置',
+        账户状态: result.data.status,
+        注册时间: result.data.createdAt
+      })
+      console.log('💾 存储状态:', {
+        auth_token已存储: !!localStorage.getItem('auth_token'),
+        user_info已存储: !!localStorage.getItem('user_info'),
+        记住我: formData.rememberMe
+      })
+      console.groupEnd()
+
       ElMessage.success('登录成功！即将自动跳转...')
       // ✅ 统一跳转逻辑
       setTimeout(() => {
@@ -272,4 +436,5 @@ const switchToForgotPassword = () => {
 
 <style scoped>
 @import url('@/styles/user/userlogin.css');
+@import url('@/styles/user/google-auth.css');
 </style>
